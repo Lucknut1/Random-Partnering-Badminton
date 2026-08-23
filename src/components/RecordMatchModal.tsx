@@ -197,7 +197,12 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
-      <div className="clean-card max-w-lg w-full p-5 space-y-4 border border-white/15 shadow-2xl my-6 bg-[#0f172a] animate-scale-in">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="record-match-title"
+        className="clean-card max-w-lg w-full p-5 space-y-4 border border-white/15 shadow-2xl my-6 bg-[#0b100e] animate-scale-in"
+      >
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-3">
           <div className="flex items-center gap-2">
@@ -205,22 +210,26 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
               <Plus size={16} />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-white">Record Match</h3>
+              <h3 id="record-match-title" className="text-sm font-extrabold text-white">Catat Pertandingan</h3>
               <p className="text-[11px] text-slate-400">Catat hasil pertandingan & update poin klasemen</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handleToggleSound}
               className="text-slate-400 hover:text-white p-1 rounded hover:bg-white/5 transition"
               title={isMuted ? 'Nyalakan Efek Suara' : 'Matikan Suara'}
+              aria-label={isMuted ? 'Nyalakan efek suara' : 'Matikan efek suara'}
             >
               {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} className="text-emerald-400" />}
             </button>
             <button
+              type="button"
               onClick={onClose}
               className="text-slate-400 hover:text-white p-1 rounded hover:bg-white/5 transition"
+              aria-label="Tutup dialog catat pertandingan"
             >
               <X size={18} />
             </button>
@@ -317,9 +326,9 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
             </div>
 
             {/* Team A Selection & Score */}
-            <div className="p-3 bg-[#131c2e] rounded-xl border border-blue-500/30 space-y-2">
+            <div className="p-3 bg-[#0d1511] rounded-xl border border-emerald-500/30 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-blue-400">TIM A</span>
+                <span className="text-xs font-bold text-emerald-400">TIM A</span>
                 <span className="text-[10px] text-slate-400">Skor Akhir:</span>
               </div>
 
@@ -369,9 +378,9 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
             </div>
 
             {/* Team B Selection & Score */}
-            <div className="p-3 bg-[#131c2e] rounded-xl border border-pink-500/30 space-y-2">
+            <div className="p-3 bg-[#0d1511] rounded-xl border border-cyan-500/30 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-pink-400">TIM B</span>
+                <span className="text-xs font-bold text-cyan-300">TIM B</span>
                 <span className="text-[10px] text-slate-400">Skor Akhir:</span>
               </div>
 
@@ -499,8 +508,8 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
             {/* Clicker Buttons */}
             <div className="grid grid-cols-2 gap-3">
               {/* TIM A Clicker */}
-              <div className="p-3 bg-[#131c2e] rounded-xl border border-blue-500/30 text-center space-y-2">
-                <span className="text-xs font-bold text-blue-400 block">TIM A</span>
+              <div className="p-3 bg-[#0d1511] rounded-xl border border-emerald-500/30 text-center space-y-2">
+                <span className="text-xs font-bold text-emerald-400 block">TIM A</span>
                 <button
                   type="button"
                   onClick={() => handleAddLivePoint('A')}
@@ -520,8 +529,8 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
               </div>
 
               {/* TIM B Clicker */}
-              <div className="p-3 bg-[#131c2e] rounded-xl border border-pink-500/30 text-center space-y-2">
-                <span className="text-xs font-bold text-pink-400 block">TIM B</span>
+              <div className="p-3 bg-[#0d1511] rounded-xl border border-cyan-500/30 text-center space-y-2">
+                <span className="text-xs font-bold text-cyan-300 block">TIM B</span>
                 <button
                   type="button"
                   onClick={() => handleAddLivePoint('B')}

@@ -134,7 +134,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
           <button
             onClick={() => setGenderFilter('pria')}
             className={`px-2.5 py-1 rounded text-xs font-bold ${
-              genderFilter === 'pria' ? 'bg-blue-600 text-white' : 'text-slate-400'
+              genderFilter === 'pria' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400'
             }`}
           >
             Putra
@@ -142,7 +142,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
           <button
             onClick={() => setGenderFilter('wanita')}
             className={`px-2.5 py-1 rounded text-xs font-bold ${
-              genderFilter === 'wanita' ? 'bg-pink-600 text-white' : 'text-slate-400'
+              genderFilter === 'wanita' ? 'bg-cyan-400 text-slate-950' : 'text-slate-400'
             }`}
           >
             Putri
@@ -179,8 +179,8 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
                   <div
                     className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs ${
                       player.gender === 'pria'
-                        ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                        : 'bg-pink-500/10 text-pink-400 border border-pink-500/20'
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        : 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20'
                     }`}
                   >
                     {player.name.charAt(0)}

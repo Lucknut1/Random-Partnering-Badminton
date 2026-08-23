@@ -196,12 +196,12 @@ export const CheckInKiosk: React.FC<CheckInKioskProps> = ({
         </div>
 
         {/* Pria Check-In (A / B) */}
-        <div className="glass-panel p-4 flex flex-col justify-between border-l-4 border-l-blue-500">
+        <div className="glass-panel p-4 flex flex-col justify-between border-l-4 border-l-emerald-500">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
             <span>Putra (Men)</span>
             <span className="badge-gender-m font-bold">PUTRA</span>
           </div>
-          <div className="text-2xl font-black text-blue-400 font-['Outfit']">
+          <div className="text-2xl font-black text-emerald-400 font-['Outfit']">
             {menCheckedIn.length} <span className="text-xs font-normal text-slate-400">Pemain</span>
           </div>
           <div className="text-[11px] text-slate-300 mt-1 flex items-center gap-2">
@@ -212,12 +212,12 @@ export const CheckInKiosk: React.FC<CheckInKioskProps> = ({
         </div>
 
         {/* Wanita Check-In (A / B) */}
-        <div className="glass-panel p-4 flex flex-col justify-between border-l-4 border-l-pink-500">
+        <div className="glass-panel p-4 flex flex-col justify-between border-l-4 border-l-cyan-500">
           <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
             <span>Putri (Women)</span>
             <span className="badge-gender-w font-bold">PUTRI</span>
           </div>
-          <div className="text-2xl font-black text-pink-400 font-['Outfit']">
+          <div className="text-2xl font-black text-cyan-300 font-['Outfit']">
             {womenCheckedIn.length} <span className="text-xs font-normal text-slate-400">Pemain</span>
           </div>
           <div className="text-[11px] text-slate-300 mt-1 flex items-center gap-2">
@@ -277,7 +277,7 @@ export const CheckInKiosk: React.FC<CheckInKioskProps> = ({
           <button
             onClick={() => setGenderFilter('pria')}
             className={`px-2.5 py-1 rounded text-xs font-bold transition ${
-              genderFilter === 'pria' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-blue-400'
+              genderFilter === 'pria' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-emerald-400'
             }`}
           >
             Putra
@@ -285,7 +285,7 @@ export const CheckInKiosk: React.FC<CheckInKioskProps> = ({
           <button
             onClick={() => setGenderFilter('wanita')}
             className={`px-2.5 py-1 rounded text-xs font-bold transition ${
-              genderFilter === 'wanita' ? 'bg-pink-600 text-white' : 'text-slate-400 hover:text-pink-400'
+              genderFilter === 'wanita' ? 'bg-cyan-400 text-slate-950' : 'text-slate-400 hover:text-cyan-300'
             }`}
           >
             Putri
@@ -344,8 +344,8 @@ export const CheckInKiosk: React.FC<CheckInKioskProps> = ({
                     className={`w-11 h-11 rounded-xl flex items-center justify-center font-black text-sm shadow-md ${
                       isCheckedIn
                         ? player.gender === 'pria'
-                          ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40'
-                          : 'bg-pink-600/30 text-pink-300 border border-pink-500/40'
+                          ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/40'
+                          : 'bg-cyan-600/30 text-cyan-200 border border-cyan-500/40'
                         : 'bg-slate-800 text-slate-500 border border-white/5'
                     }`}
                   >

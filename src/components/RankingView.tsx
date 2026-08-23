@@ -88,7 +88,7 @@ export const RankingView: React.FC<RankingViewProps> = ({
           <button
             onClick={() => setSelectedGender('pria')}
             className={`px-3.5 py-1.5 rounded text-xs font-bold transition ${
-              selectedGender === 'pria' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              selectedGender === 'pria' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             Kategori Putra
@@ -96,7 +96,7 @@ export const RankingView: React.FC<RankingViewProps> = ({
           <button
             onClick={() => setSelectedGender('wanita')}
             className={`px-3.5 py-1.5 rounded text-xs font-bold transition ${
-              selectedGender === 'wanita' ? 'bg-pink-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              selectedGender === 'wanita' ? 'bg-cyan-400 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
             }`}
           >
             Kategori Putri

@@ -208,12 +208,12 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
           winner === 'teamA'
             ? 'bg-emerald-950/40 border-emerald-500 ring-2 ring-emerald-500/30'
             : currentServe === 'teamA'
-            ? 'bg-slate-900/90 border-blue-500/60 shadow-lg shadow-blue-500/10'
+            ? 'bg-slate-900/90 border-emerald-500/60 shadow-lg shadow-emerald-500/10'
             : 'bg-slate-950/70 border-white/10'
         }`}>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-extrabold text-blue-400 tracking-wider">TIM A</span>
+              <span className="text-xs font-extrabold text-emerald-400 tracking-wider">TIM A</span>
               {currentServe === 'teamA' && (
                 <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold border border-emerald-500/30 flex items-center gap-1">
                   🏸 Servis
@@ -272,12 +272,12 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
           winner === 'teamB'
             ? 'bg-emerald-950/40 border-emerald-500 ring-2 ring-emerald-500/30'
             : currentServe === 'teamB'
-            ? 'bg-slate-900/90 border-blue-500/60 shadow-lg shadow-blue-500/10'
+            ? 'bg-slate-900/90 border-cyan-500/60 shadow-lg shadow-cyan-500/10'
             : 'bg-slate-950/70 border-white/10'
         }`}>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-extrabold text-pink-400 tracking-wider">TIM B</span>
+              <span className="text-xs font-extrabold text-cyan-300 tracking-wider">TIM B</span>
               {currentServe === 'teamB' && (
                 <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold border border-emerald-500/30 flex items-center gap-1">
                   🏸 Servis

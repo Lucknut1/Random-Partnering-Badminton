@@ -499,7 +499,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0f17] text-slate-100 pb-20 md:pb-6">
+    <div className="app-shell min-h-screen flex flex-col text-slate-100 pb-24 md:pb-8">
       {/* Top Navbar & Mobile Bottom Navigation */}
       <Navigation
         leagues={leagues}
@@ -513,7 +513,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-5">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7">
         {activeTab === 'dashboard' && (
           <DashboardView
             players={players}

@@ -50,15 +50,15 @@ export const Navigation: React.FC<NavigationProps> = ({
   return (
     <>
       {/* Desktop & Tablet Top Header */}
-      <header className="border-b border-white/5 bg-[#0b0f17]/95 backdrop-blur sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <header className="competition-header sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           {/* Logo & League Pill */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => onSelectTab('dashboard')}
               className="flex items-center gap-2 text-left bg-transparent border-none cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+              <div className="brand-mark">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <circle cx="12" cy="12" r="10"/>
                   <path d="m4.93 4.93 4.24 4.24"/>
@@ -68,21 +68,21 @@ export const Navigation: React.FC<NavigationProps> = ({
                 </svg>
               </div>
               <div>
-                <span className="font-extrabold text-sm tracking-wider text-white uppercase font-['Outfit'] block leading-none">
-                  BADMINTON TRACKER
+                <span className="font-extrabold text-[15px] tracking-tight text-white font-['Outfit'] block leading-none">
+                  ShuttleRank
                 </span>
-                <span className="text-[10px] text-slate-400 font-medium">ShuttleRank v2.0</span>
+                <span className="text-[10px] text-slate-500 font-semibold tracking-[0.12em] uppercase">Mini League</span>
               </div>
             </button>
 
             {/* League Dropdown Selector */}
-            <div className="relative group ml-2">
-              <div className="flex items-center gap-1.5 bg-[#131a26] hover:bg-[#1a2333] border border-white/10 rounded-lg px-2.5 py-1 text-xs transition cursor-pointer">
-                <span className="text-slate-400 text-[11px]">Liga:</span>
+            <div className="relative group ml-1 hidden sm:block">
+              <div className="league-switcher">
+                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Liga</span>
                 <select
                   value={activeLeague.id}
                   onChange={(e) => onSelectLeague(e.target.value)}
-                  className="bg-transparent text-emerald-400 font-bold text-xs p-0 border-none cursor-pointer focus:outline-none"
+                  className="bg-transparent text-white font-bold text-xs p-0 border-none cursor-pointer focus:outline-none max-w-48"
                 >
                   {leagues.map((l) => (
                     <option key={l.id} value={l.id} className="bg-[#131a26] text-white">
@@ -103,49 +103,53 @@ export const Navigation: React.FC<NavigationProps> = ({
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="desktop-nav hidden md:flex items-center gap-1">
             <button
               onClick={() => onSelectTab('dashboard')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              aria-pressed={activeTab === 'dashboard'}
+              className={`desktop-nav-item ${
                 activeTab === 'dashboard'
                   ? 'text-emerald-400 bg-emerald-500/10'
                   : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
-              Dashboard
+              Ringkasan
             </button>
 
             <button
               onClick={() => onSelectTab('ranking')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              aria-pressed={activeTab === 'ranking'}
+              className={`desktop-nav-item ${
                 activeTab === 'ranking'
                   ? 'text-emerald-400 bg-emerald-500/10'
                   : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
-              Ranking
+              Klasemen
             </button>
 
             <button
               onClick={() => onSelectTab('matches')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              aria-pressed={activeTab === 'matches'}
+              className={`desktop-nav-item ${
                 activeTab === 'matches'
                   ? 'text-emerald-400 bg-emerald-500/10'
                   : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
-              Match History
+              Pertandingan
             </button>
 
             <button
               onClick={() => onSelectTab('players')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              aria-pressed={activeTab === 'players'}
+              className={`desktop-nav-item ${
                 activeTab === 'players'
                   ? 'text-emerald-400 bg-emerald-500/10'
                   : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
-              Players
+              Peserta
             </button>
 
             <button
@@ -161,22 +165,22 @@ export const Navigation: React.FC<NavigationProps> = ({
           <div className="hidden md:flex items-center gap-3">
             <button
               onClick={onOpenRecordModal}
-              className="btn-action-primary text-xs py-2 px-3.5 shadow-md shadow-emerald-500/15"
+              className="btn-action-primary nav-primary-action"
             >
               <Plus size={15} />
-              <span>Record Match</span>
+              <span>Catat skor</span>
             </button>
           </div>
         </div>
 
         {/* Operating Hours Info Strip */}
-        <div className="border-t border-white/5 bg-[#0e141f] py-1 px-4 text-[11px] text-slate-400">
-          <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">
+        <div className="session-strip">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span className="font-semibold text-slate-300">{activeLeague.name}</span>
-              <span className="text-slate-600">•</span>
-              <span className="text-slate-400">
+              <span className="text-slate-700">/</span>
+              <span className="text-slate-500 hidden sm:inline">
                 {activeLeague.startTime} - {activeLeague.endTime} WIB ({activeLeague.venue})
               </span>
             </div>
@@ -211,7 +215,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           className={`bottom-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
         >
           <Home size={18} />
-          <span>Home</span>
+          <span>Beranda</span>
         </button>
 
         <button
@@ -219,14 +223,15 @@ export const Navigation: React.FC<NavigationProps> = ({
           className={`bottom-nav-item ${activeTab === 'matches' ? 'active' : ''}`}
         >
           <Activity size={18} />
-          <span>Matches</span>
+          <span>Laga</span>
         </button>
 
         {/* Prominent Floating Center CTA */}
         <button
           onClick={onOpenRecordModal}
           className="bottom-nav-record-btn"
-          title="Record Match"
+          title="Catat skor pertandingan"
+          aria-label="Catat skor pertandingan"
         >
           <Plus size={22} />
         </button>
@@ -236,7 +241,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           className={`bottom-nav-item ${activeTab === 'ranking' ? 'active' : ''}`}
         >
           <Trophy size={18} />
-          <span>Ranking</span>
+          <span>Klasemen</span>
         </button>
 
         <button
@@ -244,7 +249,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           className={`bottom-nav-item ${activeTab === 'players' ? 'active' : ''}`}
         >
           <Users size={18} />
-          <span>Players</span>
+          <span>Peserta</span>
         </button>
       </div>
     </>
