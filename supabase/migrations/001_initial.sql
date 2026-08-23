@@ -16,6 +16,25 @@ create table if not exists public.app_state (
 alter table public.profiles enable row level security;
 alter table public.app_state enable row level security;
 
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, full_name, role)
+  values (new.id, coalesce(new.raw_user_meta_data ->> 'full_name', new.email), 'viewer')
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+after insert on auth.users
+for each row execute procedure public.handle_new_user();
+
 create or replace function public.is_super_admin()
 returns boolean
 language sql

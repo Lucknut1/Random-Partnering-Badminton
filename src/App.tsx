@@ -92,8 +92,15 @@ export const App: React.FC = () => {
       }
     };
     initialize();
-    const { data: authListener } = supabase?.auth.onAuthStateChange(async (_event, session) => {
-      setIsAdmin(session ? await supabaseService.isSuperAdmin(session.user.id) : false);
+    const { data: authListener } = supabase?.auth.onAuthStateChange((_event, session) => {
+      window.setTimeout(async () => {
+        try {
+          setIsAdmin(session ? await supabaseService.isSuperAdmin(session.user.id) : false);
+        } catch (error) {
+          console.error('Role synchronization failed:', error);
+          setIsAdmin(false);
+        }
+      }, 0);
     }) || { data: { subscription: null } };
     return () => {
       mounted = false;

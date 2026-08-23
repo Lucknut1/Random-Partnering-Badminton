@@ -18,7 +18,7 @@ Tanpa environment Supabase, aplikasi memakai localStorage. Untuk akses admin lok
 2. Jalankan `supabase/migrations/001_initial.sql` melalui SQL Editor atau Supabase CLI.
 3. Buat user admin melalui Supabase Auth.
 4. Promosikan user tersebut menjadi `super_admin` memakai contoh SQL di bagian bawah migration.
-5. Isi `VITE_SUPABASE_URL` dan `VITE_SUPABASE_ANON_KEY` di Vercel.
+5. Isi `VITE_SUPABASE_URL` dan `VITE_SUPABASE_PUBLISHABLE_KEY` di Vercel.
 
 RLS mengizinkan publik membaca klasemen. Hanya akun `super_admin` yang dapat menulis snapshot aplikasi.
 
