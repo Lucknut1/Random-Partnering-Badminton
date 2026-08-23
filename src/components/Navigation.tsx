@@ -8,9 +8,9 @@ import {
   Users, 
   Plus, 
   Settings, 
-  Clock, 
   ChevronDown,
-  Calendar
+  Shuffle,
+  LogOut
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -20,7 +20,10 @@ interface NavigationProps {
   activeTab: 'dashboard' | 'matches' | 'ranking' | 'players' | 'admin';
   onSelectTab: (tab: 'dashboard' | 'matches' | 'ranking' | 'players' | 'admin') => void;
   onOpenRecordModal: () => void;
+  onOpenRandomPartnering: () => void;
+  onLogout: () => Promise<void>;
   isAdmin: boolean;
+  adminLabel: string | null;
   cloudStatus: 'local' | 'syncing' | 'synced' | 'error';
 }
 
@@ -31,7 +34,10 @@ export const Navigation: React.FC<NavigationProps> = ({
   activeTab,
   onSelectTab,
   onOpenRecordModal,
+  onOpenRandomPartnering,
+  onLogout,
   isAdmin,
+  adminLabel,
   cloudStatus,
 }) => {
   const [timeInfo, setTimeInfo] = useState(() =>
@@ -93,13 +99,29 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <ChevronDown size={13} className="text-slate-400" />
               </div>
             </div>
-            <button
-              onClick={() => onSelectTab('admin')}
-              className={`md:hidden rounded-lg border p-2 ${isAdmin ? 'border-amber-500/30 bg-amber-500/10 text-amber-300' : 'border-white/10 text-slate-400'}`}
-              aria-label="Buka super admin"
-            >
-              <Settings size={15} />
-            </button>
+            <div className="md:hidden flex items-center gap-1.5">
+              {isAdmin && (
+                <button
+                  onClick={onOpenRandomPartnering}
+                  className="mobile-admin-action random"
+                  aria-label="Buka Random Partnering"
+                >
+                  <Shuffle size={15} />
+                </button>
+              )}
+              <button
+                onClick={() => onSelectTab('admin')}
+                className={`rounded-lg border p-2 ${isAdmin ? 'border-amber-500/30 bg-amber-500/10 text-amber-300' : 'border-white/10 text-slate-400'}`}
+                aria-label="Buka super admin"
+              >
+                <Settings size={15} />
+              </button>
+              {isAdmin && (
+                <button onClick={onLogout} className="mobile-admin-action logout" aria-label="Logout Super Admin">
+                  <LogOut size={15} />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Desktop Navigation Links */}
@@ -163,6 +185,21 @@ export const Navigation: React.FC<NavigationProps> = ({
 
           {/* Desktop Primary CTA Button */}
           <div className="hidden md:flex items-center gap-3">
+            {isAdmin && (
+              <div className="admin-online-pill" title={adminLabel || 'Super Admin'}>
+                <span className="admin-online-dot" />
+                <span className="admin-online-copy">
+                  <strong>Admin online</strong>
+                  <small>{adminLabel || 'Super Admin'}</small>
+                </span>
+              </div>
+            )}
+            {isAdmin && (
+              <button onClick={onOpenRandomPartnering} className="random-partnering-action">
+                <Shuffle size={15} />
+                <span>Random Partnering</span>
+              </button>
+            )}
             <button
               onClick={onOpenRecordModal}
               className="btn-action-primary nav-primary-action"
@@ -170,6 +207,11 @@ export const Navigation: React.FC<NavigationProps> = ({
               <Plus size={15} />
               <span>Catat skor</span>
             </button>
+            {isAdmin && (
+              <button onClick={onLogout} className="logout-action" title="Logout Super Admin" aria-label="Logout Super Admin">
+                <LogOut size={16} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -186,6 +228,11 @@ export const Navigation: React.FC<NavigationProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
+              {isAdmin && (
+                <span className="admin-mobile-status">
+                  <span className="admin-online-dot" /> Admin online
+                </span>
+              )}
               <span className={`hidden sm:inline text-[10px] font-bold ${
                 cloudStatus === 'synced' ? 'text-emerald-400' : cloudStatus === 'error' ? 'text-red-400' : 'text-slate-500'
               }`}>

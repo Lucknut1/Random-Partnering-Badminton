@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Player, League, Match, CheckInRecord, Season, ScoreFormat, MatchType } from './types';
 import { storageService } from './services/storageService';
 import { Navigation } from './components/Navigation';
@@ -7,10 +7,10 @@ import { RankingView } from './components/RankingView';
 import { MatchHistoryView } from './components/MatchHistoryView';
 import { PlayersView } from './components/PlayersView';
 import { AdminPanel } from './components/AdminPanel';
-import { RecordMatchModal } from './components/RecordMatchModal';
+import { RecordMatchModal, RecordMode } from './components/RecordMatchModal';
 import { GeneratedMatchProposal, matchmakingEngine } from './services/matchmakingEngine';
 import { matchRules } from './services/matchRules';
-import { isSupabaseConfigured, supabase, supabaseService } from './services/supabaseService';
+import { AppSnapshot, isSupabaseConfigured, supabase, supabaseService } from './services/supabaseService';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { getLocalDate } from './services/dateService';
 
@@ -44,12 +44,17 @@ export const App: React.FC = () => {
   
   // Record Match Modal state
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
+  const [recordModalMode, setRecordModalMode] = useState<RecordMode>('quick');
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(() => supabaseService.localAdminActive());
+  const [adminLabel, setAdminLabel] = useState<string | null>(() =>
+    supabaseService.localAdminActive() ? 'Admin Lokal' : null
+  );
   const [cloudReady, setCloudReady] = useState(false);
   const [cloudStatus, setCloudStatus] = useState<'local' | 'syncing' | 'synced' | 'error'>(
     isSupabaseConfigured ? 'syncing' : 'local'
   );
+  const applyingCloudUpdateRef = useRef(false);
 
   // Active League object
   const activeLeague = leagues.find((l) => l.id === activeLeagueId) || leagues[0] || {
@@ -71,7 +76,11 @@ export const App: React.FC = () => {
     const initialize = async () => {
       try {
         const session = await supabaseService.getSession();
-        if (session && mounted) setIsAdmin(await supabaseService.isSuperAdmin(session.user.id));
+        if (session && mounted) {
+          const hasAdminRole = await supabaseService.isSuperAdmin(session.user.id);
+          setIsAdmin(hasAdminRole);
+          setAdminLabel(hasAdminRole ? session.user.email || 'Super Admin' : null);
+        }
         const snapshot = await supabaseService.loadSnapshot();
         if (snapshot && snapshot.leagues?.length && mounted) {
           setLeagues(snapshot.leagues);
@@ -95,10 +104,13 @@ export const App: React.FC = () => {
     const { data: authListener } = supabase?.auth.onAuthStateChange((_event, session) => {
       window.setTimeout(async () => {
         try {
-          setIsAdmin(session ? await supabaseService.isSuperAdmin(session.user.id) : false);
+          const hasAdminRole = session ? await supabaseService.isSuperAdmin(session.user.id) : false;
+          setIsAdmin(hasAdminRole);
+          setAdminLabel(hasAdminRole ? session?.user.email || 'Super Admin' : null);
         } catch (error) {
           console.error('Role synchronization failed:', error);
           setIsAdmin(false);
+          setAdminLabel(null);
         }
       }, 0);
     }) || { data: { subscription: null } };
@@ -109,6 +121,10 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (applyingCloudUpdateRef.current) {
+      applyingCloudUpdateRef.current = false;
+      return;
+    }
     if (!cloudReady || !isSupabaseConfigured || !isAdmin) return;
     setCloudStatus('syncing');
     const timer = window.setTimeout(async () => {
@@ -123,9 +139,56 @@ export const App: React.FC = () => {
     return () => window.clearTimeout(timer);
   }, [leagues, players, matches, checkIns, cloudReady, isAdmin]);
 
+  useEffect(() => {
+    const client = supabase;
+    if (!client) return;
+    const channel = client
+      .channel('app-state-live-sync')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'app_state', filter: 'id=eq.primary' },
+        (event) => {
+          const snapshot = event.new?.payload as AppSnapshot | undefined;
+          if (!snapshot?.leagues?.length) return;
+          applyingCloudUpdateRef.current = true;
+          setLeagues(snapshot.leagues);
+          setPlayers(snapshot.players || []);
+          setMatches(snapshot.matches || []);
+          setCheckIns(snapshot.checkIns || []);
+          storageService.saveLeagues(snapshot.leagues);
+          storageService.savePlayers(snapshot.players || []);
+          storageService.saveMatches(snapshot.matches || []);
+          storageService.saveCheckIns(snapshot.checkIns || []);
+          setCloudStatus('synced');
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void client.removeChannel(channel);
+    };
+  }, []);
+
   const openAdmin = () => {
     if (isAdmin) setActiveTab('admin');
     else setIsAdminLoginOpen(true);
+  };
+
+  const openRecordModal = (mode: RecordMode = 'quick') => {
+    setRecordModalMode(mode);
+    setIsRecordModalOpen(true);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabaseService.signOut();
+      setIsAdmin(false);
+      setAdminLabel(null);
+      setActiveTab('dashboard');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      alert('Logout gagal. Periksa koneksi lalu coba lagi.');
+    }
   };
 
   const handleSelectLeague = (id: string) => {
@@ -360,10 +423,26 @@ export const App: React.FC = () => {
     storageService.saveCheckIns(updatedCheckIns);
   };
 
-  const handleCancelMatch = (matchId: string) => {
+  const handleCancelMatch = async (matchId: string) => {
+    const targetMatch = matches.find(
+      (match) => match.id === matchId && match.status === 'IN_PROGRESS'
+    );
+    if (!targetMatch) return;
+
+    if (!isAdmin && isSupabaseConfigured) {
+      try {
+        await supabaseService.cancelActiveMatch(matchId);
+      } catch (error) {
+        console.error('Public match cancellation failed:', error);
+        alert('Pertandingan belum dapat dibatalkan. Muat ulang halaman lalu coba lagi.');
+        return;
+      }
+    }
+
     const updated = matches.map((match) => match.id === matchId ? { ...match, status: 'CANCELLED' as const } : match);
     setMatches(updated);
     storageService.saveMatches(updated);
+    alert('Pertandingan dibatalkan. Seluruh pemain kembali tersedia untuk random partnering berikutnya.');
   };
 
   // ADMIN HANDLERS
@@ -507,8 +586,11 @@ export const App: React.FC = () => {
         onSelectLeague={handleSelectLeague}
         activeTab={activeTab}
         onSelectTab={(tab) => tab === 'admin' ? openAdmin() : setActiveTab(tab)}
-        onOpenRecordModal={() => setIsRecordModalOpen(true)}
+        onOpenRecordModal={() => openRecordModal('quick')}
+        onOpenRandomPartnering={() => openRecordModal('generator')}
+        onLogout={handleLogout}
         isAdmin={isAdmin}
+        adminLabel={adminLabel}
         cloudStatus={cloudStatus}
       />
 
@@ -520,7 +602,7 @@ export const App: React.FC = () => {
             matches={matches}
             activeLeague={activeLeague}
             checkIns={checkIns}
-            onOpenRecordModal={() => setIsRecordModalOpen(true)}
+            onOpenRecordModal={() => openRecordModal('quick')}
             onNavigateTab={setActiveTab}
           />
         )}
@@ -585,6 +667,8 @@ export const App: React.FC = () => {
       <RecordMatchModal
         isOpen={isRecordModalOpen}
         onClose={() => setIsRecordModalOpen(false)}
+        initialMode={recordModalMode}
+        canRandomPartner={isAdmin}
         players={players}
         activeLeague={activeLeague}
         checkIns={checkIns}
@@ -596,8 +680,10 @@ export const App: React.FC = () => {
       <AdminLoginModal
         isOpen={isAdminLoginOpen}
         onClose={() => setIsAdminLoginOpen(false)}
-        onAuthenticated={() => {
+        onAuthenticated={async () => {
+          const session = await supabaseService.getSession();
           setIsAdmin(true);
+          setAdminLabel(session?.user.email || (supabaseService.localAdminActive() ? 'Admin Lokal' : 'Super Admin'));
           setActiveTab('admin');
         }}
       />

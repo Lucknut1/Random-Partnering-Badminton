@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Player, Match, League, CheckInRecord, ScoreFormat, MatchType } from '../types';
 import { matchmakingEngine, GeneratedMatchProposal } from '../services/matchmakingEngine';
 import { soundEngine } from '../services/soundEffects';
@@ -18,9 +18,13 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+export type RecordMode = 'quick' | 'live' | 'generator';
+
 interface RecordMatchModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialMode?: RecordMode;
+  canRandomPartner?: boolean;
   players: Player[];
   activeLeague: League;
   checkIns: CheckInRecord[];
@@ -42,6 +46,8 @@ interface RecordMatchModalProps {
 export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
   isOpen,
   onClose,
+  initialMode = 'quick',
+  canRandomPartner = false,
   players,
   activeLeague,
   checkIns,
@@ -49,7 +55,12 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
   onSaveQuickMatch,
   onStartGeneratedMatches,
 }) => {
-  const [recordMode, setRecordMode] = useState<'quick' | 'live' | 'generator'>('quick');
+  const [recordMode, setRecordMode] = useState<RecordMode>('quick');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setRecordMode(initialMode === 'generator' && !canRandomPartner ? 'quick' : initialMode);
+  }, [canRandomPartner, initialMode, isOpen]);
 
   // Common match form states
   const [matchType, setMatchType] = useState<MatchType>('MD');
@@ -210,8 +221,14 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
               <Plus size={16} />
             </div>
             <div>
-              <h3 id="record-match-title" className="text-sm font-extrabold text-white">Catat Pertandingan</h3>
-              <p className="text-[11px] text-slate-400">Catat hasil pertandingan & update poin klasemen</p>
+              <h3 id="record-match-title" className="text-sm font-extrabold text-white">
+                {recordMode === 'generator' ? 'Random Partnering' : 'Catat Pertandingan'}
+              </h3>
+              <p className="text-[11px] text-slate-400">
+                {recordMode === 'generator'
+                  ? 'Susun pasangan dan lawan dari peserta yang sudah check-in'
+                  : 'Catat hasil pertandingan dan perbarui poin klasemen'}
+              </p>
             </div>
           </div>
 
@@ -237,7 +254,7 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
         </div>
 
         {/* Mode Selector Tabs */}
-        <div className="grid grid-cols-3 gap-1 bg-[#151e2e] p-1 rounded-lg border border-white/5 text-xs font-bold">
+        <div className={`grid ${canRandomPartner ? 'grid-cols-3' : 'grid-cols-2'} gap-1 bg-[#0b100e] p-1 rounded-lg border border-white/5 text-xs font-bold`}>
           <button
             type="button"
             onClick={() => setRecordMode('quick')}
@@ -257,16 +274,18 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
           >
             <span>Wasit Live</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setRecordMode('generator')}
-            className={`py-1.5 rounded transition flex items-center justify-center gap-1.5 ${
-              recordMode === 'generator' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Sparkles size={13} />
-            <span>Auto Pair</span>
-          </button>
+          {canRandomPartner && (
+            <button
+              type="button"
+              onClick={() => setRecordMode('generator')}
+              className={`py-1.5 rounded transition flex items-center justify-center gap-1.5 ${
+                recordMode === 'generator' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Sparkles size={13} />
+              <span>Random Partnering</span>
+            </button>
+          )}
         </div>
 
         {/* MODE 1: QUICK INPUT FORM */}

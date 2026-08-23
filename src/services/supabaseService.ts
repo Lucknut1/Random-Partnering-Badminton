@@ -64,6 +64,14 @@ export const supabaseService = {
     sessionStorage.removeItem('shuttlerank_local_admin');
   },
 
+  async cancelActiveMatch(matchId: string): Promise<void> {
+    if (!supabase) return;
+    const { error } = await supabase.rpc('cancel_active_match', {
+      target_match_id: matchId,
+    });
+    if (error) throw error;
+  },
+
   async isSuperAdmin(userId?: string): Promise<boolean> {
     if (!supabase || !userId) return false;
     const { data, error } = await supabase

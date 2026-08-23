@@ -18,7 +18,7 @@ interface LiveScoreboardProps {
   players: Player[];
   onUpdateScore: (matchId: string, teamAScore: number, teamBScore: number, switchedSides?: boolean) => void;
   onFinishMatch: (matchId: string, winnerTeam: 'teamA' | 'teamB') => void;
-  onCancelMatch: (matchId: string) => void;
+  onCancelMatch: (matchId: string) => Promise<void> | void;
 }
 
 export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
@@ -32,11 +32,25 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
   const [teamBScore, setTeamBScore] = useState(match.teamB.score);
   const [switchedSides, setSwitchedSides] = useState(match.switchedSides || false);
   const [currentServe, setCurrentServe] = useState<'teamA' | 'teamB'>(match.currentServe || 'teamA');
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const p1A = players.find((p) => p.id === match.teamA.player1Id);
   const p2A = players.find((p) => p.id === match.teamA.player2Id);
   const p1B = players.find((p) => p.id === match.teamB.player1Id);
   const p2B = players.find((p) => p.id === match.teamB.player2Id);
+
+  const handleCancel = async () => {
+    const confirmed = confirm(
+      'Batalkan pertandingan hasil Random Partnering ini? Skor tidak masuk klasemen dan pemain akan tersedia kembali.'
+    );
+    if (!confirmed) return;
+    setIsCancelling(true);
+    try {
+      await onCancelMatch(match.id);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   const isRace42 = match.format === 'RACE_42';
   const targetPoints = isRace42 ? 42 : 21;
@@ -335,10 +349,12 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
       {/* Manual Finish Action Bar */}
       <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
         <button
-          onClick={() => onCancelMatch(match.id)}
-          className="text-xs text-slate-400 hover:text-red-400 font-semibold"
+          type="button"
+          onClick={handleCancel}
+          disabled={isCancelling}
+          className="cancel-match-action"
         >
-          Batalkan Pertandingan
+          {isCancelling ? 'Membatalkan...' : 'Batalkan pertandingan'}
         </button>
 
         <div className="flex items-center gap-2">
