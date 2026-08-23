@@ -1,8 +1,8 @@
-# Bareket
+# Mabarek
 
 Dashboard operasional liga badminton untuk check-in peserta, auto-pair ganda, live scoring, dan klasemen putra serta putri.
 
-Production: [mainbarengraket.vercel.app](https://mainbarengraket.vercel.app/)
+Production: [mabarek.vercel.app](https://mabarek.vercel.app/)
 
 ## Menjalankan aplikasi
 
@@ -16,7 +16,7 @@ Tanpa environment Supabase, aplikasi memakai localStorage. Untuk akses admin lok
 
 ## Supabase produksi
 
-1. Gunakan project Supabase khusus Bareket dengan ref `wximpqgnmjnwwmqdtdtd`.
+1. Gunakan project Supabase khusus Mabarek dengan ref `wximpqgnmjnwwmqdtdtd`.
 2. Jalankan `supabase/migrations/001_initial.sql` melalui SQL Editor atau Supabase CLI.
 3. Buat user admin melalui Supabase Auth.
 4. Promosikan user tersebut menjadi `super_admin` memakai contoh SQL di bagian bawah migration.

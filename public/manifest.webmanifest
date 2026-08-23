@@ -1,6 +1,6 @@
 {
-  "name": "Bareket",
-  "short_name": "Bareket",
+  "name": "Mabarek",
+  "short_name": "Mabarek",
   "description": "MainBarengRaket. Satu raket, banyak partner, satu klasemen.",
   "start_url": "/",
   "display": "standalone",
@@ -8,13 +8,13 @@
   "theme_color": "#050706",
   "icons": [
     {
-      "src": "/bareket-icon-192.png",
+      "src": "/mabarek-icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/bareket-icon-512.png",
+      "src": "/mabarek-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

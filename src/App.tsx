@@ -564,7 +564,7 @@ export const App: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Bareket_Backup_${getLocalDate()}.json`;
+    a.download = `Mabarek_Backup_${getLocalDate()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

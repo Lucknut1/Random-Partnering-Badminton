@@ -65,14 +65,14 @@ export const Navigation: React.FC<NavigationProps> = ({
             <button
               onClick={() => onSelectTab('dashboard')}
               className="flex items-center gap-2 text-left bg-transparent border-none cursor-pointer"
-              aria-label="Kembali ke ringkasan Bareket"
+              aria-label="Kembali ke ringkasan Mabarek"
             >
               <div className="brand-mark">
-                <img src="/bareket-icon-192.png" alt="" width="34" height="34" />
+                <img src="/mabarek-icon-192.png" alt="" width="34" height="34" />
               </div>
               <div>
                 <span className="font-extrabold text-[15px] tracking-tight text-white font-['Outfit'] block leading-none">
-                  Bareket
+                  Mabarek
                 </span>
                 <span className="text-[10px] text-slate-500 font-semibold tracking-[0.12em] uppercase">MainBarengRaket</span>
               </div>
