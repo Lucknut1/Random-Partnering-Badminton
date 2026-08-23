@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { addMonthsToLocalDate, getLocalDate } from '../services/dateService';
+import {
+  addMonthsToDateString,
+  addMonthsToLocalDate,
+  calculateDurationMonths,
+  getLocalDate,
+  isValidDateRange,
+} from '../services/dateService';
 import { Player, League, Season, Gender, SkillLevel, ScoreFormat } from '../types';
 import { 
   Shield, 
@@ -29,6 +35,7 @@ interface AdminPanelProps {
   onUpdateLeague: (league: League) => void;
   onDeleteLeague: (leagueId: string) => void;
   onAddSeason: (leagueId: string, season: Omit<Season, 'id'>) => void;
+  onUpdateSeason: (leagueId: string, season: Season) => void;
   onSetActiveSeason: (leagueId: string, seasonId: string) => void;
   onExportJSON: () => void;
   onImportJSON: (jsonStr: string) => boolean;
@@ -46,6 +53,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onUpdateLeague,
   onDeleteLeague,
   onAddSeason,
+  onUpdateSeason,
   onSetActiveSeason,
   onExportJSON,
   onImportJSON,
@@ -78,6 +86,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [seasonDuration, setSeasonDuration] = useState(1);
   const [seasonStart, setSeasonStart] = useState(getLocalDate());
   const [seasonEnd, setSeasonEnd] = useState('');
+  const [seasonError, setSeasonError] = useState('');
+  const [editingSeason, setEditingSeason] = useState<Season | null>(null);
+  const [editSeasonName, setEditSeasonName] = useState('');
+  const [editSeasonStart, setEditSeasonStart] = useState('');
+  const [editSeasonEnd, setEditSeasonEnd] = useState('');
 
   // Handle Player Save
   const handleSavePlayer = (e: React.FormEvent) => {
@@ -188,15 +201,55 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     e.preventDefault();
     if (!seasonName.trim()) return;
 
+    const resolvedEndDate = seasonEnd || addMonthsToDateString(seasonStart, seasonDuration);
+    if (!isValidDateRange(seasonStart, resolvedEndDate)) {
+      setSeasonError('Tanggal selesai tidak boleh lebih awal dari tanggal mulai.');
+      return;
+    }
+
     onAddSeason(activeLeague.id, {
       name: seasonName.trim(),
       startDate: seasonStart,
-      endDate: seasonEnd || addMonthsToLocalDate(seasonDuration),
-      durationMonths: Number(seasonDuration),
+      endDate: resolvedEndDate,
+      durationMonths: calculateDurationMonths(seasonStart, resolvedEndDate),
       isActive: false,
     });
 
     setSeasonName('');
+    setSeasonEnd('');
+    setSeasonError('');
+  };
+
+  const startEditSeason = (season: Season) => {
+    setEditingSeason(season);
+    setEditSeasonName(season.name);
+    setEditSeasonStart(season.startDate);
+    setEditSeasonEnd(season.endDate);
+    setSeasonError('');
+  };
+
+  const cancelEditSeason = () => {
+    setEditingSeason(null);
+    setSeasonError('');
+  };
+
+  const handleUpdateSeasonSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSeason || !editSeasonName.trim()) return;
+    if (!isValidDateRange(editSeasonStart, editSeasonEnd)) {
+      setSeasonError('Tanggal selesai tidak boleh lebih awal dari tanggal mulai.');
+      return;
+    }
+
+    onUpdateSeason(activeLeague.id, {
+      ...editingSeason,
+      name: editSeasonName.trim(),
+      startDate: editSeasonStart,
+      endDate: editSeasonEnd,
+      durationMonths: calculateDurationMonths(editSeasonStart, editSeasonEnd),
+    });
+    setEditingSeason(null);
+    setSeasonError('');
   };
 
   // Handle File Import
@@ -641,7 +694,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           <div className="glass-panel p-5 border border-white/10 lg:col-span-1 h-fit">
             <h3 className="text-base font-extrabold text-white mb-4 flex items-center gap-2">
               <Calendar className="text-amber-400" size={18} />
-              <span>Buat Periode / Season Baru</span>
+              <span>Buat Periode Liga Baru</span>
             </h3>
 
             <form onSubmit={handleAddSeasonSubmit} className="space-y-4">
@@ -685,7 +738,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <input
                     type="date"
                     value={seasonStart}
-                    onChange={(e) => setSeasonStart(e.target.value)}
+                    onChange={(e) => {
+                      setSeasonStart(e.target.value);
+                      setSeasonError('');
+                    }}
                     className="text-xs"
                     required
                   />
@@ -695,11 +751,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <input
                     type="date"
                     value={seasonEnd}
-                    onChange={(e) => setSeasonEnd(e.target.value)}
+                    min={seasonStart}
+                    onChange={(e) => {
+                      setSeasonEnd(e.target.value);
+                      setSeasonError('');
+                    }}
                     className="text-xs"
                   />
                 </div>
               </div>
+
+              {seasonError && !editingSeason && (
+                <p className="text-xs font-semibold text-red-300" role="alert">{seasonError}</p>
+              )}
 
               <button type="submit" className="btn btn-primary btn-sm w-full font-bold">
                 <Plus size={14} />
@@ -710,7 +774,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           <div className="glass-panel p-5 border border-white/10 lg:col-span-2 space-y-4">
             <h3 className="text-base font-extrabold text-white">
-              Riwayat Periode untuk {activeLeague.name}
+              Kelola Periode Pelaksanaan {activeLeague.name}
             </h3>
 
             <div className="space-y-3">
@@ -719,31 +783,98 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 return (
                   <div
                     key={season.id}
-                    className={`p-4 rounded-xl border transition flex items-center justify-between gap-4 ${
+                    className={`p-4 rounded-xl border transition ${
                       isActive ? 'bg-slate-900/90 border-amber-500/50 shadow-lg shadow-amber-500/10' : 'bg-slate-950/60 border-white/5'
                     }`}
                   >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-extrabold text-white text-sm">{season.name}</h4>
-                        {isActive && (
-                          <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-bold border border-amber-500/30">
-                            Sedang Berjalan (Aktif)
-                          </span>
+                    {editingSeason?.id === season.id ? (
+                      <form onSubmit={handleUpdateSeasonSubmit} className="space-y-3">
+                        <div>
+                          <label className="text-xs font-bold text-slate-300 block mb-1">Nama Periode:</label>
+                          <input
+                            type="text"
+                            value={editSeasonName}
+                            onChange={(e) => setEditSeasonName(e.target.value)}
+                            className="text-xs"
+                            required
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs font-bold text-slate-300 block mb-1">Tanggal Mulai:</label>
+                            <input
+                              type="date"
+                              value={editSeasonStart}
+                              onChange={(e) => {
+                                setEditSeasonStart(e.target.value);
+                                setSeasonError('');
+                              }}
+                              className="text-xs"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-bold text-slate-300 block mb-1">Tanggal Selesai:</label>
+                            <input
+                              type="date"
+                              value={editSeasonEnd}
+                              min={editSeasonStart}
+                              onChange={(e) => {
+                                setEditSeasonEnd(e.target.value);
+                                setSeasonError('');
+                              }}
+                              className="text-xs"
+                              required
+                            />
+                          </div>
+                        </div>
+                        {seasonError && (
+                          <p className="text-xs font-semibold text-red-300" role="alert">{seasonError}</p>
                         )}
-                      </div>
-                      <p className="text-xs text-slate-400 mt-1">
-                        Rentang Waktu: {season.startDate} s.d {season.endDate} ({season.durationMonths} Bulan)
-                      </p>
-                    </div>
+                        <div className="flex flex-wrap gap-2">
+                          <button type="submit" className="btn btn-primary btn-sm text-xs font-bold">
+                            <Save size={14} /> Simpan Periode
+                          </button>
+                          <button type="button" onClick={cancelEditSeason} className="btn btn-secondary btn-sm text-xs font-bold">
+                            Batal
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h4 className="font-extrabold text-white text-sm">{season.name}</h4>
+                            {isActive && (
+                              <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-bold border border-amber-500/30">
+                                Sedang Berjalan (Aktif)
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1">
+                            Rentang waktu: {season.startDate} s.d. {season.endDate} ({season.durationMonths} bulan)
+                          </p>
+                        </div>
 
-                    {!isActive && (
-                      <button
-                        onClick={() => onSetActiveSeason(activeLeague.id, season.id)}
-                        className="btn btn-secondary btn-sm text-xs font-bold text-amber-400 hover:text-amber-300"
-                      >
-                        Set Jadi Periode Aktif
-                      </button>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => startEditSeason(season)}
+                            className="btn btn-secondary btn-sm text-xs font-bold text-cyan-300"
+                          >
+                            <Edit3 size={14} /> Edit Periode
+                          </button>
+                          {!isActive && (
+                            <button
+                              type="button"
+                              onClick={() => onSetActiveSeason(activeLeague.id, season.id)}
+                              className="btn btn-secondary btn-sm text-xs font-bold text-amber-400 hover:text-amber-300"
+                            >
+                              Set Jadi Periode Aktif
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     )}
                   </div>
                 );

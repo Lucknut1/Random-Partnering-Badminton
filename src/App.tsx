@@ -526,6 +526,19 @@ export const App: React.FC = () => {
     storageService.saveLeagues(updatedLeagues);
   };
 
+  const handleUpdateSeason = (leagueId: string, season: Season) => {
+    const updatedLeagues = leagues.map((league) =>
+      league.id === leagueId
+        ? {
+            ...league,
+            seasons: league.seasons.map((item) => (item.id === season.id ? season : item)),
+          }
+        : league
+    );
+    setLeagues(updatedLeagues);
+    storageService.saveLeagues(updatedLeagues);
+  };
+
   const handleSetActiveSeason = (leagueId: string, seasonId: string) => {
     const updatedLeagues = leagues.map((l) => {
       if (l.id === leagueId) {
@@ -655,6 +668,7 @@ export const App: React.FC = () => {
             onUpdateLeague={handleUpdateLeague}
             onDeleteLeague={handleDeleteLeague}
             onAddSeason={handleAddSeason}
+            onUpdateSeason={handleUpdateSeason}
             onSetActiveSeason={handleSetActiveSeason}
             onExportJSON={handleExportJSON}
             onImportJSON={handleImportJSON}

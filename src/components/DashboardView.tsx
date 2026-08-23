@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Player, Match, League, CheckInRecord, Gender } from '../types';
 import { standingsEngine } from '../services/standingsEngine';
-import { getLocalDate } from '../services/dateService';
+import { formatLocalDateLong, getLocalDate } from '../services/dateService';
 import {
   Activity,
   ArrowRight,
+  CalendarDays,
   CheckCircle2,
   Clock3,
   MapPin,
@@ -77,6 +78,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <h1>{activeLeague.name}</h1>
           <div className="event-meta">
+            <span><CalendarDays size={14} /> {formatLocalDateLong()}</span>
             <span><MapPin size={14} /> {activeLeague.venue}</span>
             <span><Clock3 size={14} /> {activeLeague.startTime} sampai {activeLeague.endTime} WIB</span>
           </div>

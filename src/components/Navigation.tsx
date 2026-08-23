@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { League } from '../types';
 import { matchmakingEngine } from '../services/matchmakingEngine';
+import { formatLocalDateShort } from '../services/dateService';
 import { 
   Home, 
   Trophy, 
@@ -10,7 +11,8 @@ import {
   Settings, 
   ChevronDown,
   Shuffle,
-  LogOut
+  LogOut,
+  CalendarDays,
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -220,6 +222,10 @@ export const Navigation: React.FC<NavigationProps> = ({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="inline-flex items-center gap-1 text-cyan-300 font-semibold whitespace-nowrap">
+                <CalendarDays size={12} /> {formatLocalDateShort()}
+              </span>
+              <span className="text-slate-700">/</span>
               <span className="font-semibold text-slate-300">{activeLeague.name}</span>
               <span className="text-slate-700">/</span>
               <span className="text-slate-500 hidden sm:inline">
