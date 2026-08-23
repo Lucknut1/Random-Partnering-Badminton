@@ -2,6 +2,8 @@
 
 Dashboard operasional liga badminton untuk check-in peserta, auto-pair ganda, live scoring, dan klasemen putra serta putri.
 
+Production: [ur-random-partnering.vercel.app](https://ur-random-partnering.vercel.app/)
+
 ## Menjalankan aplikasi
 
 ```bash
