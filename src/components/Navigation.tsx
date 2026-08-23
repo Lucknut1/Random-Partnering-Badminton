@@ -65,21 +65,16 @@ export const Navigation: React.FC<NavigationProps> = ({
             <button
               onClick={() => onSelectTab('dashboard')}
               className="flex items-center gap-2 text-left bg-transparent border-none cursor-pointer"
+              aria-label="Kembali ke ringkasan Bareket"
             >
               <div className="brand-mark">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="m4.93 4.93 4.24 4.24"/>
-                  <path d="m14.83 9.17 4.24-4.24"/>
-                  <path d="m14.83 14.83 4.24 4.24"/>
-                  <path d="m9.17 14.83-4.24 4.24"/>
-                </svg>
+                <img src="/bareket-icon-192.png" alt="" width="34" height="34" />
               </div>
               <div>
                 <span className="font-extrabold text-[15px] tracking-tight text-white font-['Outfit'] block leading-none">
-                  ShuttleRank
+                  Bareket
                 </span>
-                <span className="text-[10px] text-slate-500 font-semibold tracking-[0.12em] uppercase">Mini League</span>
+                <span className="text-[10px] text-slate-500 font-semibold tracking-[0.12em] uppercase">MainBarengRaket</span>
               </div>
             </button>
 

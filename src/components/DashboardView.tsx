@@ -74,7 +74,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="event-hero-content">
           <div className="event-kicker">
             <span className="live-dot" />
-            Liga aktif
+            MainBarengRaket
           </div>
           <h1>{activeLeague.name}</h1>
           <div className="event-meta">
@@ -82,6 +82,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span><MapPin size={14} /> {activeLeague.venue}</span>
             <span><Clock3 size={14} /> {activeLeague.startTime} sampai {activeLeague.endTime} WIB</span>
           </div>
+          <p className="event-tagline">Satu raket, banyak partner, satu klasemen.</p>
           <p className="event-description">
             Kelola check-in, susun pasangan, catat skor, dan pantau klasemen dari satu pusat kompetisi.
           </p>
