@@ -562,6 +562,17 @@ export const App: React.FC = () => {
   };
 
   // ADMIN HANDLERS
+  const handleRegisterPlayer = async (playerData: Omit<Player, 'id' | 'createdAt'>): Promise<Player> => {
+    const registeredPlayer = await supabaseService.registerLeaguePlayer(playerData);
+    setPlayers((currentPlayers) => {
+      if (currentPlayers.some((player) => player.id === registeredPlayer.id)) return currentPlayers;
+      const updatedPlayers = [...currentPlayers, registeredPlayer];
+      storageService.savePlayers(updatedPlayers);
+      return updatedPlayers;
+    });
+    return registeredPlayer;
+  };
+
   const handleAddPlayer = (playerData: Omit<Player, 'id' | 'createdAt'>) => {
     const newPlayer: Player = {
       ...playerData,
@@ -768,7 +779,7 @@ export const App: React.FC = () => {
             checkIns={checkIns}
             activeLeague={activeLeague}
             matches={matches}
-            onAddPlayer={handleAddPlayer}
+            onRegisterPlayer={handleRegisterPlayer}
             onAddCheckIn={handleAddCheckIn}
             onRemoveCheckIn={handleRemoveCheckIn}
             onBulkCheckIn={handleBulkCheckIn}

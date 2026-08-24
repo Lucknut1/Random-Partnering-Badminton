@@ -218,6 +218,25 @@ export const supabaseService = {
     return data as Match;
   },
 
+  async registerLeaguePlayer(player: Omit<Player, 'id' | 'createdAt'>): Promise<Player> {
+    if (!supabase) {
+      return {
+        ...player,
+        id: `p-${Date.now()}`,
+        createdAt: new Date().toISOString().slice(0, 10),
+      };
+    }
+    const { data, error } = await supabase.rpc('register_league_player', {
+      target_league_id: player.leagueId,
+      target_full_name: player.name,
+      target_department: player.department,
+      target_level: player.level,
+      target_gender: player.gender,
+    });
+    if (error) throw error;
+    return data as Player;
+  },
+
   localAdminAvailable(): boolean {
     return Boolean(import.meta.env.VITE_LOCAL_ADMIN_PIN?.trim());
   },
