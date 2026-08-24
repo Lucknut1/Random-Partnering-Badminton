@@ -1,5 +1,13 @@
 import { createClient, Session } from '@supabase/supabase-js';
-import { CheckInRecord, League, Match, Player } from '../types';
+import {
+  AccessContext,
+  CheckInRecord,
+  League,
+  LeagueHostAssignment,
+  LeagueHostInvitation,
+  Match,
+  Player,
+} from '../types';
 
 export interface AppSnapshot {
   leagues: League[];
@@ -64,6 +72,20 @@ export const supabaseService = {
     sessionStorage.removeItem('shuttlerank_local_admin');
   },
 
+  async setInvitedUserPassword(password: string): Promise<void> {
+    if (!supabase) return;
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) throw userError;
+    const { error } = await supabase.auth.updateUser({
+      password,
+      data: {
+        ...(userData.user?.user_metadata || {}),
+        password_configured: true,
+      },
+    });
+    if (error) throw error;
+  },
+
   async cancelActiveMatch(matchId: string): Promise<void> {
     if (!supabase) return;
     const { error } = await supabase.rpc('cancel_active_match', {
@@ -81,6 +103,119 @@ export const supabaseService = {
       .maybeSingle();
     if (error) throw error;
     return data?.role === 'super_admin';
+  },
+
+  async getAccessContext(): Promise<AccessContext> {
+    if (!supabase) {
+      return { isSuperAdmin: this.localAdminActive(), hostedLeagueIds: [] };
+    }
+    const { data, error } = await supabase.rpc('my_access_context');
+    if (error) throw error;
+    const context = data as { is_super_admin?: boolean; hosted_league_ids?: string[] } | null;
+    return {
+      isSuperAdmin: Boolean(context?.is_super_admin),
+      hostedLeagueIds: Array.isArray(context?.hosted_league_ids) ? context.hosted_league_ids : [],
+    };
+  },
+
+  async acceptPendingHostInvitations(): Promise<void> {
+    if (!supabase) return;
+    const { error } = await supabase.rpc('accept_my_league_host_invitations');
+    if (error) throw error;
+  },
+
+  async listLeagueHostAccess(): Promise<{
+    invitations: LeagueHostInvitation[];
+    hosts: LeagueHostAssignment[];
+  }> {
+    if (!supabase) return { invitations: [], hosts: [] };
+    const [invitationResult, hostResult] = await Promise.all([
+      supabase
+        .from('league_host_invitations')
+        .select('id, league_id, email, status, expires_at, created_at')
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('league_hosts')
+        .select('league_id, user_id, status, assigned_at, league_host_invitations(email)')
+        .eq('status', 'active')
+        .order('assigned_at', { ascending: false }),
+    ]);
+    if (invitationResult.error) throw invitationResult.error;
+    if (hostResult.error) throw hostResult.error;
+    return {
+      invitations: (invitationResult.data || []) as LeagueHostInvitation[],
+      hosts: (hostResult.data || []) as unknown as LeagueHostAssignment[],
+    };
+  },
+
+  async inviteLeagueHost(leagueId: string, email: string): Promise<{ emailSent: boolean; warning?: string }> {
+    if (!supabase) throw new Error('Undangan host memerlukan Supabase.');
+    const { data, error } = await supabase.functions.invoke('invite-league-host', {
+      body: { leagueId, email, redirectTo: window.location.origin },
+    });
+    if (error) throw error;
+    return { emailSent: Boolean(data?.emailSent), warning: data?.warning };
+  },
+
+  async revokeLeagueHost(leagueId: string, userId: string): Promise<void> {
+    if (!supabase) return;
+    const { error } = await supabase.rpc('revoke_league_host', {
+      target_league_id: leagueId,
+      target_user_id: userId,
+    });
+    if (error) throw error;
+  },
+
+  async revokeLeagueHostInvitation(invitationId: string): Promise<void> {
+    if (!supabase) return;
+    const { error } = await supabase.rpc('revoke_league_host_invitation', {
+      target_invitation_id: invitationId,
+    });
+    if (error) throw error;
+  },
+
+  async updateLeagueOperationalInfo(league: League): Promise<League> {
+    if (!supabase) return league;
+    const { data, error } = await supabase.rpc('update_league_operational_info', {
+      target_league_id: league.id,
+      target_info: {
+        name: league.name,
+        venue: league.venue,
+        courtsCount: league.courtsCount,
+        startTime: league.startTime,
+        endTime: league.endTime,
+        defaultFormat: league.defaultFormat,
+        description: league.description,
+      },
+    });
+    if (error) throw error;
+    return data as League;
+  },
+
+  async verifyMatchResult(matchId: string): Promise<Match> {
+    if (!supabase) throw new Error('Verifikasi hasil memerlukan Supabase.');
+    const { data, error } = await supabase.rpc('verify_match_result', {
+      target_match_id: matchId,
+    });
+    if (error) throw error;
+    return data as Match;
+  },
+
+  async correctMatchResult(
+    matchId: string,
+    teamAScore: number,
+    teamBScore: number,
+    reason: string
+  ): Promise<Match> {
+    if (!supabase) throw new Error('Koreksi hasil memerlukan Supabase.');
+    const { data, error } = await supabase.rpc('correct_match_result', {
+      target_match_id: matchId,
+      target_team_a_score: teamAScore,
+      target_team_b_score: teamBScore,
+      target_reason: reason,
+    });
+    if (error) throw error;
+    return data as Match;
   },
 
   localAdminAvailable(): boolean {

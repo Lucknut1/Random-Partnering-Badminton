@@ -33,7 +33,11 @@ export const standingsEngine = {
     }
 
     // 2. Filter completed matches
-    let relevantMatches = matches.filter((m) => m.status === 'COMPLETED');
+    // Data lama tanpa verificationStatus tetap dihitung. Hasil baru berstatus
+    // PENDING baru masuk klasemen setelah host atau super admin memverifikasi.
+    let relevantMatches = matches.filter(
+      (m) => m.status === 'COMPLETED' && m.verificationStatus !== 'PENDING'
+    );
 
     if (filter.leagueId && filter.leagueId !== 'all') {
       relevantMatches = relevantMatches.filter((m) => m.leagueId === filter.leagueId);
@@ -221,6 +225,7 @@ export const standingsEngine = {
     const playerMatches = matches.filter(
       (m) =>
         m.status === 'COMPLETED' &&
+        m.verificationStatus !== 'PENDING' &&
         (m.teamA.player1Id === playerId ||
           m.teamA.player2Id === playerId ||
           m.teamB.player1Id === playerId ||

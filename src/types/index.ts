@@ -79,6 +79,34 @@ export interface Match {
   winnerTeam?: 'teamA' | 'teamB';
   currentServe?: 'teamA' | 'teamB';
   switchedSides?: boolean; // For Race 42 at 21 points
+  verificationStatus?: 'PENDING' | 'VERIFIED';
+  verifiedBy?: string;
+  verifiedAt?: string;
+  correctionReason?: string;
+  correctedBy?: string;
+  correctedAt?: string;
+}
+
+export interface AccessContext {
+  isSuperAdmin: boolean;
+  hostedLeagueIds: string[];
+}
+
+export interface LeagueHostInvitation {
+  id: string;
+  league_id: string;
+  email: string;
+  status: 'pending' | 'accepted' | 'revoked' | 'expired';
+  expires_at: string;
+  created_at: string;
+}
+
+export interface LeagueHostAssignment {
+  league_id: string;
+  user_id: string;
+  status: 'active' | 'revoked';
+  assigned_at: string;
+  league_host_invitations?: { email: string } | null;
 }
 
 export interface StandingRow {

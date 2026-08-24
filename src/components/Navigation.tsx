@@ -25,6 +25,7 @@ interface NavigationProps {
   onOpenRandomPartnering: () => void;
   onLogout: () => Promise<void>;
   isAdmin: boolean;
+  isLeagueHost: boolean;
   adminLabel: string | null;
   cloudStatus: 'local' | 'syncing' | 'synced' | 'error';
 }
@@ -39,9 +40,11 @@ export const Navigation: React.FC<NavigationProps> = ({
   onOpenRandomPartnering,
   onLogout,
   isAdmin,
+  isLeagueHost,
   adminLabel,
   cloudStatus,
 }) => {
+  const hasOperationalAccess = isAdmin || isLeagueHost;
   const [timeInfo, setTimeInfo] = useState(() =>
     matchmakingEngine.calculateSessionTimeRemaining(activeLeague)
   );
@@ -108,13 +111,13 @@ export const Navigation: React.FC<NavigationProps> = ({
               )}
               <button
                 onClick={() => onSelectTab('admin')}
-                className={`rounded-lg border p-2 ${isAdmin ? 'border-amber-500/30 bg-amber-500/10 text-amber-300' : 'border-white/10 text-slate-400'}`}
-                aria-label="Buka super admin"
+                className={`rounded-lg border p-2 ${hasOperationalAccess ? 'border-amber-500/30 bg-amber-500/10 text-amber-300' : 'border-white/10 text-slate-400'}`}
+                aria-label="Buka panel operasional"
               >
                 <Settings size={15} />
               </button>
-              {isAdmin && (
-                <button onClick={onLogout} className="mobile-admin-action logout" aria-label="Logout Super Admin">
+              {hasOperationalAccess && (
+                <button onClick={onLogout} className="mobile-admin-action logout" aria-label="Logout akun operasional">
                   <LogOut size={15} />
                 </button>
               )}
@@ -173,8 +176,8 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             <button
               onClick={() => onSelectTab('admin')}
-              className={`p-2 rounded-lg text-xs hover:bg-white/5 transition ml-1 ${isAdmin ? 'text-amber-400' : 'text-slate-400 hover:text-white'}`}
-              title={isAdmin ? 'Super Admin aktif' : 'Login Super Admin'}
+              className={`p-2 rounded-lg text-xs hover:bg-white/5 transition ml-1 ${hasOperationalAccess ? 'text-amber-400' : 'text-slate-400 hover:text-white'}`}
+              title={isAdmin ? 'Super Admin aktif' : isLeagueHost ? 'Host liga aktif' : 'Login operasional'}
             >
               <Settings size={16} />
             </button>
@@ -182,12 +185,12 @@ export const Navigation: React.FC<NavigationProps> = ({
 
           {/* Desktop Primary CTA Button */}
           <div className="hidden md:flex items-center gap-3">
-            {isAdmin && (
-              <div className="admin-online-pill" title={adminLabel || 'Super Admin'}>
+            {hasOperationalAccess && (
+              <div className="admin-online-pill" title={adminLabel || 'Akun operasional'}>
                 <span className="admin-online-dot" />
                 <span className="admin-online-copy">
-                  <strong>Admin online</strong>
-                  <small>{adminLabel || 'Super Admin'}</small>
+                  <strong>{isAdmin ? 'Super admin' : 'Host liga'}</strong>
+                  <small>{adminLabel || 'Akun operasional'}</small>
                 </span>
               </div>
             )}
@@ -204,8 +207,8 @@ export const Navigation: React.FC<NavigationProps> = ({
               <Plus size={15} />
               <span>Catat skor</span>
             </button>
-            {isAdmin && (
-              <button onClick={onLogout} className="logout-action" title="Logout Super Admin" aria-label="Logout Super Admin">
+            {hasOperationalAccess && (
+              <button onClick={onLogout} className="logout-action" title="Logout akun operasional" aria-label="Logout akun operasional">
                 <LogOut size={16} />
               </button>
             )}
@@ -229,9 +232,9 @@ export const Navigation: React.FC<NavigationProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              {isAdmin && (
+              {hasOperationalAccess && (
                 <span className="admin-mobile-status">
-                  <span className="admin-online-dot" /> Admin online
+                  <span className="admin-online-dot" /> {isAdmin ? 'Super admin' : 'Host liga'}
                 </span>
               )}
               <span className={`hidden sm:inline text-[10px] font-bold ${

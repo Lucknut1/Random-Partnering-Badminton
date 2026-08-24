@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Match, Player, League } from '../types';
-import { Activity, Search, Calendar, Trash2 } from 'lucide-react';
+import { Activity, Search, Calendar, CheckCircle2, Edit3, Trash2 } from 'lucide-react';
 import { LiveScoreboard } from './LiveScoreboard';
 
 interface MatchHistoryViewProps {
@@ -12,6 +12,9 @@ interface MatchHistoryViewProps {
   onFinishMatch: (matchId: string, winnerTeam: 'teamA' | 'teamB') => void;
   onCancelMatch: (matchId: string) => void;
   isAdmin: boolean;
+  canOperate: boolean;
+  onVerifyMatch: (matchId: string) => Promise<void>;
+  onCorrectMatch: (matchId: string, teamAScore: number, teamBScore: number, reason: string) => Promise<void>;
 }
 
 export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
@@ -23,10 +26,29 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
   onFinishMatch,
   onCancelMatch,
   isAdmin,
+  canOperate,
+  onVerifyMatch,
+  onCorrectMatch,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const getPlayer = (id: string) => players.find((p) => p.id === id);
+
+  const requestCorrection = async (match: Match) => {
+    const scoreAInput = prompt('Skor baru Tim A:', String(match.teamA.score));
+    if (scoreAInput === null) return;
+    const scoreBInput = prompt('Skor baru Tim B:', String(match.teamB.score));
+    if (scoreBInput === null) return;
+    const reason = prompt('Alasan koreksi, minimal 5 karakter:');
+    if (reason === null) return;
+    const teamAScore = Number(scoreAInput);
+    const teamBScore = Number(scoreBInput);
+    if (!Number.isInteger(teamAScore) || !Number.isInteger(teamBScore)) {
+      alert('Skor harus berupa angka bulat.');
+      return;
+    }
+    await onCorrectMatch(match.id, teamAScore, teamBScore, reason);
+  };
 
   const activeMatches = matches.filter(
     (match) => match.leagueId === activeLeague.id && match.status === 'IN_PROGRESS'
@@ -135,6 +157,13 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
                   </div>
 
                   <div className="flex items-center gap-2">
+                    {match.verificationStatus === 'VERIFIED' ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+                        <CheckCircle2 size={11} /> Terverifikasi
+                      </span>
+                    ) : (
+                      <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-300">Menunggu verifikasi</span>
+                    )}
                     <span className="flex items-center gap-1">
                       <Calendar size={11} /> {match.date}
                     </span>
@@ -180,6 +209,22 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {canOperate ? (
+                  <div className="flex flex-wrap items-center justify-end gap-2 border-t border-white/5 pt-2">
+                    <button type="button" onClick={() => void requestCorrection(match)} className="btn btn-secondary btn-sm text-xs">
+                      <Edit3 size={13} /> Koreksi hasil
+                    </button>
+                    {match.verificationStatus !== 'VERIFIED' ? (
+                      <button type="button" onClick={() => void onVerifyMatch(match.id)} className="btn btn-primary btn-sm text-xs">
+                        <CheckCircle2 size={13} /> Verifikasi hasil
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
+                {match.correctionReason ? (
+                  <p className="text-[10px] text-slate-500">Koreksi terakhir: {match.correctionReason}</p>
+                ) : null}
               </div>
             );
           })}

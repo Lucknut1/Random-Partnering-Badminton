@@ -17,12 +17,25 @@ Tanpa environment Supabase, aplikasi memakai localStorage. Untuk akses admin lok
 ## Supabase produksi
 
 1. Gunakan project Supabase khusus Mabarek dengan ref `wximpqgnmjnwwmqdtdtd`.
-2. Jalankan `supabase/migrations/001_initial.sql` melalui SQL Editor atau Supabase CLI.
+2. Jalankan seluruh migration di `supabase/migrations` secara berurutan melalui SQL Editor atau Supabase CLI.
 3. Buat user admin melalui Supabase Auth.
 4. Promosikan user tersebut menjadi `super_admin` memakai contoh SQL di bagian bawah migration.
-5. Isi `VITE_SUPABASE_URL` dan `VITE_SUPABASE_PUBLISHABLE_KEY` di Vercel.
+5. Deploy pengirim undangan dengan `supabase functions deploy invite-league-host`.
+6. Pastikan Site URL dan Redirect URLs Supabase Auth memuat domain produksi dan URL lokal yang digunakan.
+7. Isi `VITE_SUPABASE_URL` dan `VITE_SUPABASE_PUBLISHABLE_KEY` di Vercel.
 
-RLS mengizinkan publik membaca klasemen. Hanya akun `super_admin` yang dapat menulis snapshot aplikasi.
+RLS mengizinkan publik membaca klasemen. Super admin memiliki override penuh. Host hanya dapat menulis melalui RPC terkontrol untuk liga yang ditugaskan.
+
+## Host liga
+
+- Super admin mengirim undangan host dari panel operasional.
+- Undangan berlaku selama 7 hari.
+- Undangan diterima otomatis saat pengguna membuka email undangan atau login dengan email yang sama.
+- Host hanya dapat mengubah informasi operasional liga, memverifikasi hasil, dan mengoreksi skor dengan alasan wajib.
+- Hasil baru berstatus menunggu dan belum memengaruhi klasemen sampai diverifikasi.
+- Hasil historis yang belum memiliki status verifikasi tetap dihitung untuk menjaga kompatibilitas data lama.
+- Super admin dapat mencabut undangan atau akses host kapan saja.
+- Semua penunjukan, pencabutan, verifikasi, koreksi, dan perubahan informasi host masuk ke `audit_logs`.
 
 ## Aturan inti
 

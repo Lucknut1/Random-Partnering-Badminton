@@ -28,10 +28,11 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
     try {
       if (isSupabaseConfigured) {
         const session = await supabaseService.signIn(email.trim(), password);
-        const isAdmin = await supabaseService.isSuperAdmin(session.user.id);
-        if (!isAdmin) {
+        await supabaseService.acceptPendingHostInvitations();
+        const access = await supabaseService.getAccessContext();
+        if (!access.isSuperAdmin && access.hostedLeagueIds.length === 0) {
           await supabaseService.signOut();
-          throw new Error('Akun ini tidak memiliki peran super admin.');
+          throw new Error('Akun ini tidak memiliki akses super admin atau host liga aktif.');
         }
       } else if (!supabaseService.signInLocal(pin)) {
         throw new Error('PIN admin salah atau VITE_LOCAL_ADMIN_PIN belum diatur.');
@@ -54,8 +55,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
               <LockKeyhole size={19} />
             </div>
             <div>
-              <h2 className="font-extrabold text-white">Akses Super Admin</h2>
-              <p className="text-xs text-slate-400">Kelola peserta, liga, periode, dan data.</p>
+              <h2 className="font-extrabold text-white">Akses Operasional</h2>
+              <p className="text-xs text-slate-400">Masuk sebagai super admin atau host liga.</p>
             </div>
           </div>
           <button type="button" onClick={onClose} className="p-1 text-slate-400 hover:text-white" aria-label="Tutup">
@@ -88,7 +89,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
         {error && <p role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-300">{error}</p>}
         <button type="submit" disabled={submitting} className="btn-action-primary w-full justify-center py-2.5 disabled:opacity-50">
-          {submitting ? 'Memeriksa akses...' : 'Masuk sebagai Super Admin'}
+          {submitting ? 'Memeriksa akses...' : 'Masuk ke panel operasional'}
         </button>
       </form>
     </div>

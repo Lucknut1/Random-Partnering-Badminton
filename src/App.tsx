@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Player, League, Match, CheckInRecord, Season, ScoreFormat, MatchType } from './types';
+import { AccessContext, Player, League, Match, CheckInRecord, Season, ScoreFormat, MatchType } from './types';
 import { storageService } from './services/storageService';
 import { Navigation } from './components/Navigation';
 import { DashboardView } from './components/DashboardView';
@@ -12,6 +12,9 @@ import { GeneratedMatchProposal, matchmakingEngine } from './services/matchmakin
 import { matchRules } from './services/matchRules';
 import { AppSnapshot, isSupabaseConfigured, supabase, supabaseService } from './services/supabaseService';
 import { AdminLoginModal } from './components/AdminLoginModal';
+import { LeagueHostManagement } from './components/LeagueHostManagement';
+import { LeagueHostPanel } from './components/LeagueHostPanel';
+import { InvitePasswordSetupModal } from './components/InvitePasswordSetupModal';
 import { getLocalDate } from './services/dateService';
 
 const reconcileCheckIns = (records: CheckInRecord[], nextMatches: Match[]): CheckInRecord[] =>
@@ -46,7 +49,12 @@ export const App: React.FC = () => {
   const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
   const [recordModalMode, setRecordModalMode] = useState<RecordMode>('quick');
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [needsPasswordSetup, setNeedsPasswordSetup] = useState(false);
   const [isAdmin, setIsAdmin] = useState(() => supabaseService.localAdminActive());
+  const [accessContext, setAccessContext] = useState<AccessContext>(() => ({
+    isSuperAdmin: supabaseService.localAdminActive(),
+    hostedLeagueIds: [],
+  }));
   const [adminLabel, setAdminLabel] = useState<string | null>(() =>
     supabaseService.localAdminActive() ? 'Admin Lokal' : null
   );
@@ -70,6 +78,8 @@ export const App: React.FC = () => {
     activeSeasonId: '',
     description: '',
   };
+  const canOperateActiveLeague = accessContext.isSuperAdmin || accessContext.hostedLeagueIds.includes(activeLeague.id);
+  const isLeagueHost = !accessContext.isSuperAdmin && accessContext.hostedLeagueIds.length > 0;
 
   useEffect(() => {
     let mounted = true;
@@ -77,9 +87,21 @@ export const App: React.FC = () => {
       try {
         const session = await supabaseService.getSession();
         if (session && mounted) {
-          const hasAdminRole = await supabaseService.isSuperAdmin(session.user.id);
-          setIsAdmin(hasAdminRole);
-          setAdminLabel(hasAdminRole ? session.user.email || 'Super Admin' : null);
+          setNeedsPasswordSetup(
+            session.user.user_metadata?.invited_as === 'league_host'
+              && session.user.user_metadata?.password_configured !== true
+          );
+          await supabaseService.acceptPendingHostInvitations();
+          const nextAccess = await supabaseService.getAccessContext();
+          setAccessContext(nextAccess);
+          setIsAdmin(nextAccess.isSuperAdmin);
+          setAdminLabel(
+            nextAccess.isSuperAdmin
+              ? session.user.email || 'Super Admin'
+              : nextAccess.hostedLeagueIds.length > 0
+                ? session.user.email || 'Host Liga'
+                : null
+          );
         }
         const snapshot = await supabaseService.loadSnapshot();
         if (snapshot && snapshot.leagues?.length && mounted) {
@@ -104,11 +126,31 @@ export const App: React.FC = () => {
     const { data: authListener } = supabase?.auth.onAuthStateChange((_event, session) => {
       window.setTimeout(async () => {
         try {
-          const hasAdminRole = session ? await supabaseService.isSuperAdmin(session.user.id) : false;
-          setIsAdmin(hasAdminRole);
-          setAdminLabel(hasAdminRole ? session?.user.email || 'Super Admin' : null);
+          if (!session) {
+            setNeedsPasswordSetup(false);
+            setAccessContext({ isSuperAdmin: false, hostedLeagueIds: [] });
+            setIsAdmin(false);
+            setAdminLabel(null);
+            return;
+          }
+          setNeedsPasswordSetup(
+            session.user.user_metadata?.invited_as === 'league_host'
+              && session.user.user_metadata?.password_configured !== true
+          );
+          await supabaseService.acceptPendingHostInvitations();
+          const nextAccess = await supabaseService.getAccessContext();
+          setAccessContext(nextAccess);
+          setIsAdmin(nextAccess.isSuperAdmin);
+          setAdminLabel(
+            nextAccess.isSuperAdmin
+              ? session.user.email || 'Super Admin'
+              : nextAccess.hostedLeagueIds.length > 0
+                ? session.user.email || 'Host Liga'
+                : null
+          );
         } catch (error) {
           console.error('Role synchronization failed:', error);
+          setAccessContext({ isSuperAdmin: false, hostedLeagueIds: [] });
           setIsAdmin(false);
           setAdminLabel(null);
         }
@@ -170,8 +212,13 @@ export const App: React.FC = () => {
   }, []);
 
   const openAdmin = () => {
-    if (isAdmin) setActiveTab('admin');
-    else setIsAdminLoginOpen(true);
+    if (canOperateActiveLeague) {
+      setActiveTab('admin');
+    } else if (adminLabel) {
+      alert('Akun ini bukan host untuk liga yang sedang dipilih.');
+    } else {
+      setIsAdminLoginOpen(true);
+    }
   };
 
   const openRecordModal = (mode: RecordMode = 'quick') => {
@@ -182,6 +229,8 @@ export const App: React.FC = () => {
   const handleLogout = async () => {
     try {
       await supabaseService.signOut();
+      setAccessContext({ isSuperAdmin: false, hostedLeagueIds: [] });
+      setNeedsPasswordSetup(false);
       setIsAdmin(false);
       setAdminLabel(null);
       setActiveTab('dashboard');
@@ -194,6 +243,9 @@ export const App: React.FC = () => {
   const handleSelectLeague = (id: string) => {
     setActiveLeagueId(id);
     storageService.setActiveLeagueId(id);
+    if (activeTab === 'admin' && !accessContext.isSuperAdmin && !accessContext.hostedLeagueIds.includes(id)) {
+      setActiveTab('dashboard');
+    }
   };
 
   // CHECK-IN HANDLERS
@@ -332,6 +384,7 @@ export const App: React.FC = () => {
         score: data.scoreB,
       },
       status: 'COMPLETED',
+      verificationStatus: 'PENDING',
       startedAt: nowHHMM,
       completedAt: nowHHMM,
       winnerTeam,
@@ -413,6 +466,7 @@ export const App: React.FC = () => {
     const updated = matches.map((match) => match.id === matchId ? {
       ...match,
       status: 'COMPLETED' as const,
+      verificationStatus: 'PENDING' as const,
       winnerTeam,
       completedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     } : match);
@@ -443,6 +497,68 @@ export const App: React.FC = () => {
     setMatches(updated);
     storageService.saveMatches(updated);
     alert('Pertandingan dibatalkan. Seluruh pemain kembali tersedia untuk random partnering berikutnya.');
+  };
+
+  const handleVerifyMatch = async (matchId: string) => {
+    try {
+      const verifiedMatch = isSupabaseConfigured
+        ? await supabaseService.verifyMatchResult(matchId)
+        : {
+            ...matches.find((match) => match.id === matchId)!,
+            verificationStatus: 'VERIFIED' as const,
+            verifiedAt: new Date().toISOString(),
+          };
+      const updated = matches.map((match) => match.id === matchId ? verifiedMatch : match);
+      setMatches(updated);
+      storageService.saveMatches(updated);
+    } catch (error) {
+      console.error('Match verification failed:', error);
+      alert(error instanceof Error ? error.message : 'Hasil pertandingan gagal diverifikasi.');
+    }
+  };
+
+  const handleCorrectMatch = async (matchId: string, teamAScore: number, teamBScore: number, reason: string) => {
+    const target = matches.find((match) => match.id === matchId);
+    if (!target) return;
+    const validation = matchRules.validateScore(target.format, teamAScore, teamBScore);
+    if (!validation.valid) {
+      alert(validation.message);
+      return;
+    }
+    if (reason.trim().length < 5) {
+      alert('Alasan koreksi wajib diisi minimal 5 karakter.');
+      return;
+    }
+
+    try {
+      const correctedMatch = isSupabaseConfigured
+        ? await supabaseService.correctMatchResult(matchId, teamAScore, teamBScore, reason.trim())
+        : {
+            ...target,
+            teamA: { ...target.teamA, score: teamAScore },
+            teamB: { ...target.teamB, score: teamBScore },
+            winnerTeam: teamAScore > teamBScore ? 'teamA' as const : 'teamB' as const,
+            verificationStatus: 'PENDING' as const,
+            correctionReason: reason.trim(),
+            correctedAt: new Date().toISOString(),
+          };
+      const updated = matches.map((match) => match.id === matchId ? correctedMatch : match);
+      setMatches(updated);
+      storageService.saveMatches(updated);
+      const updatedCheckIns = reconcileCheckIns(checkIns, updated);
+      setCheckIns(updatedCheckIns);
+      storageService.saveCheckIns(updatedCheckIns);
+    } catch (error) {
+      console.error('Match correction failed:', error);
+      alert(error instanceof Error ? error.message : 'Hasil pertandingan gagal dikoreksi.');
+    }
+  };
+
+  const handleHostUpdateLeague = async (league: League) => {
+    const updatedLeague = await supabaseService.updateLeagueOperationalInfo(league);
+    const updated = leagues.map((current) => current.id === updatedLeague.id ? updatedLeague : current);
+    setLeagues(updated);
+    storageService.saveLeagues(updated);
   };
 
   // ADMIN HANDLERS
@@ -603,6 +719,7 @@ export const App: React.FC = () => {
         onOpenRandomPartnering={() => openRecordModal('generator')}
         onLogout={handleLogout}
         isAdmin={isAdmin}
+        isLeagueHost={isLeagueHost}
         adminLabel={adminLabel}
         cloudStatus={cloudStatus}
       />
@@ -639,6 +756,9 @@ export const App: React.FC = () => {
             onFinishMatch={handleFinishMatch}
             onCancelMatch={handleCancelMatch}
             isAdmin={isAdmin}
+            canOperate={canOperateActiveLeague}
+            onVerifyMatch={handleVerifyMatch}
+            onCorrectMatch={handleCorrectMatch}
           />
         )}
 
@@ -657,23 +777,32 @@ export const App: React.FC = () => {
         )}
 
         {activeTab === 'admin' && (
-          <AdminPanel
-            players={players}
-            leagues={leagues}
-            activeLeague={activeLeague}
-            onAddPlayer={handleAddPlayer}
-            onUpdatePlayer={handleUpdatePlayer}
-            onDeletePlayer={handleDeletePlayer}
-            onAddLeague={handleAddLeague}
-            onUpdateLeague={handleUpdateLeague}
-            onDeleteLeague={handleDeleteLeague}
-            onAddSeason={handleAddSeason}
-            onUpdateSeason={handleUpdateSeason}
-            onSetActiveSeason={handleSetActiveSeason}
-            onExportJSON={handleExportJSON}
-            onImportJSON={handleImportJSON}
-            onResetDatabase={handleResetDatabase}
-          />
+          accessContext.isSuperAdmin ? (
+            <div className="space-y-8">
+              <LeagueHostManagement leagues={leagues} />
+              <AdminPanel
+                players={players}
+                leagues={leagues}
+                activeLeague={activeLeague}
+                onAddPlayer={handleAddPlayer}
+                onUpdatePlayer={handleUpdatePlayer}
+                onDeletePlayer={handleDeletePlayer}
+                onAddLeague={handleAddLeague}
+                onUpdateLeague={handleUpdateLeague}
+                onDeleteLeague={handleDeleteLeague}
+                onAddSeason={handleAddSeason}
+                onUpdateSeason={handleUpdateSeason}
+                onSetActiveSeason={handleSetActiveSeason}
+                onExportJSON={handleExportJSON}
+                onImportJSON={handleImportJSON}
+                onResetDatabase={handleResetDatabase}
+              />
+            </div>
+          ) : canOperateActiveLeague ? (
+            <LeagueHostPanel activeLeague={activeLeague} onUpdateLeague={handleHostUpdateLeague} />
+          ) : (
+            <div className="clean-card p-6 text-sm text-amber-200">Anda tidak memiliki akses operasional untuk liga ini.</div>
+          )
         )}
       </main>
 
@@ -696,10 +825,21 @@ export const App: React.FC = () => {
         onClose={() => setIsAdminLoginOpen(false)}
         onAuthenticated={async () => {
           const session = await supabaseService.getSession();
-          setIsAdmin(true);
-          setAdminLabel(session?.user.email || (supabaseService.localAdminActive() ? 'Admin Lokal' : 'Super Admin'));
+          const nextAccess = await supabaseService.getAccessContext();
+          setAccessContext(nextAccess);
+          setIsAdmin(nextAccess.isSuperAdmin);
+          setAdminLabel(session?.user.email || (supabaseService.localAdminActive() ? 'Admin Lokal' : 'Akun Operasional'));
+          const firstHostedLeagueId = nextAccess.hostedLeagueIds[0];
+          if (!nextAccess.isSuperAdmin && firstHostedLeagueId) {
+            handleSelectLeague(firstHostedLeagueId);
+          }
           setActiveTab('admin');
         }}
+      />
+
+      <InvitePasswordSetupModal
+        isOpen={needsPasswordSetup}
+        onCompleted={() => setNeedsPasswordSetup(false)}
       />
     </div>
   );
