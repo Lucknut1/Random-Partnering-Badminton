@@ -777,6 +777,7 @@ export const App: React.FC = () => {
           <PlayersView
             players={players}
             checkIns={checkIns}
+            leagues={leagues}
             activeLeague={activeLeague}
             matches={matches}
             onRegisterPlayer={handleRegisterPlayer}

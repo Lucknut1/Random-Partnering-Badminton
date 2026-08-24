@@ -7,6 +7,7 @@ import { getLocalDate } from '../services/dateService';
 interface PlayersViewProps {
   players: Player[];
   checkIns: CheckInRecord[];
+  leagues: League[];
   activeLeague: League;
   matches: Match[];
   onRegisterPlayer: (player: Omit<Player, 'id' | 'createdAt'>) => Promise<Player>;
@@ -19,6 +20,7 @@ interface PlayersViewProps {
 export const PlayersView: React.FC<PlayersViewProps> = ({
   players,
   checkIns,
+  leagues,
   activeLeague,
   matches,
   onRegisterPlayer,
@@ -36,6 +38,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
   const [newGender, setNewGender] = useState<Gender>('pria');
   const [newLevel, setNewLevel] = useState<SkillLevel>('A');
   const [newDept, setNewDept] = useState('');
+  const [registrationLeagueId, setRegistrationLeagueId] = useState(activeLeague.id);
   const [registrationError, setRegistrationError] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -60,6 +63,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
   });
 
   const openJoinLayer = () => {
+    setRegistrationLeagueId(activeLeague.id);
     setRegistrationError('');
     setShowAddModal(true);
   };
@@ -89,7 +93,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
         gender: newGender,
         level: newLevel,
         department: newDept.trim(),
-        leagueId: activeLeague.id,
+        leagueId: registrationLeagueId,
       });
       setNewName('');
       setNewDept('');
@@ -267,14 +271,15 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
 
       {/* Public league registration layer */}
       {showAddModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md" role="presentation">
-          <form
-            onSubmit={handleCreatePlayer}
-            className="clean-card w-full max-w-md space-y-5 border border-emerald-500/20 bg-[#0b1210] p-5 shadow-2xl sm:p-6"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="join-league-title"
-          >
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md" role="presentation">
+          <div className="flex min-h-full items-start justify-center p-3 sm:items-center sm:p-4">
+            <form
+              onSubmit={handleCreatePlayer}
+              className="clean-card max-h-[calc(100dvh-1.5rem)] w-full max-w-md space-y-4 overflow-y-auto border border-emerald-500/20 bg-[#0b1210] p-4 shadow-2xl sm:max-h-[calc(100dvh-2rem)] sm:p-6"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="join-league-title"
+            >
             <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
               <div>
                 <p className="mb-1 text-[10px] font-black uppercase tracking-[0.16em] text-emerald-400">Pendaftaran Peserta</p>
@@ -291,13 +296,26 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
               </button>
             </div>
 
-            <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07] p-3">
+            <label className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07] p-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-300"><Trophy size={17} /></div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Liga yang dipilih</p>
-                <p className="truncate text-sm font-extrabold text-white">{activeLeague.name}</p>
+              <div className="min-w-0 flex-1">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">Pilih liga</span>
+                <select
+                  value={registrationLeagueId}
+                  onChange={(event) => {
+                    setRegistrationLeagueId(event.target.value);
+                    setRegistrationError('');
+                  }}
+                  className="mt-0.5 w-full border-0 bg-transparent p-0 text-sm font-extrabold text-white focus:ring-0"
+                  aria-label="Liga tujuan pendaftaran"
+                  required
+                >
+                  {leagues.map((league) => (
+                    <option key={league.id} value={league.id} className="bg-slate-900 text-white">{league.name}</option>
+                  ))}
+                </select>
               </div>
-            </div>
+            </label>
 
             <div className="space-y-4">
               <label className="block text-xs font-bold text-slate-300">
@@ -392,7 +410,8 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
             <p className="text-center text-[10px] leading-relaxed text-slate-500">
               Data digunakan untuk daftar peserta, matchmaking, dan klasemen liga.
             </p>
-          </form>
+            </form>
+          </div>
         </div>
       ) : null}
     </div>
