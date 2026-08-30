@@ -13,8 +13,8 @@ import {
   Shuffle,
   LogOut,
   CalendarDays,
-  Shield,
-  Zap,
+  Clock,
+  Shield
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -62,35 +62,35 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <>
-      {/* BWF Top Accent Bar */}
-      <div className="h-1 w-full bg-gradient-to-r from-[#e11d48] via-[#fbbf24] to-[#0284c7]" />
+      {/* Yonex Blue Top Accent Bar */}
+      <div className="h-1.5 w-full bg-[#0B50A1]" />
 
-      {/* Desktop & Tablet Top Header */}
-      <header className="sticky top-0 z-40 bg-[#080c16]/95 backdrop-blur-md border-b border-white/10 shadow-2xl">
+      {/* Main Top Header (Pure White / Yonex Structure) */}
+      <header className="sticky top-0 z-40 bg-white border-b border-[#CBD5E1] shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           
-          {/* Brand Logo & League Switcher */}
+          {/* Logo & League Selector */}
           <div className="flex items-center gap-3.5">
             <button
               onClick={() => onSelectTab('dashboard')}
               className="flex items-center gap-2.5 text-left bg-transparent border-none cursor-pointer group"
-              aria-label="Kembali ke Beranda Mabarek"
+              aria-label="Kembali ke Beranda"
             >
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-600 to-rose-700 p-0.5 shadow-md shadow-rose-600/30 flex items-center justify-center">
-                <div className="w-full h-full bg-[#090d16] rounded-[10px] flex items-center justify-center overflow-hidden">
+              <div className="w-9 h-9 rounded-xs bg-[#0B50A1] p-0.5 flex items-center justify-center shadow-xs">
+                <div className="w-full h-full bg-white rounded-xs flex items-center justify-center overflow-hidden">
                   <img src="/mabarek-icon-192.png" alt="Mabarek" className="w-6 h-6 object-contain" />
                 </div>
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-base tracking-tight text-white font-['Outfit'] block leading-none">
+                  <span className="font-black text-base tracking-wider text-[#0B50A1] font-['Outfit'] block leading-none uppercase">
                     MABAREK
                   </span>
-                  <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white">
+                  <span className="px-1.5 py-0.2 rounded-xs text-[9px] font-black uppercase tracking-wider bg-[#0B50A1] text-white">
                     PRO
                   </span>
                 </div>
-                <span className="text-[10px] text-slate-400 font-bold tracking-[0.14em] uppercase">
+                <span className="text-[10px] text-slate-500 font-bold tracking-[0.14em] uppercase">
                   MainBarengRaket
                 </span>
               </div>
@@ -98,29 +98,29 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             {/* League Dropdown Selector */}
             <div className="relative group hidden sm:block">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#111827] border border-white/10 hover:border-rose-500/40 transition">
-                <span className="text-slate-400 text-[10px] font-extrabold uppercase tracking-wider">Liga:</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xs bg-[#F8FAFC] border border-[#CBD5E1] hover:border-[#0B50A1] transition">
+                <span className="text-slate-500 text-[10px] font-extrabold uppercase tracking-wider">Liga:</span>
                 <select
                   value={activeLeague.id}
                   onChange={(e) => onSelectLeague(e.target.value)}
-                  className="bg-transparent text-white font-extrabold text-xs border-none cursor-pointer focus:outline-none max-w-44 truncate"
+                  className="bg-transparent text-[#0F172A] font-extrabold text-xs border-none cursor-pointer focus:outline-none max-w-44 truncate"
                 >
                   {leagues.map((l) => (
-                    <option key={l.id} value={l.id} className="bg-[#0e1424] text-white">
+                    <option key={l.id} value={l.id} className="bg-white text-[#0F172A]">
                       {l.name}
                     </option>
                   ))}
                 </select>
-                <ChevronDown size={13} className="text-slate-400" />
+                <ChevronDown size={13} className="text-slate-500" />
               </div>
             </div>
 
-            {/* Mobile Admin Actions */}
+            {/* Mobile Admin Quick Actions */}
             <div className="md:hidden flex items-center gap-1.5">
               {isAdmin && (
                 <button
                   onClick={onOpenRandomPartnering}
-                  className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center justify-center"
+                  className="w-8 h-8 rounded-xs bg-[#EBF3FC] border border-[#BCD8F8] text-[#0B50A1] flex items-center justify-center"
                   aria-label="Random Partnering"
                 >
                   <Shuffle size={14} />
@@ -128,10 +128,10 @@ export const Navigation: React.FC<NavigationProps> = ({
               )}
               <button
                 onClick={() => onSelectTab('admin')}
-                className={`w-8 h-8 rounded-lg border flex items-center justify-center ${
+                className={`w-8 h-8 rounded-xs border flex items-center justify-center ${
                   hasOperationalAccess
-                    ? 'border-amber-500/40 bg-amber-500/15 text-amber-300'
-                    : 'border-white/10 text-slate-400'
+                    ? 'border-[#0B50A1] bg-[#EBF3FC] text-[#0B50A1]'
+                    : 'border-[#CBD5E1] text-slate-600'
                 }`}
                 aria-label="Panel Operasional"
               >
@@ -140,7 +140,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               {hasOperationalAccess && (
                 <button
                   onClick={onLogout}
-                  className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center justify-center"
+                  className="w-8 h-8 rounded-xs bg-red-50 border border-red-200 text-red-600 flex items-center justify-center"
                   aria-label="Logout"
                 >
                   <LogOut size={14} />
@@ -149,14 +149,14 @@ export const Navigation: React.FC<NavigationProps> = ({
             </div>
           </div>
 
-          {/* Desktop Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-1.5 bg-[#0e1424] p-1 rounded-xl border border-white/5">
+          {/* Desktop Navigation Tabs (Yonex Structural Blue) */}
+          <nav className="hidden md:flex items-center gap-1 bg-[#F1F5F9] p-1 rounded-xs border border-[#E2E8F0]">
             <button
               onClick={() => onSelectTab('dashboard')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition ${
+              className={`px-3.5 py-1.5 rounded-xs text-xs font-black uppercase tracking-wider transition ${
                 activeTab === 'dashboard'
-                  ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
-                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#0B50A1] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-[#0B50A1] hover:bg-white'
               }`}
             >
               Beranda
@@ -164,10 +164,10 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             <button
               onClick={() => onSelectTab('ranking')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition ${
+              className={`px-3.5 py-1.5 rounded-xs text-xs font-black uppercase tracking-wider transition ${
                 activeTab === 'ranking'
-                  ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
-                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#0B50A1] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-[#0B50A1] hover:bg-white'
               }`}
             >
               Klasemen
@@ -175,10 +175,10 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             <button
               onClick={() => onSelectTab('matches')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition ${
+              className={`px-3.5 py-1.5 rounded-xs text-xs font-black uppercase tracking-wider transition ${
                 activeTab === 'matches'
-                  ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
-                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#0B50A1] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-[#0B50A1] hover:bg-white'
               }`}
             >
               Pertandingan
@@ -186,10 +186,10 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             <button
               onClick={() => onSelectTab('players')}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition ${
+              className={`px-3.5 py-1.5 rounded-xs text-xs font-black uppercase tracking-wider transition ${
                 activeTab === 'players'
-                  ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
-                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#0B50A1] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-[#0B50A1] hover:bg-white'
               }`}
             >
               Peserta
@@ -197,10 +197,10 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             <button
               onClick={() => onSelectTab('admin')}
-              className={`p-1.5 rounded-lg text-xs transition ${
+              className={`p-1.5 rounded-xs text-xs transition ${
                 hasOperationalAccess
-                  ? 'text-amber-400 bg-amber-500/10'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  ? 'text-[#0B50A1] bg-[#EBF3FC]'
+                  : 'text-slate-500 hover:text-[#0B50A1] hover:bg-white'
               }`}
               title={isAdmin ? 'Super Admin Aktif' : isLeagueHost ? 'Host Liga Aktif' : 'Login Operasional'}
             >
@@ -208,11 +208,11 @@ export const Navigation: React.FC<NavigationProps> = ({
             </button>
           </nav>
 
-          {/* Desktop Right CTA Buttons */}
+          {/* Desktop Right CTA Buttons (Yonex Green Action) */}
           <div className="hidden md:flex items-center gap-2.5">
             {hasOperationalAccess && (
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <div className="flex items-center gap-2 px-2.5 py-1 rounded-xs bg-[#EBF3FC] border border-[#BCD8F8] text-[#0B50A1] text-xs font-extrabold uppercase">
+                <span className="w-2 h-2 rounded-xs bg-[#0B50A1]" />
                 <span>{isAdmin ? 'Super Admin' : 'Host Liga'}</span>
               </div>
             )}
@@ -220,7 +220,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             {isAdmin && (
               <button
                 onClick={onOpenRandomPartnering}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-extrabold bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25 transition shadow-sm"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xs text-xs font-extrabold bg-white text-[#0B50A1] border border-[#CBD5E1] hover:border-[#0B50A1] transition shadow-xs"
               >
                 <Shuffle size={14} />
                 <span>Random Pair</span>
@@ -229,7 +229,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             <button
               onClick={onOpenRecordModal}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white shadow-lg shadow-rose-600/30 transition border-none cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xs text-xs font-black uppercase tracking-wider bg-[#1D9533] hover:bg-[#157327] text-white shadow-xs transition border-none cursor-pointer"
             >
               <Plus size={15} strokeWidth={3} />
               <span>Catat Skor</span>
@@ -238,7 +238,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             {hasOperationalAccess && (
               <button
                 onClick={onLogout}
-                className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition border border-transparent hover:border-rose-500/20"
+                className="p-2 rounded-xs text-slate-500 hover:text-red-600 hover:bg-red-50 transition border border-transparent hover:border-red-200"
                 title="Logout Akun Operasional"
               >
                 <LogOut size={16} />
@@ -247,25 +247,25 @@ export const Navigation: React.FC<NavigationProps> = ({
           </div>
         </div>
 
-        {/* Operating Live Status Strip */}
-        <div className="bg-[#050811] border-t border-white/5 py-1.5 px-4 sm:px-6 text-xs text-slate-400">
+        {/* Operating Live Status Strip (Outdoor Readability) */}
+        <div className="bg-[#F8FAFC] border-t border-[#E2E8F0] py-1.5 px-4 sm:px-6 text-xs text-slate-700">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 text-[11px]">
             <div className="flex items-center gap-2 truncate">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span className="text-emerald-400 font-black uppercase tracking-wider">LIVE</span>
-              <span className="text-slate-600">•</span>
-              <span className="font-semibold text-slate-300 truncate">{activeLeague.name}</span>
-              <span className="text-slate-600 hidden sm:inline">•</span>
-              <span className="text-slate-400 hidden sm:inline">{activeLeague.venue} ({activeLeague.startTime} - {activeLeague.endTime} WIB)</span>
+              <span className="w-2 h-2 rounded-xs bg-[#1D9533]" />
+              <span className="text-[#1D9533] font-black uppercase tracking-wider">SESI AKTIF</span>
+              <span className="text-slate-400">•</span>
+              <span className="font-bold text-[#0F172A] truncate">{activeLeague.name}</span>
+              <span className="text-slate-400 hidden sm:inline">•</span>
+              <span className="text-slate-600 hidden sm:inline">{activeLeague.venue} ({activeLeague.startTime} - {activeLeague.endTime} WIB)</span>
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
               <span className={`text-[10px] font-bold ${
-                cloudStatus === 'synced' ? 'text-emerald-400' : cloudStatus === 'error' ? 'text-rose-400' : 'text-slate-400'
+                cloudStatus === 'synced' ? 'text-[#1D9533]' : cloudStatus === 'error' ? 'text-red-600' : 'text-slate-500'
               }`}>
-                {cloudStatus === 'synced' ? '● Cloud Synced' : cloudStatus === 'syncing' ? 'Syncing...' : 'Local'}
+                {cloudStatus === 'synced' ? '● Terhubung Cloud' : cloudStatus === 'syncing' ? 'Menyinkronkan...' : 'Lokal'}
               </span>
-              <span className="font-mono font-black text-amber-400">
+              <span className="font-mono font-black text-[#0B50A1]">
                 {timeInfo.isSessionActive
                   ? `Sisa ${timeInfo.remainingMinutes} mnt`
                   : timeInfo.isSessionOver
@@ -277,11 +277,11 @@ export const Navigation: React.FC<NavigationProps> = ({
         </div>
       </header>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <div className="bottom-nav-bar md:hidden bg-[#070a14]/95 border-t border-white/10 backdrop-blur-lg">
+      {/* Mobile Bottom Navigation Bar (Pure White) */}
+      <div className="bottom-nav-bar md:hidden bg-white border-t border-[#CBD5E1]">
         <button
           onClick={() => onSelectTab('dashboard')}
-          className={`bottom-nav-item ${activeTab === 'dashboard' ? 'text-rose-400' : 'text-slate-400'}`}
+          className={`bottom-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
         >
           <Home size={18} />
           <span>Beranda</span>
@@ -289,24 +289,24 @@ export const Navigation: React.FC<NavigationProps> = ({
 
         <button
           onClick={() => onSelectTab('matches')}
-          className={`bottom-nav-item ${activeTab === 'matches' ? 'text-rose-400' : 'text-slate-400'}`}
+          className={`bottom-nav-item ${activeTab === 'matches' ? 'active' : ''}`}
         >
           <Activity size={18} />
           <span>Laga</span>
         </button>
 
-        {/* Center Record Match Floating Action Button */}
+        {/* Center Record Match Button (Yonex Green Solid) */}
         <button
           onClick={onOpenRecordModal}
-          className="w-12 h-12 -mt-5 rounded-full bg-gradient-to-r from-rose-600 to-rose-700 text-white flex items-center justify-center shadow-lg shadow-rose-600/40 border-2 border-[#070a14]"
+          className="w-11 h-11 -mt-4 rounded-xs bg-[#1D9533] text-white flex items-center justify-center shadow-md border-2 border-white cursor-pointer"
           aria-label="Catat Skor"
         >
-          <Plus size={22} strokeWidth={3} />
+          <Plus size={20} strokeWidth={3} />
         </button>
 
         <button
           onClick={() => onSelectTab('ranking')}
-          className={`bottom-nav-item ${activeTab === 'ranking' ? 'text-rose-400' : 'text-slate-400'}`}
+          className={`bottom-nav-item ${activeTab === 'ranking' ? 'active' : ''}`}
         >
           <Trophy size={18} />
           <span>Klasemen</span>
@@ -314,7 +314,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
         <button
           onClick={() => onSelectTab('players')}
-          className={`bottom-nav-item ${activeTab === 'players' ? 'text-rose-400' : 'text-slate-400'}`}
+          className={`bottom-nav-item ${activeTab === 'players' ? 'active' : ''}`}
         >
           <Users size={18} />
           <span>Peserta</span>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Player, CheckInRecord, League, Match, Gender, SkillLevel } from '../types';
-import { Users, Search, Plus, UserCheck, Check, RefreshCw, Clock, X, Trophy, Shield, UserPlus, Flame } from 'lucide-react';
+import { Users, Search, Plus, UserCheck, Check, RefreshCw, Clock, X, Trophy, UserPlus } from 'lucide-react';
 import { matchmakingEngine } from '../services/matchmakingEngine';
 import { getLocalDate } from '../services/dateService';
 
@@ -108,21 +108,21 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* ATHLETE REGISTRY HEADER */}
-      <div className="clean-card p-5 bg-[#0d121c] border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+    <div className="max-w-7xl mx-auto space-y-5 pb-12">
+      {/* 1. ATHLETE REGISTRY HEADER */}
+      <div className="clean-card p-4 sm:p-5 bg-white border border-[#CBD5E1] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white">
-              ATHLETE REGISTRY
+            <span className="px-2 py-0.5 rounded-xs text-[10px] font-black uppercase tracking-wider bg-[#EBF3FC] text-[#0B50A1] border border-[#BCD8F8]">
+              DAFTAR ATLET LIGA
             </span>
-            <span className="text-xs text-slate-400 font-semibold">{activeLeague.name}</span>
+            <span className="text-xs text-slate-500 font-semibold">{activeLeague.name}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white font-['Outfit'] flex items-center gap-2">
-            <Users className="text-rose-500" size={22} />
-            <span>Peserta & Check-In Kiosk</span>
+          <h1 className="text-xl sm:text-2xl font-black text-[#0B50A1] font-['Outfit'] tracking-wider uppercase flex items-center gap-2">
+            <Users className="text-[#0B50A1]" size={22} />
+            <span>PESERTA & CHECK-IN KIOSK</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             {todayCheckIns.length} dari {leaguePlayers.length} atlet hadir hari ini ({Math.round((todayCheckIns.length / (leaguePlayers.length || 1)) * 100)}%)
           </p>
         </div>
@@ -131,26 +131,26 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
           {canManage && (
             <button
               onClick={() => onBulkCheckIn(leaguePlayers.map((p) => p.id))}
-              className="btn-action-secondary text-xs py-2 px-3 hidden sm:inline-flex items-center gap-1.5"
+              className="btn-yonex-outline text-xs py-2 px-3 hidden sm:inline-flex items-center gap-1.5 uppercase"
               title="Check-In Semua Pemain"
             >
-              <Check size={14} className="text-emerald-400" />
+              <Check size={14} className="text-[#1D9533]" />
               <span>Check-In Semua</span>
             </button>
           )}
 
           <button
             onClick={openJoinLayer}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white shadow-lg shadow-rose-600/30 transition border-none cursor-pointer"
+            className="btn-yonex-action"
           >
             <UserPlus size={14} />
-            <span>Daftar Atlet</span>
+            <span>DAFTAR ATLET</span>
           </button>
         </div>
       </div>
 
-      {/* FILTER & SEARCH BAR */}
-      <div className="clean-card p-3 sm:p-4 bg-[#0a0e18] border-white/10 flex flex-wrap items-center justify-between gap-3">
+      {/* 2. FILTER & SEARCH BAR */}
+      <div className="clean-card p-3 sm:p-4 bg-white border border-[#CBD5E1] flex flex-wrap items-center justify-between gap-3 shadow-xs">
         <div className="relative flex-1 min-w-[220px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
           <input
@@ -158,43 +158,43 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
             placeholder="Cari atlet atau divisi..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 pr-3 py-1.5 text-xs rounded-lg w-full bg-[#101524] border-white/10 focus:border-rose-500 text-slate-200"
+            className="pl-9 pr-3 py-1.5 text-xs rounded-xs w-full bg-white border-[#CBD5E1] text-[#0F172A] focus:border-[#0B50A1]"
           />
         </div>
 
         {/* Gender Toggle Tabs */}
-        <div className="flex items-center gap-1 bg-[#101524] p-1 rounded-lg border border-white/5 text-xs">
+        <div className="flex items-center gap-1 bg-[#F1F5F9] p-1 rounded-xs border border-[#CBD5E1] text-xs">
           <button
             onClick={() => setGenderFilter('all')}
-            className={`px-3 py-1 rounded text-xs font-extrabold transition ${
-              genderFilter === 'all' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
+            className={`px-3 py-1 rounded-xs text-xs font-black uppercase tracking-wider transition ${
+              genderFilter === 'all' ? 'bg-[#0B50A1] text-white shadow-xs' : 'text-slate-600 hover:text-[#0B50A1]'
             }`}
           >
-            Semua
+            SEMUA
           </button>
           <button
             onClick={() => setGenderFilter('pria')}
-            className={`px-3 py-1 rounded text-xs font-extrabold transition ${
-              genderFilter === 'pria' ? 'bg-rose-600 text-white' : 'text-slate-400 hover:text-rose-300'
+            className={`px-3 py-1 rounded-xs text-xs font-black uppercase tracking-wider transition ${
+              genderFilter === 'pria' ? 'bg-[#0B50A1] text-white shadow-xs' : 'text-slate-600 hover:text-[#0B50A1]'
             }`}
           >
-            Putra (MS/MD)
+            PUTRA
           </button>
           <button
             onClick={() => setGenderFilter('wanita')}
-            className={`px-3 py-1 rounded text-xs font-extrabold transition ${
-              genderFilter === 'wanita' ? 'bg-rose-600 text-white' : 'text-slate-400 hover:text-rose-300'
+            className={`px-3 py-1 rounded-xs text-xs font-black uppercase tracking-wider transition ${
+              genderFilter === 'wanita' ? 'bg-[#0B50A1] text-white shadow-xs' : 'text-slate-600 hover:text-[#0B50A1]'
             }`}
           >
-            Putri (WS/WD)
+            PUTRI
           </button>
         </div>
       </div>
 
-      {/* ATHLETES LIST (BWF PLAYER CARDS) */}
-      <div className="clean-card bg-[#0d121c] border-white/10 divide-y divide-white/5 overflow-hidden shadow-xl">
+      {/* 3. ATHLETES LIST (YONEX MECHANICAL ROSTER CARDS) */}
+      <div className="clean-card bg-white border border-[#CBD5E1] divide-y divide-[#E2E8F0] overflow-hidden shadow-xs">
         {filteredPlayers.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-500">
+          <div className="p-12 text-center text-xs text-slate-500 font-medium">
             Tidak ada atlet ditemukan pada kategori ini.
           </div>
         ) : (
@@ -214,41 +214,41 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
             return (
               <div
                 key={player.id}
-                className="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-white/[0.02] transition"
+                className="p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:bg-[#F8FAFC] transition"
               >
                 <div className="flex items-center gap-3 sm:gap-4">
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm shadow-inner ${
+                    className={`w-9 h-9 rounded-xs flex items-center justify-center font-black text-xs uppercase ${
                       player.gender === 'pria'
-                        ? 'bg-rose-600/15 text-rose-400 border border-rose-500/30'
-                        : 'bg-pink-600/15 text-pink-400 border border-pink-500/30'
+                        ? 'bg-[#EBF3FC] text-[#0B50A1] border border-[#BCD8F8]'
+                        : 'bg-[#EDF9F0] text-[#157327] border border-[#A3E3B1]'
                     }`}
                   >
                     {player.name.charAt(0)}
                   </div>
                   <div>
-                    <div className="font-extrabold text-white text-sm flex items-center gap-2">
+                    <div className="font-black text-[#0F172A] text-xs sm:text-sm flex items-center gap-2 uppercase tracking-tight">
                       <span>{player.name}</span>
                       <span className={`badge-lvl-${player.level.toLowerCase()} text-[10px]`}>
-                        Level {player.level}
+                        LVL {player.level}
                       </span>
                     </div>
-                    <div className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+                    <div className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5 font-medium">
                       <span>{player.department}</span>
-                      <span className="text-slate-600">•</span>
-                      <span className="capitalize">{player.gender === 'pria' ? 'Putra' : 'Putri'}</span>
+                      <span className="text-slate-400">•</span>
+                      <span className="capitalize">{player.gender === 'pria' ? 'Ganda Putra' : 'Ganda Putri'}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* 1-Tap Check-In Button */}
+                {/* 1-Tap Check-In Button (Yonex Green Solid) */}
                 <div>
                   {isCheckedIn ? (
                     <div className="flex items-center gap-1.5">
                       {canRecheck && (
                         <button
                           onClick={() => onAddCheckIn(player.id, checkIn.round + 1)}
-                          className="px-2.5 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center gap-1 hover:bg-amber-500/25 transition"
+                          className="px-2.5 py-1.5 rounded-xs bg-[#FEF3C7] border border-[#FCD34D] text-[#B45309] text-xs font-black uppercase flex items-center gap-1 hover:bg-[#FDE68A] transition"
                           title={`Sisa waktu ${sessionTime.remainingMinutes} menit`}
                         >
                           <RefreshCw size={13} />
@@ -257,7 +257,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
                       )}
                       <button
                         onClick={() => onRemoveCheckIn(checkIn.id)}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-black uppercase tracking-wider flex items-center gap-1.5 hover:bg-rose-500/20 hover:text-rose-300 hover:border-rose-500/30 transition"
+                        className="px-3 py-1.5 rounded-xs bg-[#EDF9F0] border border-[#A3E3B1] text-[#157327] text-xs font-black uppercase tracking-wider flex items-center gap-1.5 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition"
                         title="Klik untuk membatalkan check-in"
                       >
                         {hasPlayed && !sessionTime.hasTimeToPlayMore ? <Clock size={13} /> : <UserCheck size={13} />}
@@ -267,7 +267,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
                   ) : (
                     <button
                       onClick={() => onAddCheckIn(player.id, 1)}
-                      className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-rose-600/20 border-none cursor-pointer transition"
+                      className="btn-yonex-action text-xs py-1.5 px-3.5"
                     >
                       <span>Check-In</span>
                     </button>
@@ -279,103 +279,103 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
         )}
       </div>
 
-      {/* ATHLETE ENTRY MODAL */}
+      {/* 4. ATHLETE ENTRY MODAL (CLEAN LIGHT MODAL) */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md" role="presentation">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs" role="presentation">
           <div className="flex min-h-full items-start justify-center p-3 sm:items-center sm:p-4">
             <form
               onSubmit={handleCreatePlayer}
-              className="clean-card max-h-[calc(100dvh-1.5rem)] w-full max-w-md space-y-4 overflow-y-auto border border-rose-500/30 bg-[#0b101c] p-5 sm:p-6 shadow-2xl"
+              className="clean-card max-h-[calc(100dvh-1.5rem)] w-full max-w-md space-y-4 overflow-y-auto border border-[#CBD5E1] bg-white p-5 sm:p-6 shadow-2xl"
               role="dialog"
               aria-modal="true"
             >
-              <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
+              <div className="flex items-start justify-between gap-4 border-b border-[#E2E8F0] pb-3">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-rose-400">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#0B50A1]">
                     PENDAFTARAN ATLET RESMI
                   </span>
-                  <h2 className="text-xl font-black text-white font-['Outfit']">Pendaftaran Atlet</h2>
-                  <p className="mt-1 text-xs text-slate-400">Daftarkan pemain ke dalam sistem turnamen liga.</p>
+                  <h2 className="text-xl font-black text-[#0B50A1] font-['Outfit'] uppercase">Pendaftaran Atlet</h2>
+                  <p className="mt-1 text-xs text-slate-600 font-medium">Daftarkan pemain ke dalam sistem turnamen liga.</p>
                 </div>
                 <button
                   type="button"
                   onClick={closeJoinLayer}
-                  className="rounded-lg p-1.5 text-slate-400 hover:bg-white/5 hover:text-white"
+                  className="rounded-xs p-1 text-slate-400 hover:text-slate-700"
                 >
                   <X size={18} />
                 </button>
               </div>
 
               {registrationError && (
-                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold">
+                <div className="p-3 rounded-xs bg-red-50 border border-red-200 text-red-600 text-xs font-bold">
                   {registrationError}
                 </div>
               )}
 
-              <div className="space-y-3">
+              <div className="space-y-3 text-xs">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Nama Lengkap Atlet *</label>
+                  <label className="block font-bold text-slate-700 mb-1">Nama Lengkap Atlet *</label>
                   <input
                     type="text"
                     required
                     placeholder="Contoh: Anthony Ginting"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    className="w-full text-xs py-2 px-3 rounded-lg bg-[#101524] border-white/10 focus:border-rose-500 text-white"
+                    className="w-full py-2 px-3 rounded-xs bg-white border-[#CBD5E1] text-[#0F172A]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">Divisi / Departemen *</label>
+                  <label className="block font-bold text-slate-700 mb-1">Divisi / Departemen *</label>
                   <input
                     type="text"
                     required
                     placeholder="Contoh: Tim IT / Operasional"
                     value={newDept}
                     onChange={(e) => setNewDept(e.target.value)}
-                    className="w-full text-xs py-2 px-3 rounded-lg bg-[#101524] border-white/10 focus:border-rose-500 text-white"
+                    className="w-full py-2 px-3 rounded-xs bg-white border-[#CBD5E1] text-[#0F172A]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-300 mb-1">Kategori Gender</label>
+                    <label className="block font-bold text-slate-700 mb-1">Kategori Gender</label>
                     <select
                       value={newGender}
                       onChange={(e) => setNewGender(e.target.value as Gender)}
-                      className="w-full text-xs py-2 px-3 rounded-lg bg-[#101524] border-white/10 text-white font-bold"
+                      className="w-full py-2 px-3 rounded-xs bg-white border-[#CBD5E1] text-[#0F172A] font-bold"
                     >
-                      <option value="pria">Putra (MS/MD)</option>
-                      <option value="wanita">Putri (WS/WD)</option>
+                      <option value="pria">Putra (Ganda Putra)</option>
+                      <option value="wanita">Putri (Ganda Putri)</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-300 mb-1">Level Permainan</label>
+                    <label className="block font-bold text-slate-700 mb-1">Level Permainan</label>
                     <select
                       value={newLevel}
                       onChange={(e) => setNewLevel(e.target.value as SkillLevel)}
-                      className="w-full text-xs py-2 px-3 rounded-lg bg-[#101524] border-white/10 text-white font-bold"
+                      className="w-full py-2 px-3 rounded-xs bg-white border-[#CBD5E1] text-[#0F172A] font-bold"
                     >
-                      <option value="A">Level A (Mahir / Elite)</option>
+                      <option value="A">Level A (Elite)</option>
                       <option value="B">Level B (Intermediate)</option>
                     </select>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex items-center justify-end gap-2">
+              <div className="pt-3 border-t border-[#E2E8F0] flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={closeJoinLayer}
-                  className="btn-action-secondary text-xs py-2 px-4"
+                  className="btn-yonex-outline text-xs py-2 px-4 uppercase"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isRegistering}
-                  className="flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 transition border-none cursor-pointer disabled:opacity-50"
+                  className="btn-yonex-action disabled:opacity-50"
                 >
                   {isRegistering ? 'Mendaftarkan...' : 'Simpan Profil Atlet'}
                 </button>

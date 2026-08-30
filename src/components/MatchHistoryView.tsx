@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Match, Player, League } from '../types';
-import { Activity, Search, Calendar, CheckCircle2, Edit3, Trash2, Shield, Trophy, Award, Check } from 'lucide-react';
+import { Activity, Search, Calendar, CheckCircle2, Edit3, Trash2, Shield, Check } from 'lucide-react';
 import { LiveScoreboard } from './LiveScoreboard';
 
 interface MatchHistoryViewProps {
@@ -78,33 +78,33 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* MATCH CENTER HEADER */}
-      <div className="clean-card p-5 bg-[#0d121c] border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+    <div className="max-w-7xl mx-auto space-y-5 pb-12">
+      {/* 1. MATCH CENTER HEADER */}
+      <div className="clean-card p-4 sm:p-5 bg-white border border-[#CBD5E1] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white">
-              MATCH CENTER
+            <span className="px-2 py-0.5 rounded-xs text-[10px] font-black uppercase tracking-wider bg-[#EBF3FC] text-[#0B50A1] border border-[#BCD8F8]">
+              PUSAT PERTANDINGAN
             </span>
-            <span className="text-xs text-slate-400 font-semibold">{activeLeague.name}</span>
+            <span className="text-xs text-slate-500 font-semibold">{activeLeague.name}</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-white font-['Outfit'] flex items-center gap-2">
-            <Activity className="text-rose-500" size={22} />
-            <span>Hasil & Riwayat Pertandingan</span>
+          <h1 className="text-xl sm:text-2xl font-black text-[#0B50A1] font-['Outfit'] tracking-wider uppercase flex items-center gap-2">
+            <Activity className="text-[#0B50A1]" size={22} />
+            <span>HASIL & RIWAYAT PERTANDINGAN</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-slate-600 font-medium mt-0.5">
             Total {completedMatches.length} Laga Selesai • {activeMatches.length} Laga Sedang Berlangsung
           </p>
         </div>
       </div>
 
-      {/* ACTIVE IN-PROGRESS MATCHES */}
+      {/* 2. ACTIVE IN-PROGRESS MATCHES */}
       {activeMatches.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <h2 className="text-sm font-black text-emerald-400 uppercase tracking-wider font-['Outfit']">
-              Pertandingan Sedang Berlangsung ({activeMatches.length})
+            <span className="w-2.5 h-2.5 rounded-xs bg-[#1D9533]" />
+            <h2 className="text-xs font-black text-[#157327] uppercase tracking-wider font-['Outfit']">
+              PERTANDINGAN SEDANG BERLANGSUNG ({activeMatches.length})
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -122,7 +122,7 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
         </section>
       )}
 
-      {/* SEARCH BAR */}
+      {/* 3. SEARCH BAR */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
         <input
@@ -130,17 +130,17 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
           placeholder="Cari pertandingan berdasarkan nama atlet..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 pr-4 py-2.5 text-xs rounded-xl w-full bg-[#0d121c] border-white/10 focus:border-rose-500 text-slate-200"
+          className="pl-9 pr-4 py-2 text-xs rounded-xs w-full bg-white border-[#CBD5E1] text-[#0F172A] focus:border-[#0B50A1]"
         />
       </div>
 
-      {/* COMPLETED MATCH CARDS LIST */}
+      {/* 4. COMPLETED MATCH CARDS LIST (CLEAN LIGHT HIGH CONTRAST) */}
       {completedMatches.length === 0 ? (
-        <div className="clean-card p-12 text-center text-xs text-slate-500 bg-[#0d121c]">
+        <div className="clean-card p-12 text-center text-xs text-slate-500 bg-white">
           Belum ada riwayat pertandingan selesai pada liga ini.
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {completedMatches.map((match) => {
             const p1A = getPlayer(match.teamA.player1Id);
             const p2A = getPlayer(match.teamA.player2Id);
@@ -153,104 +153,98 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
             return (
               <div
                 key={match.id}
-                className="clean-card p-4 sm:p-5 bg-[#0b101c] border-white/10 hover:border-rose-500/30 transition-all space-y-3 shadow-lg"
+                className="clean-card p-4 bg-white border border-[#CBD5E1] hover:border-[#0B50A1] transition-all space-y-3 shadow-xs"
               >
                 {/* Match Card Header */}
-                <div className="flex items-center justify-between text-xs text-slate-400 border-b border-white/5 pb-2">
+                <div className="flex items-center justify-between text-xs text-slate-500 border-b border-[#E2E8F0] pb-2">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-rose-600/20 text-rose-300 font-extrabold text-[10px] border border-rose-500/30">
+                    <span className="px-2 py-0.5 rounded-xs bg-[#EBF3FC] text-[#0B50A1] font-black text-[10px] border border-[#BCD8F8]">
                       LAP. {match.courtNumber}
                     </span>
-                    <span className="font-bold text-slate-300">
-                      {match.matchType === 'MD' ? "Men's Doubles" : match.matchType === 'WD' ? "Women's Doubles" : 'Mixed Doubles'}
+                    <span className="font-bold text-[#0F172A] uppercase text-[11px]">
+                      {match.matchType === 'MD' ? 'Ganda Putra' : match.matchType === 'WD' ? 'Ganda Putri' : 'Ganda Campuran'}
                     </span>
-                    <span className="text-slate-600">•</span>
-                    <span className="text-[11px] text-slate-400">{match.format === 'RACE_42' ? 'Race 42' : 'Standar 21'}</span>
+                    <span className="text-slate-400">•</span>
+                    <span className="text-[10px] font-mono text-slate-600">{match.format === 'RACE_42' ? 'Race 42' : 'Standar 21'}</span>
                   </div>
 
                   <div className="flex items-center gap-2 text-[11px]">
-                    <span>{match.date} {match.completedAt ? `• ${match.completedAt} WIB` : ''}</span>
+                    <span className="font-mono text-slate-500">{match.date} {match.completedAt ? `• ${match.completedAt} WIB` : ''}</span>
                     {match.verificationStatus === 'VERIFIED' ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#157327] bg-[#EDF9F0] px-2 py-0.5 rounded-xs border border-[#A3E3B1]">
                         <Check size={11} /> Verified
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-xs border border-amber-200">
                         Pending
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Score Lineup Display (Red Corner vs Blue Corner) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {/* Team A (Red) */}
-                  <div className={`p-3 rounded-xl border flex items-center justify-between ${
+                {/* Score Lineup Display */}
+                <div className="space-y-1.5">
+                  {/* Team A */}
+                  <div className={`p-2.5 rounded-xs border flex items-center justify-between ${
                     teamAWon
-                      ? 'bg-gradient-to-r from-emerald-950/30 to-[#0e1726] border-emerald-500/40 text-white'
-                      : 'bg-[#101524] border-white/5 text-slate-400'
+                      ? 'bg-[#EDF9F0] border-[#A3E3B1] text-[#157327]'
+                      : 'bg-[#F8FAFC] border-[#E2E8F0] text-slate-700'
                   }`}>
-                    <div className="flex items-center gap-2.5 truncate pr-2">
-                      <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
-                      <div className="truncate">
-                        <div className="font-extrabold text-xs text-white truncate">
-                          {p1A?.name || 'Pemain 1'} & {p2A?.name || 'Pemain 2'}
-                        </div>
-                        <div className="text-[10px] text-slate-400">
-                          {p1A?.department} · Level {p1A?.level}/{p2A?.level}
-                        </div>
+                    <div className="truncate pr-2">
+                      <div className="font-black text-xs uppercase truncate text-[#0F172A]">
+                        {p1A?.name || 'Pemain 1'} & {p2A?.name || 'Pemain 2'}
+                      </div>
+                      <div className="text-[10px] text-slate-500 font-medium">
+                        {p1A?.department} · LVL {p1A?.level}/{p2A?.level}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       {teamAWon && (
-                        <span className="text-[10px] font-black uppercase text-amber-400 bg-amber-500/15 px-1.5 py-0.2 rounded border border-amber-500/30 flex items-center gap-0.5">
-                          <Award size={10} /> +3 PTS
+                        <span className="badge-status-win text-[10px]">
+                          +3 PTS
                         </span>
                       )}
-                      <span className="font-mono font-black text-xl text-white">
+                      <span className="font-mono font-black text-xl text-[#0F172A] tabular-nums">
                         {match.teamA.score}
                       </span>
                     </div>
                   </div>
 
-                  {/* Team B (Blue) */}
-                  <div className={`p-3 rounded-xl border flex items-center justify-between ${
+                  {/* Team B */}
+                  <div className={`p-2.5 rounded-xs border flex items-center justify-between ${
                     teamBWon
-                      ? 'bg-gradient-to-r from-emerald-950/30 to-[#0e1726] border-emerald-500/40 text-white'
-                      : 'bg-[#101524] border-white/5 text-slate-400'
+                      ? 'bg-[#EDF9F0] border-[#A3E3B1] text-[#157327]'
+                      : 'bg-[#F8FAFC] border-[#E2E8F0] text-slate-700'
                   }`}>
-                    <div className="flex items-center gap-2.5 truncate pr-2">
-                      <span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
-                      <div className="truncate">
-                        <div className="font-extrabold text-xs text-white truncate">
-                          {p1B?.name || 'Pemain 1'} & {p2B?.name || 'Pemain 2'}
-                        </div>
-                        <div className="text-[10px] text-slate-400">
-                          {p1B?.department} · Level {p1B?.level}/{p2B?.level}
-                        </div>
+                    <div className="truncate pr-2">
+                      <div className="font-black text-xs uppercase truncate text-[#0F172A]">
+                        {p1B?.name || 'Pemain 1'} & {p2B?.name || 'Pemain 2'}
+                      </div>
+                      <div className="text-[10px] text-slate-500 font-medium">
+                        {p1B?.department} · LVL {p1B?.level}/{p2B?.level}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       {teamBWon && (
-                        <span className="text-[10px] font-black uppercase text-amber-400 bg-amber-500/15 px-1.5 py-0.2 rounded border border-amber-500/30 flex items-center gap-0.5">
-                          <Award size={10} /> +3 PTS
+                        <span className="badge-status-win text-[10px]">
+                          +3 PTS
                         </span>
                       )}
-                      <span className="font-mono font-black text-xl text-white">
+                      <span className="font-mono font-black text-xl text-[#0F172A] tabular-nums">
                         {match.teamB.score}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Host Operational Actions Bar */}
+                {/* Host Actions */}
                 {canOperate && (
-                  <div className="flex items-center justify-between pt-1 text-xs border-t border-white/5">
+                  <div className="flex items-center justify-between pt-1 text-xs border-t border-[#E2E8F0]">
                     <div className="flex items-center gap-2">
                       {match.verificationStatus !== 'VERIFIED' && (
                         <button
                           onClick={() => onVerifyMatch(match.id)}
-                          className="text-[11px] font-extrabold text-emerald-400 hover:text-emerald-300 px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 transition flex items-center gap-1"
+                          className="text-[11px] font-extrabold text-[#157327] hover:bg-[#EDF9F0] px-2.5 py-1 rounded-xs border border-[#A3E3B1] transition flex items-center gap-1 uppercase"
                         >
                           <CheckCircle2 size={12} />
                           <span>Verifikasi Skor</span>
@@ -258,7 +252,7 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
                       )}
                       <button
                         onClick={() => requestCorrection(match)}
-                        className="text-[11px] font-bold text-slate-300 hover:text-white px-2 py-1 rounded hover:bg-white/5 transition flex items-center gap-1"
+                        className="text-[11px] font-bold text-slate-600 hover:text-[#0B50A1] px-2 py-1 rounded-xs border border-[#CBD5E1] transition flex items-center gap-1 uppercase"
                       >
                         <Edit3 size={12} />
                         <span>Koreksi</span>
@@ -272,7 +266,7 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
                             onDeleteMatch(match.id);
                           }
                         }}
-                        className="text-slate-500 hover:text-rose-400 p-1"
+                        className="text-slate-400 hover:text-red-600 p-1"
                         title="Hapus Laga"
                       >
                         <Trash2 size={13} />

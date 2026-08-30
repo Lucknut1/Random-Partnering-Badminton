@@ -276,25 +276,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="clean-card p-5 bg-white border border-[#CBD5E1] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
         <div>
-          <h2 className="text-2xl font-black text-amber-400 flex items-center gap-2.5">
-            <Shield size={26} />
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 rounded-xs text-[10px] font-black uppercase tracking-wider bg-[#EBF3FC] text-[#0B50A1] border border-[#BCD8F8]">
+              PUSAT KONTROL ADMIN
+            </span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-[#0B50A1] font-['Outfit'] tracking-wider uppercase flex items-center gap-2.5">
+            <Shield size={24} />
             <span>Super Admin Dashboard</span>
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Kontrol penuh data master peserta, konfigurasi 2 liga (Melawai & IP), batas waktu operasional, dan manajemen periode.
+          <p className="text-xs text-slate-600 mt-0.5 font-medium">
+            Kontrol data master peserta, konfigurasi 2 liga, batas waktu operasional, dan manajemen periode.
           </p>
         </div>
 
         {/* Sub Tabs */}
-        <div className="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-xl border border-white/10">
+        <div className="flex flex-wrap items-center gap-1.5 bg-[#F1F5F9] p-1 rounded-xs border border-[#CBD5E1]">
           <button
             onClick={() => setAdminTab('players')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-              adminTab === 'players' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xs text-xs font-black uppercase tracking-wider transition ${
+              adminTab === 'players' ? 'bg-[#0B50A1] text-white shadow-xs' : 'text-slate-600 hover:text-[#0B50A1] hover:bg-white'
             }`}
           >
             <Users size={14} />
@@ -303,8 +308,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           <button
             onClick={() => setAdminTab('leagues')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-              adminTab === 'leagues' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xs text-xs font-black uppercase tracking-wider transition ${
+              adminTab === 'leagues' ? 'bg-[#0B50A1] text-white shadow-xs' : 'text-slate-600 hover:text-[#0B50A1] hover:bg-white'
             }`}
           >
             <Trophy size={14} />
@@ -313,8 +318,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           <button
             onClick={() => setAdminTab('seasons')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-              adminTab === 'seasons' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xs text-xs font-black uppercase tracking-wider transition ${
+              adminTab === 'seasons' ? 'bg-[#0B50A1] text-white shadow-xs' : 'text-slate-600 hover:text-[#0B50A1] hover:bg-white'
             }`}
           >
             <Calendar size={14} />
@@ -323,8 +328,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           <button
             onClick={() => setAdminTab('data')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-              adminTab === 'data' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xs text-xs font-black uppercase tracking-wider transition ${
+              adminTab === 'data' ? 'bg-[#0B50A1] text-white shadow-xs' : 'text-slate-600 hover:text-[#0B50A1] hover:bg-white'
             }`}
           >
             <Download size={14} />

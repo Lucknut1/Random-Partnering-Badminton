@@ -4,13 +4,9 @@ import {
   Trophy, 
   RotateCcw, 
   CheckCircle2, 
-  Flame, 
-  AlertCircle, 
-  RefreshCw, 
-  Zap, 
   ArrowLeftRight,
-  Maximize2,
-  Shield
+  Shield,
+  Activity
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -54,7 +50,6 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
   };
 
   const isRace42 = match.format === 'RACE_42';
-  const targetPoints = isRace42 ? 42 : 21;
   const intervalPoint = isRace42 ? 21 : 11;
 
   // Check if interval reached (Pindah Sisi di Race 42)
@@ -108,10 +103,10 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
         (!isRace42 && ((newScoreA >= 21 && newScoreA - newScoreB >= 2) || (newScoreB >= 21 && newScoreB - newScoreA >= 2) || newScoreA === 30 || newScoreB === 30))) {
       try {
         confetti({
-          particleCount: 60,
-          spread: 70,
+          particleCount: 50,
+          spread: 65,
           origin: { y: 0.6 },
-          colors: ['#e11d48', '#f59e0b', '#10b981', '#06b6d4'],
+          colors: ['#0B50A1', '#1D9533', '#D4AF37'],
         });
       } catch {}
     }
@@ -139,23 +134,23 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
   };
 
   return (
-    <div className="clean-card bg-[#0b101c] p-4 sm:p-5 border-white/15 shadow-2xl relative overflow-hidden space-y-4">
-      {/* Top Header with BWF Court Ribbon */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-3">
+    <div className="clean-card bg-white p-4 sm:p-5 border border-[#CBD5E1] shadow-xs space-y-4">
+      {/* Top Header Strip */}
+      <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-rose-600 text-white font-black flex items-center justify-center font-mono text-xs shadow-md shadow-rose-600/30">
-            C{match.courtNumber}
+          <div className="w-8 h-8 rounded-xs bg-[#0B50A1] text-white font-black flex items-center justify-center font-mono text-xs">
+            L{match.courtNumber}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h4 className="font-black text-white text-sm font-['Outfit']">
-                COURT {match.courtNumber}
+              <h4 className="font-black text-[#0B50A1] text-sm font-['Outfit'] uppercase">
+                LAPANGAN {match.courtNumber}
               </h4>
-              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              <span className="px-2 py-0.5 rounded-xs text-[10px] font-black uppercase tracking-wider bg-[#EBF3FC] text-[#0B50A1] border border-[#BCD8F8]">
                 {match.format === 'RACE_42' ? '⚡ RACE TO 42' : '🏸 STANDAR 21'}
               </span>
-              <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-extrabold border border-white/10 uppercase">
-                {match.matchType === 'MD' ? "Men's Doubles" : match.matchType === 'WD' ? "Women's Doubles" : 'Mixed Doubles'}
+              <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-xs font-bold border border-[#CBD5E1] uppercase">
+                {match.matchType === 'MD' ? 'Ganda Putra' : match.matchType === 'WD' ? 'Ganda Putri' : 'Ganda Campuran'}
               </span>
             </div>
           </div>
@@ -169,7 +164,7 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
               setSwitchedSides(false);
               onUpdateScore(match.id, 0, 0, false);
             }}
-            className="text-xs text-slate-400 hover:text-white p-1 rounded hover:bg-white/5"
+            className="text-xs text-slate-400 hover:text-[#0B50A1] p-1 rounded-xs hover:bg-[#F1F5F9] transition"
             title="Reset Skor"
           >
             <RotateCcw size={14} />
@@ -179,89 +174,89 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
 
       {/* Interval / Switch Side Notification (Gold Alert) */}
       {isIntervalReached && (
-        <div className="p-3 bg-amber-500/20 border-2 border-amber-400 rounded-xl flex items-center justify-between gap-3 animate-pulse">
-          <div className="flex items-center gap-2 text-amber-300 text-xs font-bold">
-            <ArrowLeftRight size={18} className="text-amber-400 shrink-0" />
+        <div className="p-3 bg-[#FFFDF0] border-2 border-[#D4AF37] rounded-xs flex items-center justify-between gap-3 animate-pulse">
+          <div className="flex items-center gap-2 text-[#B45309] text-xs font-bold">
+            <ArrowLeftRight size={18} className="text-[#D4AF37] shrink-0" />
             <div>
-              <p className="font-black text-xs sm:text-sm text-amber-200 uppercase">INTERVAL PINDAH SISI (SKOR 21)</p>
-              <p className="text-[11px] text-amber-300/80">Pemain bertukar sisi lapangan sesuai aturan resmi.</p>
+              <p className="font-black text-xs sm:text-sm uppercase">INTERVAL PINDAH SISI (SKOR 21 TERCAPAI)</p>
+              <p className="text-[11px] font-medium text-slate-600">Pemain bertukar sisi lapangan dan wasit mencatat perpindahan.</p>
             </div>
           </div>
           <button
             onClick={handleConfirmSwitchSide}
-            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-lg shadow-md shrink-0 border-none cursor-pointer"
+            className="px-3 py-1.5 bg-[#D4AF37] hover:bg-[#B45309] text-white font-black text-xs rounded-xs shadow-xs shrink-0 border-none cursor-pointer uppercase"
           >
             Pindah Sisi Selesai ✓
           </button>
         </div>
       )}
 
-      {/* Match Won Banner */}
+      {/* Match Won Banner (Yonex Green Solid) */}
       {isMatchWon && winner && (
-        <div className="p-3 bg-emerald-500/20 border-2 border-emerald-400 rounded-xl flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-emerald-300 text-xs font-bold">
-            <Trophy size={18} className="text-emerald-400 shrink-0" />
+        <div className="p-3 bg-[#EDF9F0] border-2 border-[#1D9533] rounded-xs flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-[#157327] text-xs font-bold">
+            <Trophy size={18} className="text-[#1D9533] shrink-0" />
             <div>
-              <p className="font-black text-xs sm:text-sm text-emerald-200 uppercase">
-                PERTANDINGAN SELESAI! PEMENANG: {winner === 'teamA' ? 'TIM A (RED)' : 'TIM B (BLUE)'}
+              <p className="font-black text-xs sm:text-sm uppercase">
+                PERTANDINGAN SELESAI! PEMENANG: {winner === 'teamA' ? 'TIM A' : 'TIM B'}
               </p>
-              <p className="text-[11px] text-emerald-300/80">Pemenang berhak mendapatkan +3 Poin pada klasemen turnamen.</p>
+              <p className="text-[11px] font-medium text-slate-600">Pemenang berhak mendapatkan +3 Poin pada klasemen turnamen.</p>
             </div>
           </div>
           <button
             onClick={() => handleFinish(winner!)}
-            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg shadow-lg shadow-emerald-500/30 shrink-0 border-none cursor-pointer"
+            className="btn-yonex-action shrink-0"
           >
             Simpan Hasil (+3 Poin) ✓
           </button>
         </div>
       )}
 
-      {/* BWF Main Court Score Console (Red Corner vs Blue Corner) */}
+      {/* Scoreboard Columns: Team A vs Team B */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 items-stretch">
-        {/* RED CORNER: TIM A */}
-        <div className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
+        {/* TIM A (YONEX BLUE STRUCTURAL ACCENT) */}
+        <div className={`p-4 rounded-xs border transition-all flex flex-col justify-between ${
           winner === 'teamA'
-            ? 'bg-rose-950/40 border-rose-500 ring-2 ring-rose-500/30'
+            ? 'bg-[#EDF9F0] border-[#1D9533] ring-2 ring-[#1D9533]/20'
             : currentServe === 'teamA'
-            ? 'bg-[#15121e] border-rose-500/70 shadow-lg shadow-rose-500/10'
-            : 'bg-[#0f1422] border-white/10'
+            ? 'bg-[#F0F6FD] border-[#0B50A1]'
+            : 'bg-[#F8FAFC] border-[#CBD5E1]'
         }`}>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-black uppercase tracking-wider text-rose-400">
-                TIM A (RED)
+              <span className="text-[11px] font-black uppercase tracking-wider text-[#0B50A1]">
+                TIM A
               </span>
               {currentServe === 'teamA' && (
-                <span className="text-[9px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full font-black uppercase border border-rose-500/30 flex items-center gap-1">
+                <span className="text-[9px] bg-[#0B50A1] text-white px-2 py-0.5 rounded-xs font-black uppercase">
                   🏸 SERVIS
                 </span>
               )}
             </div>
 
             {/* Players */}
-            <div className="space-y-1.5 mb-3">
+            <div className="space-y-1 mb-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-extrabold text-white truncate max-w-[120px] sm:max-w-[150px]">{p1A?.name || 'Pemain 1'}</span>
-                <span className="badge-lvl-a text-[10px]">Lvl {p1A?.level}</span>
+                <span className="font-black text-[#0F172A] truncate max-w-[120px] uppercase">{p1A?.name || 'Pemain 1'}</span>
+                <span className="badge-lvl-a text-[10px]">LVL {p1A?.level}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="font-extrabold text-white truncate max-w-[120px] sm:max-w-[150px]">{p2A?.name || 'Pemain 2'}</span>
-                <span className="badge-lvl-b text-[10px]">Lvl {p2A?.level}</span>
+                <span className="font-black text-[#0F172A] truncate max-w-[120px] uppercase">{p2A?.name || 'Pemain 2'}</span>
+                <span className="badge-lvl-b text-[10px]">LVL {p2A?.level}</span>
               </div>
             </div>
           </div>
 
-          {/* Large Point Button */}
+          {/* Large Score Dial (Outdoor High Contrast) */}
           <div className="mt-auto">
             <div
               onClick={() => handleAddPoint('teamA')}
-              className="w-full bg-[#0a0d16] hover:bg-[#111728] border-2 border-rose-500/30 hover:border-rose-400 rounded-2xl py-6 flex flex-col items-center justify-center cursor-pointer transition active:scale-95 select-none shadow-inner group"
+              className="w-full bg-white hover:bg-[#F0F6FD] border-2 border-[#CBD5E1] hover:border-[#0B50A1] rounded-xs py-5 flex flex-col items-center justify-center cursor-pointer transition active:scale-98 select-none shadow-xs group"
             >
-              <span className="text-5xl sm:text-6xl font-black text-rose-200 group-hover:text-white font-['JetBrains_Mono'] transition-colors">
+              <span className="text-5xl sm:text-6xl font-black text-[#0B50A1] font-['JetBrains_Mono'] tabular-nums leading-none">
                 {teamAScore}
               </span>
-              <span className="text-[10px] text-rose-400/80 font-bold uppercase tracking-wider mt-1 group-hover:text-rose-300">
+              <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider mt-2 group-hover:text-[#0B50A1]">
                 +1 TAMBAH POIN
               </span>
             </div>
@@ -270,13 +265,13 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
               <button
                 onClick={() => handleSubtractPoint('teamA')}
                 disabled={teamAScore === 0}
-                className="text-slate-400 hover:text-rose-400 font-bold disabled:opacity-30"
+                className="text-slate-500 hover:text-red-600 font-bold disabled:opacity-30"
               >
                 -1 Kurang
               </button>
               <button
                 onClick={() => setCurrentServe('teamA')}
-                className="text-[10px] text-slate-500 hover:text-slate-300 uppercase font-semibold"
+                className="text-[10px] text-[#0B50A1] hover:underline uppercase font-bold"
               >
                 Pindah Servis
               </button>
@@ -284,49 +279,49 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
           </div>
         </div>
 
-        {/* BLUE CORNER: TIM B */}
-        <div className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
+        {/* TIM B */}
+        <div className={`p-4 rounded-xs border transition-all flex flex-col justify-between ${
           winner === 'teamB'
-            ? 'bg-sky-950/40 border-sky-500 ring-2 ring-sky-500/30'
+            ? 'bg-[#EDF9F0] border-[#1D9533] ring-2 ring-[#1D9533]/20'
             : currentServe === 'teamB'
-            ? 'bg-[#0f1728] border-sky-500/70 shadow-lg shadow-sky-500/10'
-            : 'bg-[#0f1422] border-white/10'
+            ? 'bg-[#F0F6FD] border-[#0B50A1]'
+            : 'bg-[#F8FAFC] border-[#CBD5E1]'
         }`}>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-black uppercase tracking-wider text-sky-400">
-                TIM B (BLUE)
+              <span className="text-[11px] font-black uppercase tracking-wider text-[#0B50A1]">
+                TIM B
               </span>
               {currentServe === 'teamB' && (
-                <span className="text-[9px] bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded-full font-black uppercase border border-sky-500/30 flex items-center gap-1">
+                <span className="text-[9px] bg-[#0B50A1] text-white px-2 py-0.5 rounded-xs font-black uppercase">
                   🏸 SERVIS
                 </span>
               )}
             </div>
 
             {/* Players */}
-            <div className="space-y-1.5 mb-3">
+            <div className="space-y-1 mb-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-extrabold text-white truncate max-w-[120px] sm:max-w-[150px]">{p1B?.name || 'Pemain 1'}</span>
-                <span className="badge-lvl-a text-[10px]">Lvl {p1B?.level}</span>
+                <span className="font-black text-[#0F172A] truncate max-w-[120px] uppercase">{p1B?.name || 'Pemain 1'}</span>
+                <span className="badge-lvl-a text-[10px]">LVL {p1B?.level}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="font-extrabold text-white truncate max-w-[120px] sm:max-w-[150px]">{p2B?.name || 'Pemain 2'}</span>
-                <span className="badge-lvl-b text-[10px]">Lvl {p2B?.level}</span>
+                <span className="font-black text-[#0F172A] truncate max-w-[120px] uppercase">{p2B?.name || 'Pemain 2'}</span>
+                <span className="badge-lvl-b text-[10px]">LVL {p2B?.level}</span>
               </div>
             </div>
           </div>
 
-          {/* Large Point Button */}
+          {/* Large Score Dial */}
           <div className="mt-auto">
             <div
               onClick={() => handleAddPoint('teamB')}
-              className="w-full bg-[#0a0d16] hover:bg-[#111728] border-2 border-sky-500/30 hover:border-sky-400 rounded-2xl py-6 flex flex-col items-center justify-center cursor-pointer transition active:scale-95 select-none shadow-inner group"
+              className="w-full bg-white hover:bg-[#F0F6FD] border-2 border-[#CBD5E1] hover:border-[#0B50A1] rounded-xs py-5 flex flex-col items-center justify-center cursor-pointer transition active:scale-98 select-none shadow-xs group"
             >
-              <span className="text-5xl sm:text-6xl font-black text-sky-200 group-hover:text-white font-['JetBrains_Mono'] transition-colors">
+              <span className="text-5xl sm:text-6xl font-black text-[#0B50A1] font-['JetBrains_Mono'] tabular-nums leading-none">
                 {teamBScore}
               </span>
-              <span className="text-[10px] text-sky-400/80 font-bold uppercase tracking-wider mt-1 group-hover:text-sky-300">
+              <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider mt-2 group-hover:text-[#0B50A1]">
                 +1 TAMBAH POIN
               </span>
             </div>
@@ -335,13 +330,13 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
               <button
                 onClick={() => handleSubtractPoint('teamB')}
                 disabled={teamBScore === 0}
-                className="text-slate-400 hover:text-rose-400 font-bold disabled:opacity-30"
+                className="text-slate-500 hover:text-red-600 font-bold disabled:opacity-30"
               >
                 -1 Kurang
               </button>
               <button
                 onClick={() => setCurrentServe('teamB')}
-                className="text-[10px] text-slate-500 hover:text-slate-300 uppercase font-semibold"
+                className="text-[10px] text-[#0B50A1] hover:underline uppercase font-bold"
               >
                 Pindah Servis
               </button>
@@ -351,28 +346,28 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
       </div>
 
       {/* Manual Finish Action Bar */}
-      <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
+      <div className="flex items-center justify-between gap-3 pt-2 border-t border-[#E2E8F0]">
         <button
           type="button"
           onClick={handleCancel}
           disabled={isCancelling}
-          className="text-xs text-rose-400 hover:text-rose-300 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 font-bold transition disabled:opacity-50"
+          className="text-xs text-red-600 hover:text-red-700 px-3 py-1.5 rounded-xs bg-red-50 border border-red-200 font-bold transition disabled:opacity-50 uppercase"
         >
-          {isCancelling ? 'Membatalkan...' : 'Batalkan Pertandingan'}
+          {isCancelling ? 'Membatalkan...' : 'Batalkan Laga'}
         </button>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleFinish('teamA')}
-            className="btn-action-secondary text-xs py-1.5 px-3"
+            className="btn-yonex-outline text-xs py-1.5 px-3 uppercase font-extrabold"
           >
-            Selesai: Tim A Menang
+            Tim A Menang
           </button>
           <button
             onClick={() => handleFinish('teamB')}
-            className="btn-action-secondary text-xs py-1.5 px-3"
+            className="btn-yonex-outline text-xs py-1.5 px-3 uppercase font-extrabold"
           >
-            Selesai: Tim B Menang
+            Tim B Menang
           </button>
         </div>
       </div>

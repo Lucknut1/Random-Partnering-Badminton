@@ -10,15 +10,11 @@ import {
   Clock3,
   MapPin,
   Plus,
-  Sparkles,
   Trophy,
   Users,
   Shield,
-  Zap,
-  Star,
-  Award,
   ChevronRight,
-  Flame
+  Sparkles
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -62,6 +58,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const leagueMatches = matches.filter((match) => match.leagueId === activeLeague.id);
   const completedMatches = leagueMatches.filter((match) => match.status === 'COMPLETED');
   const activeMatches = leagueMatches.filter((match) => match.status === 'IN_PROGRESS');
+  const availableCourts = Math.max(0, activeLeague.courtsCount - activeMatches.length);
+  const waitingPlayers = Math.max(0, todayCheckIns.length - (activeMatches.length * 4));
+
   const recentMatches = [...completedMatches]
     .sort((a, b) => {
       const dateDifference = new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -69,214 +68,189 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     })
     .slice(0, 4);
 
-  const checkInProgress = leaguePlayers.length
-    ? Math.min(100, Math.round((todayCheckIns.length / leaguePlayers.length) * 100))
-    : 0;
-
   const getPlayerName = (id: string) => players.find((player) => player.id === id)?.name || 'Peserta';
 
   return (
-    <div className="space-y-6 pb-8">
-      {/* BWF TOURNAMENT HERO BANNER */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#121829] via-[#0e1424] to-[#0a0e1a] border border-rose-500/25 shadow-2xl p-6 sm:p-8">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-rose-600/10 blur-3xl pointer-events-none rounded-full" />
-        <div className="absolute top-0 left-0 h-full w-1.5 bg-gradient-to-b from-rose-500 via-amber-400 to-rose-600" />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center relative z-10">
-          {/* Main Tournament Info */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-md shadow-rose-600/30">
-                <Shield size={11} /> TOURNAMENT HUB
+    <div className="space-y-5 pb-8 max-w-7xl mx-auto">
+      
+      {/* 1. HORIZONTAL STATUS STRIP (YONEX MECHANICAL SPEC) */}
+      <section className="clean-card p-4 sm:p-5 bg-white border border-[#CBD5E1] shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2 py-0.5 rounded-xs text-[10px] font-black uppercase tracking-wider bg-[#EBF3FC] text-[#0B50A1] border border-[#BCD8F8]">
+                PUSAT KOMPETISI LIGA
               </span>
-              <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Sesi Sedang Berjalan
-              </span>
+              <span className="text-xs text-slate-500 font-semibold">{formatLocalDateLong()}</span>
             </div>
-
-            <h1 className="text-2xl sm:text-4xl font-black text-white font-['Outfit'] tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-[#0B50A1] font-['Outfit'] tracking-wider uppercase">
               {activeLeague.name}
             </h1>
-
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-300 font-semibold">
-              <span className="flex items-center gap-1.5 text-slate-200">
-                <CalendarDays size={14} className="text-rose-400" /> {formatLocalDateLong()}
-              </span>
-              <span className="flex items-center gap-1.5 text-slate-200">
-                <MapPin size={14} className="text-rose-400" /> {activeLeague.venue}
-              </span>
-              <span className="flex items-center gap-1.5 text-slate-200">
-                <Clock3 size={14} className="text-rose-400" /> {activeLeague.startTime} - {activeLeague.endTime} WIB
-              </span>
-            </div>
-
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-2xl">
-              Satu raket, banyak partner, satu klasemen resmi. Pantau jalannya turnamen, skor langsung per lapangan, dan peringkat pemain secara *real-time*.
+            <p className="text-xs text-slate-600 flex items-center gap-2 mt-0.5 font-medium">
+              <span><MapPin size={13} className="inline text-[#0B50A1]" /> {activeLeague.venue}</span>
+              <span>•</span>
+              <span><Clock3 size={13} className="inline text-[#0B50A1]" /> {activeLeague.startTime} - {activeLeague.endTime} WIB</span>
             </p>
-
-            {/* Quick Action CTAs */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                onClick={onOpenRecordModal}
-                className="flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white shadow-xl shadow-rose-600/30 transition transform hover:-translate-y-0.5 border-none cursor-pointer"
-              >
-                <Plus size={16} strokeWidth={3} />
-                <span>Catat Skor Laga</span>
-              </button>
-
-              <button
-                onClick={() => onNavigateTab('players')}
-                className="btn-action-secondary text-xs py-3 px-4"
-              >
-                <Users size={16} />
-                <span>Check-In Peserta</span>
-              </button>
-
-              <button
-                onClick={() => onNavigateTab('ranking')}
-                className="px-4 py-3 rounded-xl text-xs font-extrabold bg-[#161f33] text-amber-300 hover:bg-[#1c2740] border border-amber-500/30 transition flex items-center gap-1.5"
-              >
-                <Trophy size={15} />
-                <span>Klasemen</span>
-              </button>
-            </div>
           </div>
 
-          {/* Right Column: Court & Session Widget */}
-          <div className="bg-[#090d17]/90 border border-white/10 rounded-xl p-5 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-white/5 pb-3">
-              <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-400">STATUS LAPANGAN</span>
-                <h3 className="font-extrabold text-white text-sm">{activeLeague.courtsCount} Lapangan Aktif</h3>
-              </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                {activeMatches.length} Main
+          {/* Quick Metrics Grid */}
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-4 shrink-0">
+            <div className="p-2.5 sm:p-3 bg-[#F0FAF2] border border-[#A3E3B1] rounded-xs text-center min-w-[90px]">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#157327] block">
+                LAGA AKTIF
+              </span>
+              <span className="font-mono font-black text-xl sm:text-2xl text-[#1D9533]">
+                {activeMatches.length}
               </span>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-slate-300 font-semibold">
-                <span>Peserta Hadir</span>
-                <span className="font-mono text-white font-bold">{todayCheckIns.length} / {leaguePlayers.length}</span>
-              </div>
-              <div className="w-full bg-slate-800/80 h-2 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-rose-500 to-amber-400 transition-all duration-500"
-                  style={{ width: `${checkInProgress}%` }}
-                />
-              </div>
+            <div className="p-2.5 sm:p-3 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xs text-center min-w-[90px]">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 block">
+                LAP. KOSONG
+              </span>
+              <span className="font-mono font-black text-xl sm:text-2xl text-slate-800">
+                {availableCourts}
+              </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 pt-1 text-center">
-              <div className="bg-[#101524] p-2.5 rounded-lg border border-white/5">
-                <div className="text-[10px] font-bold text-slate-400">TOTAL LAGA</div>
-                <div className="text-lg font-black text-white font-mono">{completedMatches.length}</div>
-              </div>
-              <div className="bg-[#101524] p-2.5 rounded-lg border border-white/5">
-                <div className="text-[10px] font-bold text-slate-400">TOTAL ATLET</div>
-                <div className="text-lg font-black text-amber-400 font-mono">{leaguePlayers.length}</div>
-              </div>
+            <div className="p-2.5 sm:p-3 bg-[#EBF3FC] border border-[#BCD8F8] rounded-xs text-center min-w-[90px]">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0B50A1] block">
+                MENUNGGU
+              </span>
+              <span className="font-mono font-black text-xl sm:text-2xl text-[#0B50A1]">
+                {waitingPlayers}
+              </span>
             </div>
+          </div>
+        </div>
+
+        {/* Action Buttons Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 mt-4 border-t border-[#E2E8F0]">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={onOpenRecordModal}
+              className="btn-yonex-action"
+            >
+              <Plus size={15} strokeWidth={3} />
+              <span>CATAT SKOR PERTANDINGAN</span>
+            </button>
 
             <button
-              onClick={() => onNavigateTab('matches')}
-              className="w-full py-2 bg-[#12192c] hover:bg-[#18223c] text-slate-200 text-xs font-bold rounded-lg border border-white/10 flex items-center justify-center gap-1.5 transition"
+              onClick={() => onNavigateTab('players')}
+              className="btn-yonex-outline"
             >
-              <span>Buka Match Center</span>
-              <ArrowRight size={13} />
+              <Users size={15} className="text-[#0B50A1]" />
+              <span>CHECK-IN ({todayCheckIns.length}/{leaguePlayers.length})</span>
             </button>
           </div>
+
+          <button
+            onClick={() => onNavigateTab('ranking')}
+            className="btn-yonex-outline text-[#0B50A1] border-[#0B50A1]"
+          >
+            <Trophy size={15} />
+            <span>KLASEMEN LENGKAP</span>
+          </button>
         </div>
       </section>
 
-      {/* DASHBOARD 2-COLUMN SECTION: LEADERBOARD TEASER & LIVE MATCH FEED */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* 2. DASHBOARD MAIN GRID: TOP 5 LEADERBOARD & RECENT MATCHES */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         
-        {/* LEFT: TOP 5 RANKINGS TEASER */}
-        <section className="clean-card bg-[#0b0f19] border-white/10 p-5 space-y-4 shadow-xl">
-          <div className="flex items-center justify-between border-b border-white/5 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                <Trophy size={16} />
+        {/* LEFT COLUMN: TOP 5 LEADERBOARD (YONEX 3-TIER COLOR SYSTEM) */}
+        <section className="clean-card p-4 sm:p-5 bg-white border border-[#CBD5E1] space-y-3 shadow-xs">
+          <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-[#EBF3FC] text-[#0B50A1] flex items-center justify-center rounded-xs font-black text-xs">
+                <Trophy size={15} />
               </div>
               <div>
-                <h3 className="font-extrabold text-white text-sm">Top 5 Leaderboard</h3>
-                <p className="text-[11px] text-slate-400">Peringkat perolehan poin sementara</p>
+                <h3 className="font-black text-[#0B50A1] text-xs sm:text-sm font-['Outfit'] uppercase tracking-wider">
+                  TOP 5 LEADERBOARD
+                </h3>
+                <p className="text-[11px] text-slate-500 font-medium">Peringkat klasemen sementara liga</p>
               </div>
             </div>
 
             {/* Gender Toggle */}
-            <div className="flex items-center bg-[#101524] p-0.5 rounded-lg border border-white/5 text-xs">
+            <div className="flex items-center bg-[#F1F5F9] p-0.5 rounded-xs border border-[#E2E8F0]">
               <button
                 onClick={() => setTopGender('pria')}
-                className={`px-3 py-1 rounded text-[11px] font-bold transition ${
-                  topGender === 'pria' ? 'bg-rose-600 text-white' : 'text-slate-400'
+                className={`px-3 py-1 text-[11px] font-black uppercase tracking-wider transition ${
+                  topGender === 'pria' ? 'bg-[#0B50A1] text-white shadow-xs' : 'text-slate-600 hover:text-[#0B50A1]'
                 }`}
               >
-                Putra
+                PUTRA
               </button>
               <button
                 onClick={() => setTopGender('wanita')}
-                className={`px-3 py-1 rounded text-[11px] font-bold transition ${
-                  topGender === 'wanita' ? 'bg-rose-600 text-white' : 'text-slate-400'
+                className={`px-3 py-1 text-[11px] font-black uppercase tracking-wider transition ${
+                  topGender === 'wanita' ? 'bg-[#0B50A1] text-white shadow-xs' : 'text-slate-600 hover:text-[#0B50A1]'
                 }`}
               >
-                Putri
+                PUTRI
               </button>
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {topPlayers.length === 0 ? (
-              <div className="text-center py-10 text-xs text-slate-500">
-                Belum ada klasemen terbentuk pada kategori ini.
+              <div className="text-center py-10 text-xs text-slate-500 font-medium">
+                Belum ada perolehan poin pada kategori ini.
               </div>
             ) : (
               topPlayers.map((row, index) => {
-                const isNo1 = index === 0;
+                const isRank1 = index === 0;
+                const isRank2 = index === 1;
+                const isRank3 = index === 2;
+
                 return (
                   <div
                     key={row.player.id}
-                    className={`flex items-center justify-between p-3 rounded-xl border transition ${
-                      isNo1
-                        ? 'bg-amber-500/10 border-amber-500/30'
-                        : 'bg-[#101524] border-white/5 hover:border-white/10'
+                    className={`flex items-center justify-between p-2.5 rounded-xs border transition ${
+                      isRank1
+                        ? 'yonex-row-rank-1 border-[#FCD34D]'
+                        : isRank2
+                        ? 'yonex-row-rank-2 border-[#BCD8F8]'
+                        : isRank3
+                        ? 'yonex-row-rank-3 border-[#A3E3B1]'
+                        : 'bg-white border-[#E2E8F0] hover:bg-[#F8FAFC]'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs ${
-                          index === 0
-                            ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md'
-                            : index === 1
-                            ? 'bg-slate-300 text-slate-950'
-                            : index === 2
-                            ? 'bg-amber-700 text-white'
-                            : 'bg-slate-800 text-slate-400'
+                        className={`rank-badge-box ${
+                          isRank1
+                            ? 'rank-box-gold'
+                            : isRank2
+                            ? 'rank-box-blue'
+                            : isRank3
+                            ? 'rank-box-green'
+                            : 'rank-box-standard'
                         }`}
                       >
                         {index + 1}
                       </div>
 
                       <div>
-                        <div className="font-extrabold text-white text-xs flex items-center gap-1.5">
+                        <div className="font-extrabold text-[#0F172A] text-xs uppercase tracking-tight flex items-center gap-1.5">
                           <span>{row.player.name}</span>
-                          {isNo1 && <Flame size={12} className="text-amber-400" />}
+                          {isRank1 && <Trophy size={13} className="text-[#D4AF37] inline" />}
                         </div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[10px] text-slate-500 font-semibold">
                           {row.player.department} · Level {row.player.level}
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <div className="font-mono font-black text-amber-400 text-sm">
-                          {row.points} <span className="text-[9px] text-amber-400/80">PTS</span>
-                        </div>
-                        <div className="text-[10px] text-slate-400">
-                          {row.won}W - {row.lost}L
-                        </div>
+                    <div className="flex items-center gap-3 text-right">
+                      <div>
+                        <span className="font-mono font-black text-sm text-[#0B50A1] block">
+                          {row.points} PTS
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-500">
+                          {row.won}W - {row.lost}L ({row.winRate}%)
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -287,39 +261,41 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           <button
             onClick={() => onNavigateTab('ranking')}
-            className="w-full py-2.5 bg-[#12192c] hover:bg-[#18223c] text-rose-300 text-xs font-black uppercase tracking-wider rounded-xl border border-rose-500/20 flex items-center justify-center gap-1.5 transition"
+            className="w-full py-2.5 bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#0B50A1] text-xs font-black uppercase tracking-wider rounded-xs border border-[#CBD5E1] flex items-center justify-center gap-1.5 transition"
           >
-            <span>Lihat Klasemen Lengkap</span>
+            <span>LIHAT KLASEMEN LENGKAP</span>
             <ChevronRight size={14} />
           </button>
         </section>
 
-        {/* RIGHT: RECENT MATCHES FEED */}
-        <section className="clean-card bg-[#0b0f19] border-white/10 p-5 space-y-4 shadow-xl">
-          <div className="flex items-center justify-between border-b border-white/5 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                <Activity size={16} />
+        {/* RIGHT COLUMN: RECENT MATCHES (HIGH CONTRAST OUTDOOR READABLE) */}
+        <section className="clean-card p-4 sm:p-5 bg-white border border-[#CBD5E1] space-y-3 shadow-xs">
+          <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 bg-[#EBF3FC] text-[#0B50A1] flex items-center justify-center rounded-xs font-black text-xs">
+                <Activity size={15} />
               </div>
               <div>
-                <h3 className="font-extrabold text-white text-sm">Hasil Laga Terkini</h3>
-                <p className="text-[11px] text-slate-400">Pertandingan yang baru saja selesai</p>
+                <h3 className="font-black text-[#0B50A1] text-xs sm:text-sm font-['Outfit'] uppercase tracking-wider">
+                  HASIL LAGA TERAKHIR
+                </h3>
+                <p className="text-[11px] text-slate-500 font-medium">Rekap pertandingan yang baru selesai</p>
               </div>
             </div>
 
             <button
               onClick={() => onNavigateTab('matches')}
-              className="text-xs font-bold text-rose-400 hover:text-rose-300 flex items-center gap-1"
+              className="text-xs font-bold text-[#0B50A1] hover:underline flex items-center gap-1 uppercase"
             >
-              <span>Semua Laga</span>
+              <span>SEMUA LAGA</span>
               <ChevronRight size={13} />
             </button>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {recentMatches.length === 0 ? (
-              <div className="text-center py-10 text-xs text-slate-500">
-                Belum ada pertandingan selesai hari ini.
+              <div className="text-center py-10 text-xs text-slate-500 font-medium">
+                Belum ada pertandingan selesai pada sesi ini.
               </div>
             ) : (
               recentMatches.map((m) => {
@@ -329,29 +305,29 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 return (
                   <div
                     key={m.id}
-                    className="p-3 bg-[#101524] rounded-xl border border-white/5 space-y-2"
+                    className="p-3 bg-[#F8FAFC] rounded-xs border border-[#CBD5E1] space-y-2"
                   >
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 border-b border-white/5 pb-1.5">
-                      <span className="font-bold text-rose-400">Lapangan {m.courtNumber}</span>
-                      <span>Format: {m.format === 'RACE_42' ? 'Race 42' : 'Standar 21'} • Selesai: {m.completedAt || 'Hari Ini'}</span>
+                    <div className="flex items-center justify-between text-[10px] text-slate-500 font-bold uppercase border-b border-[#E2E8F0] pb-1">
+                      <span className="text-[#0B50A1]">LAPANGAN {m.courtNumber}</span>
+                      <span>{m.format === 'RACE_42' ? 'Race 42' : 'Standar 21'} • Selesai {m.completedAt || 'Hari Ini'}</span>
                     </div>
 
                     <div className="space-y-1">
                       {/* Team A */}
-                      <div className={`flex items-center justify-between text-xs px-2 py-1 rounded ${
-                        teamAWon ? 'bg-emerald-500/10 text-emerald-300 font-extrabold' : 'text-slate-300'
+                      <div className={`flex items-center justify-between text-xs px-2 py-1 rounded-xs ${
+                        teamAWon ? 'bg-[#EDF9F0] text-[#157327] font-black border border-[#A3E3B1]' : 'text-slate-700'
                       }`}>
-                        <span className="truncate max-w-[200px]">
+                        <span className="truncate max-w-[220px]">
                           {getPlayerName(m.teamA.player1Id)} & {getPlayerName(m.teamA.player2Id)}
                         </span>
                         <span className="font-mono font-black text-sm">{m.teamA.score}</span>
                       </div>
 
                       {/* Team B */}
-                      <div className={`flex items-center justify-between text-xs px-2 py-1 rounded ${
-                        teamBWon ? 'bg-emerald-500/10 text-emerald-300 font-extrabold' : 'text-slate-300'
+                      <div className={`flex items-center justify-between text-xs px-2 py-1 rounded-xs ${
+                        teamBWon ? 'bg-[#EDF9F0] text-[#157327] font-black border border-[#A3E3B1]' : 'text-slate-700'
                       }`}>
-                        <span className="truncate max-w-[200px]">
+                        <span className="truncate max-w-[220px]">
                           {getPlayerName(m.teamB.player1Id)} & {getPlayerName(m.teamB.player2Id)}
                         </span>
                         <span className="font-mono font-black text-sm">{m.teamB.score}</span>
