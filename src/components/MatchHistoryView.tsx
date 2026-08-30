@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Match, Player, League } from '../types';
-import { Activity, Search, Calendar, CheckCircle2, Edit3, Trash2 } from 'lucide-react';
+import { Activity, Search, Calendar, CheckCircle2, Edit3, Trash2, Shield, Trophy, Award, Check } from 'lucide-react';
 import { LiveScoreboard } from './LiveScoreboard';
 
 interface MatchHistoryViewProps {
@@ -78,24 +78,34 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-5 pb-12">
-      <div className="flex items-center justify-between">
+    <div className="max-w-4xl mx-auto space-y-6 pb-12">
+      {/* BWF MATCH CENTER HEADER */}
+      <div className="clean-card p-5 bg-[#0d121c] border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2 font-['Outfit']">
-            <Activity className="text-emerald-400" size={22} />
-            <span>Match History</span>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white">
+              BWF MATCH CENTER
+            </span>
+            <span className="text-xs text-slate-400 font-semibold">{activeLeague.name}</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black text-white font-['Outfit'] flex items-center gap-2">
+            <Activity className="text-rose-500" size={22} />
+            <span>Hasil & Riwayat Pertandingan</span>
           </h1>
-          <p className="text-xs text-slate-400">
-            Daftar hasil pertandingan selesai ({completedMatches.length} Laga)
+          <p className="text-xs text-slate-400 mt-0.5">
+            Total {completedMatches.length} Laga Selesai • {activeMatches.length} Laga Sedang Berlangsung
           </p>
         </div>
       </div>
 
+      {/* ACTIVE IN-PROGRESS MATCHES */}
       {activeMatches.length > 0 && (
         <section className="space-y-3">
-          <div>
-            <h2 className="text-sm font-extrabold text-emerald-300">Pertandingan Berlangsung</h2>
-            <p className="text-[11px] text-slate-400">Skor tersimpan otomatis. Selesaikan laga agar klasemen diperbarui.</p>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <h2 className="text-sm font-black text-emerald-400 uppercase tracking-wider font-['Outfit']">
+              Pertandingan Sedang Berlangsung ({activeMatches.length})
+            </h2>
           </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {activeMatches.map((match) => (
@@ -112,22 +122,22 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
         </section>
       )}
 
-      {/* Search Input */}
+      {/* SEARCH BAR */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
         <input
           type="text"
-          placeholder="Cari nama pemain..."
+          placeholder="Cari pertandingan berdasarkan nama atlet..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-8 pr-3 py-2 text-xs rounded-lg"
+          className="pl-9 pr-4 py-2.5 text-xs rounded-xl w-full bg-[#0d121c] border-white/10 focus:border-rose-500 text-slate-200"
         />
       </div>
 
-      {/* Match Cards List */}
+      {/* COMPLETED MATCH CARDS LIST (BWF STYLE) */}
       {completedMatches.length === 0 ? (
-        <div className="clean-card p-8 text-center text-xs text-slate-500">
-          Belum ada riwayat pertandingan selesai.
+        <div className="clean-card p-12 text-center text-xs text-slate-500 bg-[#0d121c]">
+          Belum ada riwayat pertandingan selesai pada liga ini.
         </div>
       ) : (
         <div className="space-y-3">
@@ -143,88 +153,133 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
             return (
               <div
                 key={match.id}
-                className="clean-card p-4 space-y-2.5 relative group hover:border-white/20 transition"
+                className="clean-card p-4 sm:p-5 bg-[#0b101c] border-white/10 hover:border-rose-500/30 transition-all space-y-3 shadow-lg"
               >
-                <div className="flex items-center justify-between text-[11px] text-slate-400 border-b border-white/5 pb-2">
+                {/* Match Card Header */}
+                <div className="flex items-center justify-between text-xs text-slate-400 border-b border-white/5 pb-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-emerald-400">Lap. {match.courtNumber}</span>
-                    <span className="badge-sport-format">
-                      {match.format === 'RACE_42' ? 'Race 42' : 'BWF 21'}
+                    <span className="px-2 py-0.5 rounded bg-rose-600/20 text-rose-300 font-extrabold text-[10px] border border-rose-500/30">
+                      LAP. {match.courtNumber}
                     </span>
-                    <span className="text-slate-400">
-                      {match.matchType === 'MD' ? 'Ganda Putra' : match.matchType === 'WD' ? 'Ganda Putri' : 'Ganda Campuran'}
+                    <span className="font-bold text-slate-300">
+                      {match.matchType === 'MD' ? "Men's Doubles" : match.matchType === 'WD' ? "Women's Doubles" : 'Mixed Doubles'}
                     </span>
+                    <span className="text-slate-600">•</span>
+                    <span className="text-[11px] text-slate-400">{match.format === 'RACE_42' ? 'Race 42' : 'BWF 21'}</span>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 text-[11px]">
+                    <span>{match.date} {match.completedAt ? `• ${match.completedAt} WIB` : ''}</span>
                     {match.verificationStatus === 'VERIFIED' ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                        <CheckCircle2 size={11} /> Terverifikasi
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        <Check size={11} /> Verified
                       </span>
                     ) : (
-                      <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-300">Menunggu verifikasi</span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                        Pending
+                      </span>
                     )}
-                    <span className="flex items-center gap-1">
-                      <Calendar size={11} /> {match.date}
-                    </span>
-                    {isAdmin && <button
-                      onClick={() => {
-                        if (confirm('Hapus hasil pertandingan ini?')) {
-                          onDeleteMatch(match.id);
-                        }
-                      }}
-                      className="text-slate-500 hover:text-red-400 p-0.5 opacity-0 group-hover:opacity-100 transition"
-                      title="Hapus Pertandingan"
-                    >
-                      <Trash2 size={12} />
-                    </button>}
                   </div>
                 </div>
 
-                {/* Teams & Scores */}
-                <div className="space-y-2">
-                  {/* Team A */}
-                  <div className={`flex items-center justify-between p-2 rounded-lg ${
-                    teamAWon ? 'bg-emerald-500/10 text-white font-bold' : 'text-slate-300'
+                {/* Score Lineup Display (Red Corner vs Blue Corner) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {/* Team A (Red) */}
+                  <div className={`p-3 rounded-xl border flex items-center justify-between ${
+                    teamAWon
+                      ? 'bg-gradient-to-r from-emerald-950/30 to-[#0e1726] border-emerald-500/40 text-white'
+                      : 'bg-[#101524] border-white/5 text-slate-400'
                   }`}>
-                    <div className="truncate pr-2 text-xs">
-                      <span>{p1A?.name}</span> <span className="text-[10px] text-slate-400">(Lvl {p1A?.level})</span> & <span>{p2A?.name}</span> <span className="text-[10px] text-slate-400">(Lvl {p2A?.level})</span>
+                    <div className="flex items-center gap-2.5 truncate pr-2">
+                      <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+                      <div className="truncate">
+                        <div className="font-extrabold text-xs text-white truncate">
+                          {p1A?.name || 'Pemain 1'} & {p2A?.name || 'Pemain 2'}
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                          {p1A?.department} · Level {p1A?.level}/{p2A?.level}
+                        </div>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {teamAWon && <span className="text-[9px] bg-emerald-500 text-slate-950 font-black px-1.5 py-0.2 rounded">+3 PTS</span>}
-                      <span className="mono-num text-base font-black text-white">{match.teamA.score}</span>
+                      {teamAWon && (
+                        <span className="text-[10px] font-black uppercase text-amber-400 bg-amber-500/15 px-1.5 py-0.2 rounded border border-amber-500/30 flex items-center gap-0.5">
+                          <Award size={10} /> +3 PTS
+                        </span>
+                      )}
+                      <span className="font-mono font-black text-xl text-white">
+                        {match.teamA.score}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Team B */}
-                  <div className={`flex items-center justify-between p-2 rounded-lg ${
-                    teamBWon ? 'bg-emerald-500/10 text-white font-bold' : 'text-slate-300'
+                  {/* Team B (Blue) */}
+                  <div className={`p-3 rounded-xl border flex items-center justify-between ${
+                    teamBWon
+                      ? 'bg-gradient-to-r from-emerald-950/30 to-[#0e1726] border-emerald-500/40 text-white'
+                      : 'bg-[#101524] border-white/5 text-slate-400'
                   }`}>
-                    <div className="truncate pr-2 text-xs">
-                      <span>{p1B?.name}</span> <span className="text-[10px] text-slate-400">(Lvl {p1B?.level})</span> & <span>{p2B?.name}</span> <span className="text-[10px] text-slate-400">(Lvl {p2B?.level})</span>
+                    <div className="flex items-center gap-2.5 truncate pr-2">
+                      <span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" />
+                      <div className="truncate">
+                        <div className="font-extrabold text-xs text-white truncate">
+                          {p1B?.name || 'Pemain 1'} & {p2B?.name || 'Pemain 2'}
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                          {p1B?.department} · Level {p1B?.level}/{p2B?.level}
+                        </div>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {teamBWon && <span className="text-[9px] bg-emerald-500 text-slate-950 font-black px-1.5 py-0.2 rounded">+3 PTS</span>}
-                      <span className="mono-num text-base font-black text-white">{match.teamB.score}</span>
+                      {teamBWon && (
+                        <span className="text-[10px] font-black uppercase text-amber-400 bg-amber-500/15 px-1.5 py-0.2 rounded border border-amber-500/30 flex items-center gap-0.5">
+                          <Award size={10} /> +3 PTS
+                        </span>
+                      )}
+                      <span className="font-mono font-black text-xl text-white">
+                        {match.teamB.score}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {canOperate ? (
-                  <div className="flex flex-wrap items-center justify-end gap-2 border-t border-white/5 pt-2">
-                    <button type="button" onClick={() => void requestCorrection(match)} className="btn btn-secondary btn-sm text-xs">
-                      <Edit3 size={13} /> Koreksi hasil
-                    </button>
-                    {match.verificationStatus !== 'VERIFIED' ? (
-                      <button type="button" onClick={() => void onVerifyMatch(match.id)} className="btn btn-primary btn-sm text-xs">
-                        <CheckCircle2 size={13} /> Verifikasi hasil
+                {/* Host Operational Actions Bar */}
+                {canOperate && (
+                  <div className="flex items-center justify-between pt-1 text-xs border-t border-white/5">
+                    <div className="flex items-center gap-2">
+                      {match.verificationStatus !== 'VERIFIED' && (
+                        <button
+                          onClick={() => onVerifyMatch(match.id)}
+                          className="text-[11px] font-extrabold text-emerald-400 hover:text-emerald-300 px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 transition flex items-center gap-1"
+                        >
+                          <CheckCircle2 size={12} />
+                          <span>Verifikasi Skor</span>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => requestCorrection(match)}
+                        className="text-[11px] font-bold text-slate-300 hover:text-white px-2 py-1 rounded hover:bg-white/5 transition flex items-center gap-1"
+                      >
+                        <Edit3 size={12} />
+                        <span>Koreksi</span>
                       </button>
-                    ) : null}
+                    </div>
+
+                    {isAdmin && (
+                      <button
+                        onClick={() => {
+                          if (confirm('Hapus riwayat pertandingan ini secara permanen?')) {
+                            onDeleteMatch(match.id);
+                          }
+                        }}
+                        className="text-slate-500 hover:text-rose-400 p-1"
+                        title="Hapus Laga"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
-                ) : null}
-                {match.correctionReason ? (
-                  <p className="text-[10px] text-slate-500">Koreksi terakhir: {match.correctionReason}</p>
-                ) : null}
+                )}
               </div>
             );
           })}
@@ -233,3 +288,5 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
     </div>
   );
 };
+
+export default MatchHistoryView;

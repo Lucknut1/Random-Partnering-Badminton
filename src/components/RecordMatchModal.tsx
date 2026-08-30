@@ -14,7 +14,9 @@ import {
   ArrowLeftRight, 
   ShieldCheck, 
   Volume2,
-  VolumeX
+  VolumeX,
+  Shuffle,
+  Shield
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -107,7 +109,7 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!p1A || !p2A || !p1B || !p2B) {
-      alert('Pilih 4 pemain untuk partai ganda.');
+      alert('Pilih 4 atlet untuk partai ganda.');
       return;
     }
     const unique = new Set([p1A, p2A, p1B, p2B]);
@@ -131,7 +133,7 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
     soundEngine.playVictory();
 
     try {
-      confetti({ particleCount: 35, spread: 60, origin: { y: 0.65 } });
+      confetti({ particleCount: 45, spread: 65, origin: { y: 0.65 } });
     } catch {}
 
     onClose();
@@ -166,12 +168,12 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
 
   const handleLiveFinish = (winner: 'teamA' | 'teamB') => {
     if (!p1A || !p2A || !p1B || !p2B) {
-      alert('Pilih 4 pemain terlebih dahulu.');
+      alert('Pilih 4 atlet terlebih dahulu.');
       return;
     }
     const expectedWinner = liveScoreA > liveScoreB ? 'teamA' : 'teamB';
     if (winner !== expectedWinner) {
-      alert('Tim yang dipilih tidak sesuai dengan skor saat ini.');
+      alert('Tim pemenang tidak sesuai dengan perolehan skor.');
       return;
     }
     const saved = onSaveQuickMatch({
@@ -207,28 +209,25 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
   });
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="record-match-title"
-        className="clean-card max-w-lg w-full p-5 space-y-4 border border-white/15 shadow-2xl my-6 bg-[#0b100e] animate-scale-in"
+        className="clean-card max-w-lg w-full p-5 sm:p-6 space-y-4 border border-rose-500/30 shadow-2xl my-6 bg-[#0c101c]"
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-              <Plus size={16} />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center shadow-md shadow-rose-600/30">
+              <Plus size={18} strokeWidth={3} />
             </div>
             <div>
-              <h3 id="record-match-title" className="text-sm font-extrabold text-white">
-                {recordMode === 'generator' ? 'Random Partnering' : 'Catat Pertandingan'}
+              <span className="text-[10px] font-black uppercase tracking-wider text-rose-400">
+                BWF MATCH CONTROLLER
+              </span>
+              <h3 className="text-base font-black text-white font-['Outfit']">
+                {recordMode === 'generator' ? 'Random Partnering Engine' : 'Catat Pertandingan'}
               </h3>
-              <p className="text-[11px] text-slate-400">
-                {recordMode === 'generator'
-                  ? 'Susun pasangan dan lawan dari peserta yang sudah check-in'
-                  : 'Catat hasil pertandingan dan perbarui poin klasemen'}
-              </p>
             </div>
           </div>
 
@@ -238,89 +237,64 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
               onClick={handleToggleSound}
               className="text-slate-400 hover:text-white p-1 rounded hover:bg-white/5 transition"
               title={isMuted ? 'Nyalakan Efek Suara' : 'Matikan Suara'}
-              aria-label={isMuted ? 'Nyalakan efek suara' : 'Matikan efek suara'}
             >
-              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} className="text-emerald-400" />}
+              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} className="text-amber-400" />}
             </button>
             <button
               type="button"
               onClick={onClose}
               className="text-slate-400 hover:text-white p-1 rounded hover:bg-white/5 transition"
-              aria-label="Tutup dialog catat pertandingan"
             >
               <X size={18} />
             </button>
           </div>
         </div>
 
-        {/* Mode Selector Tabs */}
-        <div className={`grid ${canRandomPartner ? 'grid-cols-3' : 'grid-cols-2'} gap-1 bg-[#0b100e] p-1 rounded-lg border border-white/5 text-xs font-bold`}>
+        {/* Mode Selector Tabs (BWF Pill) */}
+        <div className={`grid ${canRandomPartner ? 'grid-cols-3' : 'grid-cols-2'} gap-1 bg-[#101524] p-1 rounded-xl border border-white/5 text-xs font-black uppercase tracking-wider`}>
           <button
             type="button"
             onClick={() => setRecordMode('quick')}
-            className={`py-1.5 rounded transition flex items-center justify-center gap-1.5 ${
-              recordMode === 'quick' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
+            className={`py-2 rounded-lg transition ${
+              recordMode === 'quick' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Zap size={13} />
-            <span>Quick Input</span>
+            Catat Cepat
           </button>
           <button
             type="button"
             onClick={() => setRecordMode('live')}
-            className={`py-1.5 rounded transition flex items-center justify-center gap-1.5 ${
-              recordMode === 'live' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
+            className={`py-2 rounded-lg transition ${
+              recordMode === 'live' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
             }`}
           >
-            <span>Wasit Live</span>
+            Wasit Live
           </button>
           {canRandomPartner && (
             <button
               type="button"
               onClick={() => setRecordMode('generator')}
-              className={`py-1.5 rounded transition flex items-center justify-center gap-1.5 ${
-                recordMode === 'generator' ? 'bg-amber-400 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
+              className={`py-2 rounded-lg transition flex items-center justify-center gap-1 ${
+                recordMode === 'generator' ? 'bg-amber-500 text-slate-950 shadow-md' : 'text-amber-400 hover:text-amber-300'
               }`}
             >
-              <Sparkles size={13} />
-              <span>Random Partnering</span>
+              <Shuffle size={12} />
+              <span>Random Pair</span>
             </button>
           )}
         </div>
 
-        {/* MODE 1: QUICK INPUT FORM */}
+        {/* MODE 1: QUICK SCORE SUBMISSION */}
         {recordMode === 'quick' && (
           <form onSubmit={handleQuickSubmit} className="space-y-4">
-            {/* Format & Category Selectors */}
-            <div className="grid grid-cols-3 gap-2">
+            {/* Match Configurations */}
+            <div className="grid grid-cols-3 gap-2 text-xs">
               <div>
-                <label className="text-[10px] font-bold text-slate-400 block mb-1">Format:</label>
-                <select
-                  value={scoreFormat}
-                  onChange={(e) => {
-                    const fmt = e.target.value as ScoreFormat;
-                    setScoreFormat(fmt);
-                    if (fmt === 'RACE_42') {
-                      setQuickScoreA(42);
-                      setQuickScoreB(38);
-                    } else {
-                      setQuickScoreA(21);
-                      setQuickScoreB(17);
-                    }
-                  }}
-                  className="text-xs py-1.5"
-                >
-                  <option value="RACE_42">Race to 42</option>
-                  <option value="BWF">Standar BWF (21)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-bold text-slate-400 block mb-1">Kategori:</label>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">Partai</label>
                 <select
                   value={matchType}
                   onChange={(e) => setMatchType(e.target.value as MatchType)}
-                  className="text-xs py-1.5"
+                  className="w-full py-1.5 px-2 rounded-lg bg-[#101524] border-white/10 text-white font-bold"
                 >
                   <option value="MD">Ganda Putra (MD)</option>
                   <option value="WD">Ganda Putri (WD)</option>
@@ -329,40 +303,51 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-slate-400 block mb-1">Lapangan:</label>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">Format</label>
+                <select
+                  value={scoreFormat}
+                  onChange={(e) => setScoreFormat(e.target.value as ScoreFormat)}
+                  className="w-full py-1.5 px-2 rounded-lg bg-[#101524] border-white/10 text-white font-bold"
+                >
+                  <option value="RACE_42">Race to 42</option>
+                  <option value="BWF">BWF Standar (21)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 mb-1">Lapangan</label>
                 <select
                   value={courtNum}
                   onChange={(e) => setCourtNum(Number(e.target.value))}
-                  className="text-xs py-1.5"
+                  className="w-full py-1.5 px-2 rounded-lg bg-[#101524] border-white/10 text-white font-bold"
                 >
-                  {Array.from({ length: activeLeague.courtsCount }).map((_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      Lap. {i + 1}
+                  {Array.from({ length: activeLeague.courtsCount }, (_, i) => i + 1).map((c) => (
+                    <option key={c} value={c}>
+                      Lap. {c}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
 
-            {/* Team A Selection & Score */}
-            <div className="p-3 bg-[#0d1511] rounded-xl border border-emerald-500/30 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-400">TIM A</span>
-                <span className="text-[10px] text-slate-400">Skor Akhir:</span>
-              </div>
-
-              <div className="grid grid-cols-5 gap-2 items-center">
-                <div className="col-span-3 space-y-1.5">
+            {/* Red Corner (Team A) vs Blue Corner (Team B) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* TIM A (RED) */}
+              <div className="p-3.5 bg-[#14121e] border border-rose-500/30 rounded-xl space-y-2">
+                <div className="text-[11px] font-black uppercase tracking-wider text-rose-400">
+                  TIM A (RED CORNER)
+                </div>
+                <div className="space-y-1.5">
                   <select
                     value={p1A}
                     onChange={(e) => setP1A(e.target.value)}
-                    className="text-xs py-1"
                     required
+                    className="w-full text-xs py-1.5 px-2 rounded-lg bg-[#0a0d16] border-white/10 text-white"
                   >
-                    <option value="">Pilih Pemain 1</option>
+                    <option value="">-- Pemain 1 --</option>
                     {leaguePlayers.map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name} ({p.gender === 'pria' ? 'P' : 'W'} - Lvl {p.level})
+                        {p.name} ({p.department} · Lvl {p.level})
                       </option>
                     ))}
                   </select>
@@ -370,51 +355,48 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
                   <select
                     value={p2A}
                     onChange={(e) => setP2A(e.target.value)}
-                    className="text-xs py-1"
                     required
+                    className="w-full text-xs py-1.5 px-2 rounded-lg bg-[#0a0d16] border-white/10 text-white"
                   >
-                    <option value="">Pilih Pemain 2</option>
+                    <option value="">-- Pemain 2 --</option>
                     {leaguePlayers.map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name} ({p.gender === 'pria' ? 'P' : 'W'} - Lvl {p.level})
+                        {p.name} ({p.department} · Lvl {p.level})
                       </option>
                     ))}
                   </select>
                 </div>
 
-                <div className="col-span-2">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 mb-0.5">Skor Akhir Tim A</label>
                   <input
                     type="number"
-                    min={0}
-                    max={50}
+                    min="0"
+                    max="50"
                     value={quickScoreA}
                     onChange={(e) => setQuickScoreA(Number(e.target.value))}
-                    className="text-center font-extrabold text-xl py-3 text-emerald-400 mono-num"
                     required
+                    className="w-full text-center font-mono font-black text-lg py-1 rounded-lg bg-[#0a0d16] border-rose-500/40 text-rose-300"
                   />
                 </div>
               </div>
-            </div>
 
-            {/* Team B Selection & Score */}
-            <div className="p-3 bg-[#0d1511] rounded-xl border border-cyan-500/30 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-cyan-300">TIM B</span>
-                <span className="text-[10px] text-slate-400">Skor Akhir:</span>
-              </div>
-
-              <div className="grid grid-cols-5 gap-2 items-center">
-                <div className="col-span-3 space-y-1.5">
+              {/* TIM B (BLUE) */}
+              <div className="p-3.5 bg-[#0f1728] border border-sky-500/30 rounded-xl space-y-2">
+                <div className="text-[11px] font-black uppercase tracking-wider text-sky-400">
+                  TIM B (BLUE CORNER)
+                </div>
+                <div className="space-y-1.5">
                   <select
                     value={p1B}
                     onChange={(e) => setP1B(e.target.value)}
-                    className="text-xs py-1"
                     required
+                    className="w-full text-xs py-1.5 px-2 rounded-lg bg-[#0a0d16] border-white/10 text-white"
                   >
-                    <option value="">Pilih Pemain 1</option>
+                    <option value="">-- Pemain 1 --</option>
                     {leaguePlayers.map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name} ({p.gender === 'pria' ? 'P' : 'W'} - Lvl {p.level})
+                        {p.name} ({p.department} · Lvl {p.level})
                       </option>
                     ))}
                   </select>
@@ -422,229 +404,187 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
                   <select
                     value={p2B}
                     onChange={(e) => setP2B(e.target.value)}
-                    className="text-xs py-1"
                     required
+                    className="w-full text-xs py-1.5 px-2 rounded-lg bg-[#0a0d16] border-white/10 text-white"
                   >
-                    <option value="">Pilih Pemain 2</option>
+                    <option value="">-- Pemain 2 --</option>
                     {leaguePlayers.map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name} ({p.gender === 'pria' ? 'P' : 'W'} - Lvl {p.level})
+                        {p.name} ({p.department} · Lvl {p.level})
                       </option>
                     ))}
                   </select>
                 </div>
 
-                <div className="col-span-2">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 mb-0.5">Skor Akhir Tim B</label>
                   <input
                     type="number"
-                    min={0}
-                    max={50}
+                    min="0"
+                    max="50"
                     value={quickScoreB}
                     onChange={(e) => setQuickScoreB(Number(e.target.value))}
-                    className="text-center font-extrabold text-xl py-3 text-emerald-400 mono-num"
                     required
+                    className="w-full text-center font-mono font-black text-lg py-1 rounded-lg bg-[#0a0d16] border-sky-500/40 text-sky-300"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="btn-action-primary w-full py-2.5 justify-center font-extrabold text-sm"
-            >
-              Simpan Hasil (+3 Poin Pemenang) ✓
-            </button>
+            <div className="pt-2 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="btn-action-secondary text-xs py-2 px-4"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 transition border-none cursor-pointer"
+              >
+                Simpan Hasil Laga
+              </button>
+            </div>
           </form>
         )}
 
-        {/* MODE 2: LIVE REFEREE CLICKER */}
+        {/* MODE 2: LIVE REFEREE CONTROLLER */}
         {recordMode === 'live' && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <select
-                value={p1A}
-                onChange={(e) => setP1A(e.target.value)}
-                className="py-1"
-              >
-                <option value="">Tim A: Pemain 1</option>
-                {leaguePlayers.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name} (Lvl {p.level})</option>
-                ))}
-              </select>
-
-              <select
-                value={p1B}
-                onChange={(e) => setP1B(e.target.value)}
-                className="py-1"
-              >
-                <option value="">Tim B: Pemain 1</option>
-                {leaguePlayers.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name} (Lvl {p.level})</option>
-                ))}
-              </select>
-
-              <select
-                value={p2A}
-                onChange={(e) => setP2A(e.target.value)}
-                className="py-1"
-              >
-                <option value="">Tim A: Pemain 2</option>
-                {leaguePlayers.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name} (Lvl {p.level})</option>
-                ))}
-              </select>
-
-              <select
-                value={p2B}
-                onChange={(e) => setP2B(e.target.value)}
-                className="py-1"
-              >
-                <option value="">Tim B: Pemain 2</option>
-                {leaguePlayers.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name} (Lvl {p.level})</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Court Interval Alert for Race 42 */}
-            {scoreFormat === 'RACE_42' && (liveScoreA >= 21 || liveScoreB >= 21) && !switchedSide && (
-              <div className="p-2.5 bg-amber-500/20 border border-amber-500/40 rounded-lg flex items-center justify-between text-xs text-amber-300">
-                <span className="font-bold">Pindah Lapangan (Interval 21)!</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.playWhistle();
-                    setSwitchedSide(true);
-                  }}
-                  className="btn-action-primary text-[11px] py-1 px-2"
-                >
-                  Selesai Pindah ✓
-                </button>
-              </div>
-            )}
-
-            {/* Clicker Buttons */}
             <div className="grid grid-cols-2 gap-3">
-              {/* TIM A Clicker */}
-              <div className="p-3 bg-[#0d1511] rounded-xl border border-emerald-500/30 text-center space-y-2">
-                <span className="text-xs font-bold text-emerald-400 block">TIM A</span>
-                <button
-                  type="button"
-                  onClick={() => handleAddLivePoint('A')}
-                  className="w-full py-5 bg-[#1e2a40] hover:bg-[#253552] rounded-xl text-4xl font-black text-white mono-num transition active:scale-95 border border-white/5"
-                >
-                  {liveScoreA}
-                </button>
-                <div className="flex items-center justify-between text-[11px]">
+              {/* TIM A LIVE DIAL */}
+              <div className="p-3 bg-[#14121e] border border-rose-500/30 rounded-xl space-y-2 text-center">
+                <div className="text-xs font-black text-rose-400 uppercase">TIM A (RED)</div>
+                <div className="text-4xl font-black font-mono text-white my-2">{liveScoreA}</div>
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleAddLivePoint('A')}
+                    className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-black text-xs rounded-lg shadow"
+                  >
+                    +1 Poin
+                  </button>
                   <button
                     type="button"
                     onClick={() => handleUndoLivePoint('A')}
-                    className="text-slate-400 hover:text-red-400"
+                    className="px-2.5 py-2 bg-slate-800 text-slate-300 text-xs rounded-lg hover:bg-slate-700"
                   >
-                    -1 Undo
+                    -1
                   </button>
                 </div>
               </div>
 
-              {/* TIM B Clicker */}
-              <div className="p-3 bg-[#0d1511] rounded-xl border border-cyan-500/30 text-center space-y-2">
-                <span className="text-xs font-bold text-cyan-300 block">TIM B</span>
-                <button
-                  type="button"
-                  onClick={() => handleAddLivePoint('B')}
-                  className="w-full py-5 bg-[#1e2a40] hover:bg-[#253552] rounded-xl text-4xl font-black text-white mono-num transition active:scale-95 border border-white/5"
-                >
-                  {liveScoreB}
-                </button>
-                <div className="flex items-center justify-between text-[11px]">
+              {/* TIM B LIVE DIAL */}
+              <div className="p-3 bg-[#0f1728] border border-sky-500/30 rounded-xl space-y-2 text-center">
+                <div className="text-xs font-black text-sky-400 uppercase">TIM B (BLUE)</div>
+                <div className="text-4xl font-black font-mono text-white my-2">{liveScoreB}</div>
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleAddLivePoint('B')}
+                    className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-black text-xs rounded-lg shadow"
+                  >
+                    +1 Poin
+                  </button>
                   <button
                     type="button"
                     onClick={() => handleUndoLivePoint('B')}
-                    className="text-slate-400 hover:text-red-400"
+                    className="px-2.5 py-2 bg-slate-800 text-slate-300 text-xs rounded-lg hover:bg-slate-700"
                   >
-                    -1 Undo
+                    -1
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Finish Actions */}
-            <div className="grid grid-cols-2 gap-2 pt-2">
+            <div className="pt-2 flex items-center justify-between border-t border-white/10">
               <button
                 type="button"
-                onClick={() => handleLiveFinish('teamA')}
-                className="btn-action-secondary justify-center text-xs"
+                onClick={() => {
+                  setLiveScoreA(0);
+                  setLiveScoreB(0);
+                }}
+                className="text-xs text-slate-400 hover:text-white"
               >
-                Selesai: Tim A Menang
+                Reset Skor
               </button>
-              <button
-                type="button"
-                onClick={() => handleLiveFinish('teamB')}
-                className="btn-action-secondary justify-center text-xs"
-              >
-                Selesai: Tim B Menang
-              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleLiveFinish('teamA')}
+                  className="btn-action-secondary text-xs py-1.5 px-3"
+                >
+                  Tim A Menang
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleLiveFinish('teamB')}
+                  className="btn-action-secondary text-xs py-1.5 px-3"
+                >
+                  Tim B Menang
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* MODE 3: SMART AUTO PAIR GENERATOR */}
+        {/* MODE 3: RANDOM PARTNERING GENERATOR */}
         {recordMode === 'generator' && (
           <div className="space-y-4">
-            <div className="p-3 bg-[#131c2e] rounded-xl border border-white/5 space-y-2 text-xs">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={allowMixed}
-                  onChange={(e) => setAllowMixed(e.target.checked)}
-                  className="w-4 h-4 rounded text-emerald-500 bg-slate-900 border-white/20"
-                />
-                <span className="text-slate-300 font-semibold">
-                  Izinkan Ganda Campuran (XD) jika ada sisa pemain putra & putri
-                </span>
-              </label>
+            <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center gap-2.5 text-xs text-amber-300">
+              <Sparkles size={16} className="text-amber-400 shrink-0" />
+              <span>
+                Sistem secara otomatis memasangkan atlet berdasarkan kesetaraan level dan riwayat pertemuan terdahulu.
+              </span>
             </div>
 
-            <div className="space-y-2 max-h-56 overflow-y-auto">
+            <div className="space-y-2">
               {matchmakingResult.proposals.length === 0 ? (
-                <div className="p-4 text-center text-xs text-slate-500">
-                  Tidak cukup pemain yang check-in untuk membentuk partai baru.
+                <div className="text-center py-8 text-xs text-slate-500">
+                  Jumlah pemain hadir belum mencukupi untuk membuat pasangan pertandingan.
                 </div>
               ) : (
                 matchmakingResult.proposals.map((prop, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 bg-[#131c2e] rounded-lg border border-white/10 text-xs flex items-center justify-between"
-                  >
-                    <div>
-                      <span className="font-bold text-emerald-400 mr-2">Lap. {prop.courtNumber}</span>
-                      <span className="text-slate-300">
-                        {prop.teamA.player1.name} & {prop.teamA.player2.name} vs {prop.teamB.player1.name} & {prop.teamB.player2.name}
+                  <div key={idx} className="p-3 bg-[#101524] rounded-xl border border-white/5 space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between text-slate-400 text-[10px] font-bold uppercase">
+                      <span className="text-amber-400">LAPANGAN {prop.courtNumber}</span>
+                      <span>Format: {prop.format === 'RACE_42' ? 'Race 42' : 'BWF 21'}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-white font-extrabold">
+                      <span className="truncate text-rose-300">
+                        {prop.teamA.player1.name} & {prop.teamA.player2.name}
+                      </span>
+                      <span className="text-slate-500 px-2 font-normal text-[10px]">VS</span>
+                      <span className="truncate text-sky-300">
+                        {prop.teamB.player1.name} & {prop.teamB.player2.name}
                       </span>
                     </div>
-                    <span className="text-[10px] bg-slate-800 text-amber-300 px-1.5 py-0.5 rounded">
-                      {prop.balanceScore}
-                    </span>
                   </div>
                 ))
               )}
             </div>
 
-            <button
-              type="button"
-              disabled={matchmakingResult.proposals.length === 0}
-              onClick={() => {
-                onStartGeneratedMatches(matchmakingResult.proposals);
-                onClose();
-              }}
-              className="btn-action-primary w-full py-2.5 justify-center font-bold text-xs disabled:opacity-40"
-            >
-              Mulai Jadwal Lapangan
-            </button>
+            {matchmakingResult.proposals.length > 0 && (
+              <div className="pt-2 text-right">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onStartGeneratedMatches(matchmakingResult.proposals);
+                    onClose();
+                  }}
+                  className="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/30 transition border-none cursor-pointer"
+                >
+                  Mulai {matchmakingResult.proposals.length} Pertandingan Otomatis
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
     </div>
   );
 };
+
+export default RecordMatchModal;
