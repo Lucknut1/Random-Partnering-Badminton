@@ -340,46 +340,51 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* TAB 1: MANAJEMEN PESERTA */}
       {adminTab === 'players' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Form Tambah/Edit Peserta */}
-          <div className="glass-panel p-5 border border-white/10 lg:col-span-1 h-fit">
-            <h3 className="text-base font-extrabold text-white mb-4 flex items-center gap-2">
-              <Users className="text-amber-400" size={18} />
-              <span>{editingPlayer ? 'Edit Data Peserta' : 'Tambah Peserta Baru'}</span>
-            </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          {/* Form Tambah/Edit Peserta (5 Cols - Proportional) */}
+          <div className="clean-card bg-white p-5 border border-[#CBD5E1] shadow-xs lg:col-span-5 h-fit space-y-4">
+            <div className="border-b border-[#E2E8F0] pb-2.5">
+              <h3 className="text-sm font-black text-[#0F172A] font-['Outfit'] uppercase flex items-center gap-2">
+                <Users className="text-[#0B50A1]" size={17} />
+                <span>{editingPlayer ? 'Edit Data Peserta' : 'Tambah Peserta Baru'}</span>
+              </h3>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                {editingPlayer ? 'Perbarui data profil atlet terdaftar' : 'Daftarkan atlet baru ke dalam master database liga'}
+              </p>
+            </div>
 
-            <form onSubmit={handleSavePlayer} className="space-y-4">
+            <form onSubmit={handleSavePlayer} className="space-y-3.5">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Nama Lengkap:</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Nama Lengkap *</label>
                 <input
                   type="text"
                   placeholder="Contoh: Aris Wicaksono"
                   value={playerName}
                   onChange={(e) => setPlayerName(e.target.value)}
-                  className="text-xs"
+                  className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A]"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Jenis Kelamin:</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Jenis Kelamin</label>
                   <select
                     value={playerGender}
                     onChange={(e) => setPlayerGender(e.target.value as Gender)}
-                    className="text-xs"
+                    className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A] font-bold"
                   >
-                    <option value="pria">Pria (Men)</option>
-                    <option value="wanita">Wanita (Women)</option>
+                    <option value="pria">Putra (Men)</option>
+                    <option value="wanita">Putri (Women)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Level Permainan:</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Level Permainan</label>
                   <select
                     value={playerLevel}
                     onChange={(e) => setPlayerLevel(e.target.value as SkillLevel)}
-                    className="text-xs"
+                    className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A] font-bold"
                   >
                     <option value="A">Level A (Tinggi)</option>
                     <option value="B">Level B (Menengah)</option>
@@ -388,22 +393,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Departemen / Divisi / Unit:</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Departemen / Divisi *</label>
                 <input
                   type="text"
                   placeholder="Contoh: Divisi Transmisi / IP Operasi"
                   value={playerDept}
                   onChange={(e) => setPlayerDept(e.target.value)}
-                  className="text-xs"
+                  className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A]"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Afiliasi Liga Utama:</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Afiliasi Liga Utama</label>
                 <select
                   value={playerLeagueId}
                   onChange={(e) => setPlayerLeagueId(e.target.value)}
-                  className="text-xs"
+                  className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A] font-bold"
                 >
                   <option value="all">Semua Liga</option>
                   {leagues.map((l) => (
@@ -415,15 +420,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
 
               <div className="flex items-center gap-2 pt-2">
-                <button type="submit" className="btn btn-primary btn-sm flex-1 font-bold">
+                <button type="submit" className="btn-yonex-action flex-1 py-2.5 text-xs font-black justify-center">
                   <Save size={14} />
-                  <span>{editingPlayer ? 'Simpan Perubahan' : 'Tambah Peserta'}</span>
+                  <span>{editingPlayer ? 'Simpan Perubahan' : 'TAMBAH PESERTA'}</span>
                 </button>
                 {editingPlayer && (
                   <button
                     type="button"
                     onClick={cancelEditPlayer}
-                    className="btn btn-secondary btn-sm"
+                    className="btn-yonex-outline py-2.5 text-xs font-bold"
                   >
                     Batal
                   </button>
@@ -432,67 +437,78 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </form>
           </div>
 
-          {/* List Peserta */}
-          <div className="glass-panel p-5 border border-white/10 lg:col-span-2 space-y-4">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-base font-extrabold text-white">
-                Daftar Peserta Master ({filteredPlayers.length} Pemain)
-              </h3>
+          {/* List Peserta (7 Cols - Dense & Proportional) */}
+          <div className="clean-card bg-white p-5 border border-[#CBD5E1] shadow-xs lg:col-span-7 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] pb-3">
+              <div>
+                <h3 className="text-sm font-black text-[#0F172A] font-['Outfit'] uppercase">
+                  Daftar Peserta Master ({filteredPlayers.length} Pemain)
+                </h3>
+                <p className="text-[11px] text-slate-500 font-medium">Database master seluruh pemain yang terdaftar</p>
+              </div>
               <input
                 type="text"
                 placeholder="Cari nama atau departemen..."
                 value={playerSearch}
                 onChange={(e) => setPlayerSearch(e.target.value)}
-                className="text-xs py-1.5 px-3 rounded-lg max-w-xs"
+                className="text-xs py-1.5 px-3 rounded-xs max-w-xs bg-white border-[#CBD5E1] text-[#0F172A]"
               />
             </div>
 
-            <div className="max-h-[500px] overflow-y-auto space-y-2 pr-1">
-              {filteredPlayers.map((player) => (
-                <div
-                  key={player.id}
-                  className="p-3 bg-slate-900/90 rounded-xl border border-white/5 flex items-center justify-between gap-3 hover:border-white/20 transition"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center font-bold text-xs text-slate-300">
-                      {player.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="font-extrabold text-white text-xs flex items-center gap-2">
-                        <span>{player.name}</span>
-                        <span className={`badge-level-${player.level.toLowerCase()}`}>
-                          Level {player.level}
-                        </span>
-                        <span className={player.gender === 'pria' ? 'badge-gender-m' : 'badge-gender-w'}>
-                          {player.gender === 'pria' ? 'Pria' : 'Wanita'}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-slate-400">{player.department}</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => startEditPlayer(player)}
-                      className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition"
-                      title="Edit Peserta"
-                    >
-                      <Edit3 size={13} />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (confirm(`Hapus peserta ${player.name}?`)) {
-                          onDeletePlayer(player.id);
-                        }
-                      }}
-                      className="p-1.5 rounded-lg bg-slate-800 text-red-400 hover:bg-red-500/20 transition"
-                      title="Hapus Peserta"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
+            <div className="max-h-[520px] overflow-y-auto space-y-2 pr-1">
+              {filteredPlayers.length === 0 ? (
+                <div className="p-8 text-center text-xs text-slate-500 font-medium">
+                  Tidak ada peserta ditemukan dengan kata kunci pencarian tersebut.
                 </div>
-              ))}
+              ) : (
+                filteredPlayers.map((player) => (
+                  <div
+                    key={player.id}
+                    className="p-3 bg-[#F8FAFC] rounded-xs border border-[#CBD5E1] flex items-center justify-between gap-3 hover:bg-[#F0F6FD] hover:border-[#BCD8F8] transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-xs font-black text-xs flex items-center justify-center ${
+                        player.gender === 'pria' ? 'bg-[#EBF3FC] text-[#0B50A1]' : 'bg-[#EDF9F0] text-[#157327]'
+                      }`}>
+                        {player.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="font-black text-[#0F172A] text-xs flex items-center gap-2 uppercase">
+                          <span>{player.name}</span>
+                          <span className={`badge-lvl-${player.level.toLowerCase()} text-[10px]`}>
+                            LVL {player.level}
+                          </span>
+                          <span className="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded-xs font-bold uppercase">
+                            {player.gender === 'pria' ? 'Pria' : 'Wanita'}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-slate-500 font-medium mt-0.5">{player.department}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => startEditPlayer(player)}
+                        className="p-1.5 rounded-xs bg-white border border-[#CBD5E1] text-slate-600 hover:text-[#0B50A1] hover:border-[#0B50A1] transition"
+                        title="Edit Peserta"
+                      >
+                        <Edit3 size={13} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Hapus peserta ${player.name}?`)) {
+                            onDeletePlayer(player.id);
+                          }
+                        }}
+                        className="p-1.5 rounded-xs bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:text-red-700 transition"
+                        title="Hapus Peserta"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -500,87 +516,90 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* TAB 2: MANAJEMEN LIGA & LIMIT WAKTU */}
       {adminTab === 'leagues' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Form Tambah/Edit Liga */}
-          <div className="glass-panel p-5 border border-white/10 lg:col-span-1 h-fit">
-            <h3 className="text-base font-extrabold text-white mb-4 flex items-center gap-2">
-              <Trophy className="text-amber-400" size={18} />
-              <span>{editingLeague ? 'Edit Konfigurasi Liga' : 'Tambah Liga Baru'}</span>
-            </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          {/* Form Tambah/Edit Liga (5 Cols) */}
+          <div className="clean-card bg-white p-5 border border-[#CBD5E1] shadow-xs lg:col-span-5 h-fit space-y-4">
+            <div className="border-b border-[#E2E8F0] pb-2.5">
+              <h3 className="text-sm font-black text-[#0F172A] font-['Outfit'] uppercase flex items-center gap-2">
+                <Trophy className="text-[#0B50A1]" size={17} />
+                <span>{editingLeague ? 'Edit Konfigurasi Liga' : 'Tambah Liga Baru'}</span>
+              </h3>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">Konfigurasi lokasi, kapasitas lapangan, dan jam main</p>
+            </div>
 
-            <form onSubmit={handleSaveLeague} className="space-y-4">
+            <form onSubmit={handleSaveLeague} className="space-y-3.5">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Nama Liga:</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Nama Liga *</label>
                 <input
                   type="text"
                   placeholder="Contoh: Liga Melawai - PLN Pusat"
                   value={leagueName}
                   onChange={(e) => setLeagueName(e.target.value)}
-                  className="text-xs"
+                  className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A]"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Lokasi Venue:</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Lokasi Venue *</label>
                 <input
                   type="text"
                   placeholder="Contoh: GOR Bulutangkis Melawai"
                   value={leagueVenue}
                   onChange={(e) => setLeagueVenue(e.target.value)}
-                  className="text-xs"
+                  className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Jumlah Lapangan:</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Jumlah Lapangan</label>
                   <input
                     type="number"
                     min={1}
                     max={10}
                     value={leagueCourts}
                     onChange={(e) => setLeagueCourts(Number(e.target.value))}
-                    className="text-xs"
+                    className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A] font-bold font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Default Format Skor:</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Format Skor Default</label>
                   <select
                     value={leagueDefaultFormat}
                     onChange={(e) => setLeagueDefaultFormat(e.target.value as ScoreFormat)}
-                    className="text-xs"
+                    className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A] font-bold"
                   >
                     <option value="RACE_42">Race to 42</option>
-                    <option value="BWF">Standar 21</option>
+                    <option value="BWF">Standar 21 Poin</option>
                   </select>
                 </div>
               </div>
 
               {/* Jam Operasional Limit Waktu */}
-              <div className="p-3 bg-slate-900/90 rounded-xl border border-emerald-500/30 space-y-2">
-                <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+              <div className="p-3 bg-[#EDF9F0] rounded-xs border border-[#A3E3B1] space-y-2">
+                <span className="text-xs font-black text-[#157327] flex items-center gap-1 uppercase tracking-wide">
                   <Clock size={13} /> Batas Jam Operasional Sesi (WIB):
                 </span>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] text-slate-400 block mb-0.5">Jam Mulai:</label>
+                    <label className="text-[10px] text-slate-600 block mb-0.5 font-bold uppercase">Jam Mulai</label>
                     <input
                       type="time"
                       value={leagueStartTime}
                       onChange={(e) => setLeagueStartTime(e.target.value)}
-                      className="text-xs"
+                      className="w-full py-1.5 px-2 text-xs bg-white border-[#CBD5E1] text-[#0F172A] font-mono font-bold"
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-slate-400 block mb-0.5">Jam Selesai:</label>
+                    <label className="text-[10px] text-slate-600 block mb-0.5 font-bold uppercase">Jam Selesai</label>
                     <input
                       type="time"
                       value={leagueEndTime}
                       onChange={(e) => setLeagueEndTime(e.target.value)}
-                      className="text-xs"
+                      className="w-full py-1.5 px-2 text-xs bg-white border-[#CBD5E1] text-[#0F172A] font-mono font-bold"
                       required
                     />
                   </div>
@@ -588,11 +607,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Durasi Periode Default:</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Durasi Periode Default</label>
                 <select
                   value={leaguePeriodMonths}
                   onChange={(e) => setLeaguePeriodMonths(Number(e.target.value))}
-                  className="text-xs"
+                  className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A] font-bold"
                 >
                   <option value={1}>1 Bulan</option>
                   <option value={2}>2 Bulan</option>
@@ -602,15 +621,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </div>
 
               <div className="flex items-center gap-2 pt-2">
-                <button type="submit" className="btn btn-primary btn-sm flex-1 font-bold">
+                <button type="submit" className="btn-yonex-action flex-1 py-2.5 text-xs font-black justify-center">
                   <Save size={14} />
-                  <span>{editingLeague ? 'Simpan Perubahan' : 'Buat Liga Baru'}</span>
+                  <span>{editingLeague ? 'Simpan Perubahan' : 'BUAT LIGA BARU'}</span>
                 </button>
                 {editingLeague && (
                   <button
                     type="button"
                     onClick={() => setEditingLeague(null)}
-                    className="btn btn-secondary btn-sm"
+                    className="btn-yonex-outline py-2.5 text-xs font-bold"
                   >
                     Batal
                   </button>
@@ -619,35 +638,38 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </form>
           </div>
 
-          {/* List Liga Aktif */}
-          <div className="glass-panel p-5 border border-white/10 lg:col-span-2 space-y-4">
-            <h3 className="text-base font-extrabold text-white">
-              Daftar Liga Badminton Aktif ({leagues.length} Liga)
-            </h3>
+          {/* List Liga Aktif (7 Cols) */}
+          <div className="clean-card bg-white p-5 border border-[#CBD5E1] shadow-xs lg:col-span-7 space-y-4">
+            <div className="border-b border-[#E2E8F0] pb-2.5">
+              <h3 className="text-sm font-black text-[#0F172A] font-['Outfit'] uppercase">
+                Daftar Liga Badminton Terdaftar ({leagues.length} Liga)
+              </h3>
+              <p className="text-[11px] text-slate-500 font-medium">Liga aktif yang dikelola dalam aplikasi Mabarek</p>
+            </div>
 
             <div className="space-y-3">
               {leagues.map((l) => (
                 <div
                   key={l.id}
-                  className="p-4 bg-slate-900/90 rounded-xl border border-white/10 hover:border-white/20 transition space-y-3"
+                  className="p-4 bg-[#F8FAFC] rounded-xs border border-[#CBD5E1] hover:border-[#0B50A1] transition space-y-3"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h4 className="font-extrabold text-white text-sm flex items-center gap-2">
+                      <h4 className="font-black text-[#0F172A] text-sm flex items-center gap-2 uppercase">
                         <span>{l.name}</span>
                         {l.id === activeLeague.id && (
-                          <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold border border-emerald-500/30">
-                            Liga Terpilih
+                          <span className="text-[10px] bg-[#EDF9F0] text-[#157327] px-2 py-0.5 rounded-xs font-black border border-[#A3E3B1]">
+                            Liga Aktif
                           </span>
                         )}
                       </h4>
-                      <p className="text-xs text-slate-400 mt-0.5">{l.venue}</p>
+                      <p className="text-xs text-slate-600 font-medium mt-0.5">{l.venue}</p>
                     </div>
 
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => startEditLeague(l)}
-                        className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white transition"
+                        className="p-1.5 rounded-xs bg-white border border-[#CBD5E1] text-slate-600 hover:text-[#0B50A1] transition"
                         title="Edit Liga"
                       >
                         <Edit3 size={14} />
@@ -659,7 +681,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               onDeleteLeague(l.id);
                             }
                           }}
-                          className="p-1.5 rounded-lg bg-slate-800 text-red-400 hover:bg-red-500/20 transition"
+                          className="p-1.5 rounded-xs bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:text-red-700 transition"
                           title="Hapus Liga"
                         >
                           <Trash2 size={14} />
@@ -668,22 +690,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-slate-950/80 p-2.5 rounded-lg border border-white/5">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-white p-3 rounded-xs border border-[#CBD5E1]">
                     <div>
-                      <span className="text-slate-500 block text-[10px]">Jam Sesi:</span>
-                      <span className="font-bold text-amber-300 font-mono">{l.startTime} - {l.endTime} WIB</span>
+                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Jam Sesi:</span>
+                      <span className="font-bold text-[#0B50A1] font-mono">{l.startTime} - {l.endTime} WIB</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block text-[10px]">Lapangan:</span>
-                      <span className="font-bold text-white">{l.courtsCount} Lapangan</span>
+                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Lapangan:</span>
+                      <span className="font-bold text-slate-800 font-mono">{l.courtsCount} Lapangan</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block text-[10px]">Format Default:</span>
-                      <span className="font-bold text-emerald-300">{l.defaultFormat === 'RACE_42' ? 'Race 42' : 'Standar 21'}</span>
+                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Format:</span>
+                      <span className="font-bold text-[#157327] font-mono">{l.defaultFormat === 'RACE_42' ? 'Race 42' : 'Standar 21'}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500 block text-[10px]">Periode:</span>
-                      <span className="font-bold text-sky-300">{l.periodDurationMonths} Bulan</span>
+                      <span className="text-slate-500 block text-[10px] font-bold uppercase">Periode:</span>
+                      <span className="font-bold text-slate-800 font-mono">{l.periodDurationMonths} Bulan</span>
                     </div>
                   </div>
                 </div>
@@ -695,39 +717,43 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* TAB 3: MANAJEMEN PERIODE / SEASONS */}
       {adminTab === 'seasons' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="glass-panel p-5 border border-white/10 lg:col-span-1 h-fit">
-            <h3 className="text-base font-extrabold text-white mb-4 flex items-center gap-2">
-              <Calendar className="text-amber-400" size={18} />
-              <span>Buat Periode Liga Baru</span>
-            </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          {/* Form Buat Periode (5 Cols) */}
+          <div className="clean-card bg-white p-5 border border-[#CBD5E1] shadow-xs lg:col-span-5 h-fit space-y-4">
+            <div className="border-b border-[#E2E8F0] pb-2.5">
+              <h3 className="text-sm font-black text-[#0F172A] font-['Outfit'] uppercase flex items-center gap-2">
+                <Calendar className="text-[#0B50A1]" size={17} />
+                <span>Buat Periode Liga Baru</span>
+              </h3>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">Tentukan rentang tanggal musim kompetisi</p>
+            </div>
 
-            <form onSubmit={handleAddSeasonSubmit} className="space-y-4">
+            <form onSubmit={handleAddSeasonSubmit} className="space-y-3.5">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Liga Target:</label>
-                <div className="p-2 bg-slate-900 rounded-lg text-xs font-bold text-emerald-400 border border-white/10">
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Liga Target</label>
+                <div className="p-2.5 bg-[#EBF3FC] rounded-xs text-xs font-black text-[#0B50A1] border border-[#BCD8F8]">
                   {activeLeague.name}
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Nama Periode / Season:</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Nama Periode / Season *</label>
                 <input
                   type="text"
                   placeholder="Contoh: Periode 2 - 2026 (Maret - April)"
                   value={seasonName}
                   onChange={(e) => setSeasonName(e.target.value)}
-                  className="text-xs"
+                  className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A]"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Durasi Periode:</label>
+                <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Durasi Periode</label>
                 <select
                   value={seasonDuration}
                   onChange={(e) => setSeasonDuration(Number(e.target.value))}
-                  className="text-xs"
+                  className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A] font-bold"
                 >
                   <option value={1}>1 Bulan</option>
                   <option value={2}>2 Bulan</option>
@@ -739,7 +765,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Tgl Mulai:</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Tgl Mulai *</label>
                   <input
                     type="date"
                     value={seasonStart}
@@ -747,12 +773,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       setSeasonStart(e.target.value);
                       setSeasonError('');
                     }}
-                    className="text-xs"
+                    className="w-full py-2 px-2 text-xs bg-white border-[#CBD5E1] text-[#0F172A] font-bold font-mono"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Tgl Selesai:</label>
+                  <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Tgl Selesai *</label>
                   <input
                     type="date"
                     value={seasonEnd}
@@ -761,26 +787,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       setSeasonEnd(e.target.value);
                       setSeasonError('');
                     }}
-                    className="text-xs"
+                    className="w-full py-2 px-2 text-xs bg-white border-[#CBD5E1] text-[#0F172A] font-bold font-mono"
                   />
                 </div>
               </div>
 
               {seasonError && !editingSeason && (
-                <p className="text-xs font-semibold text-red-300" role="alert">{seasonError}</p>
+                <p className="text-xs font-bold text-red-600 bg-red-50 p-2 rounded-xs border border-red-200" role="alert">{seasonError}</p>
               )}
 
-              <button type="submit" className="btn btn-primary btn-sm w-full font-bold">
+              <button type="submit" className="btn-yonex-action w-full py-2.5 text-xs font-black justify-center">
                 <Plus size={14} />
-                <span>Tambah Periode Baru</span>
+                <span>TAMBAH PERIODE BARU</span>
               </button>
             </form>
           </div>
 
-          <div className="glass-panel p-5 border border-white/10 lg:col-span-2 space-y-4">
-            <h3 className="text-base font-extrabold text-white">
-              Kelola Periode Pelaksanaan {activeLeague.name}
-            </h3>
+          {/* List Periode (7 Cols) */}
+          <div className="clean-card bg-white p-5 border border-[#CBD5E1] shadow-xs lg:col-span-7 space-y-4">
+            <div className="border-b border-[#E2E8F0] pb-2.5">
+              <h3 className="text-sm font-black text-[#0F172A] font-['Outfit'] uppercase">
+                Kelola Periode Pelaksanaan {activeLeague.name}
+              </h3>
+              <p className="text-[11px] text-slate-500 font-medium">Musim kompetisi aktif dan arsip periode sebelumnya</p>
+            </div>
 
             <div className="space-y-3">
               {activeLeague.seasons.map((season) => {
@@ -788,25 +818,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 return (
                   <div
                     key={season.id}
-                    className={`p-4 rounded-xl border transition ${
-                      isActive ? 'bg-slate-900/90 border-amber-500/50 shadow-lg shadow-amber-500/10' : 'bg-slate-950/60 border-white/5'
+                    className={`p-4 rounded-xs border transition ${
+                      isActive ? 'bg-[#FFFDF0] border-[#D4AF37] shadow-xs' : 'bg-[#F8FAFC] border-[#CBD5E1]'
                     }`}
                   >
                     {editingSeason?.id === season.id ? (
                       <form onSubmit={handleUpdateSeasonSubmit} className="space-y-3">
                         <div>
-                          <label className="text-xs font-bold text-slate-300 block mb-1">Nama Periode:</label>
+                          <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Nama Periode:</label>
                           <input
                             type="text"
                             value={editSeasonName}
                             onChange={(e) => setEditSeasonName(e.target.value)}
-                            className="text-xs"
+                            className="w-full py-2 px-3 text-sm bg-white border-[#CBD5E1] text-[#0F172A]"
                             required
                           />
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <div>
-                            <label className="text-xs font-bold text-slate-300 block mb-1">Tanggal Mulai:</label>
+                            <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Tanggal Mulai:</label>
                             <input
                               type="date"
                               value={editSeasonStart}
@@ -814,12 +844,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 setEditSeasonStart(e.target.value);
                                 setSeasonError('');
                               }}
-                              className="text-xs"
+                              className="w-full py-1.5 px-2 text-xs bg-white border-[#CBD5E1] text-[#0F172A] font-mono font-bold"
                               required
                             />
                           </div>
                           <div>
-                            <label className="text-xs font-bold text-slate-300 block mb-1">Tanggal Selesai:</label>
+                            <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1">Tanggal Selesai:</label>
                             <input
                               type="date"
                               value={editSeasonEnd}
@@ -828,19 +858,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 setEditSeasonEnd(e.target.value);
                                 setSeasonError('');
                               }}
-                              className="text-xs"
+                              className="w-full py-1.5 px-2 text-xs bg-white border-[#CBD5E1] text-[#0F172A] font-mono font-bold"
                               required
                             />
                           </div>
                         </div>
                         {seasonError && (
-                          <p className="text-xs font-semibold text-red-300" role="alert">{seasonError}</p>
+                          <p className="text-xs font-bold text-red-600 bg-red-50 p-2 rounded-xs border border-red-200" role="alert">{seasonError}</p>
                         )}
-                        <div className="flex flex-wrap gap-2">
-                          <button type="submit" className="btn btn-primary btn-sm text-xs font-bold">
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          <button type="submit" className="btn-yonex-action py-2 px-4 text-xs font-black">
                             <Save size={14} /> Simpan Periode
                           </button>
-                          <button type="button" onClick={cancelEditSeason} className="btn btn-secondary btn-sm text-xs font-bold">
+                          <button type="button" onClick={cancelEditSeason} className="btn-yonex-outline py-2 px-4 text-xs font-bold">
                             Batal
                           </button>
                         </div>
@@ -849,15 +879,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <h4 className="font-extrabold text-white text-sm">{season.name}</h4>
+                            <h4 className="font-black text-[#0F172A] text-sm uppercase">{season.name}</h4>
                             {isActive && (
-                              <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-bold border border-amber-500/30">
+                              <span className="text-[10px] bg-[#FFFDF0] text-[#B45309] px-2 py-0.5 rounded-xs font-black border border-[#D4AF37]">
                                 Sedang Berjalan (Aktif)
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-slate-400 mt-1">
-                            Rentang waktu: {season.startDate} s.d. {season.endDate} ({season.durationMonths} bulan)
+                          <p className="text-xs text-slate-600 font-medium mt-1">
+                            Rentang waktu: <strong>{season.startDate}</strong> s.d. <strong>{season.endDate}</strong> ({season.durationMonths} bulan)
                           </p>
                         </div>
 
@@ -865,17 +895,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           <button
                             type="button"
                             onClick={() => startEditSeason(season)}
-                            className="btn btn-secondary btn-sm text-xs font-bold text-cyan-300"
+                            className="btn-yonex-outline py-1.5 px-3 text-xs text-[#0B50A1]"
                           >
-                            <Edit3 size={14} /> Edit Periode
+                            <Edit3 size={13} /> Edit
                           </button>
                           {!isActive && (
                             <button
                               type="button"
                               onClick={() => onSetActiveSeason(activeLeague.id, season.id)}
-                              className="btn btn-secondary btn-sm text-xs font-bold text-amber-400 hover:text-amber-300"
+                              className="btn-yonex-action py-1.5 px-3 text-xs"
                             >
-                              Set Jadi Periode Aktif
+                              Jadikan Aktif
                             </button>
                           )}
                         </div>
@@ -891,35 +921,35 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
       {/* TAB 4: BACKUP, RESTORE & RESET DATA */}
       {adminTab === 'data' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="glass-panel p-6 border border-white/10 space-y-4">
-            <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-              <Download className="text-emerald-400" size={20} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="clean-card bg-white p-6 border border-[#CBD5E1] space-y-4 shadow-xs">
+            <h3 className="text-base font-black text-[#0F172A] font-['Outfit'] uppercase flex items-center gap-2">
+              <Download className="text-[#157327]" size={20} />
               <span>Backup Data (Export JSON)</span>
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
               Download seluruh data peserta master, daftar liga, konfigurasi jam bermain, riwayat pertandingan, dan status check-in ke dalam format file JSON.
             </p>
             <button
               onClick={onExportJSON}
-              className="btn btn-primary btn-md flex items-center gap-2 font-bold"
+              className="btn-yonex-action py-3 px-5 text-xs font-black flex items-center gap-2"
             >
               <Download size={16} />
-              <span>Download File Backup JSON</span>
+              <span>DOWNLOAD FILE BACKUP JSON</span>
             </button>
           </div>
 
-          <div className="glass-panel p-6 border border-white/10 space-y-4">
-            <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-              <Upload className="text-sky-400" size={20} />
+          <div className="clean-card bg-white p-6 border border-[#CBD5E1] space-y-4 shadow-xs">
+            <h3 className="text-base font-black text-[#0F172A] font-['Outfit'] uppercase flex items-center gap-2">
+              <Upload className="text-[#0B50A1]" size={20} />
               <span>Restore Data (Import JSON)</span>
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
               Pulihkan data sistem dari file backup JSON sebelumnya. Data yang ada akan diperbarui sesuai isi file.
             </p>
-            <label className="btn btn-secondary btn-md inline-flex items-center gap-2 cursor-pointer">
+            <label className="btn-yonex-outline py-3 px-5 text-xs font-black inline-flex items-center gap-2 cursor-pointer">
               <Upload size={16} />
-              <span>Pilih File Backup JSON</span>
+              <span>PILIH FILE BACKUP JSON</span>
               <input
                 type="file"
                 accept=".json"
@@ -929,12 +959,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </label>
           </div>
 
-          <div className="glass-panel p-6 border border-red-500/20 md:col-span-2 space-y-3 bg-red-950/20">
-            <h3 className="text-base font-extrabold text-red-400 flex items-center gap-2">
+          <div className="clean-card p-6 border border-red-200 md:col-span-2 space-y-3 bg-red-50/60 shadow-xs">
+            <h3 className="text-base font-black text-red-700 font-['Outfit'] uppercase flex items-center gap-2">
               <AlertTriangle size={20} />
               <span>Reset Data Demo Awal</span>
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600 font-medium">
               Mengembalikan database ke data awal bawaan (Liga Melawai PLN Pusat & Liga Jumat Malam IP) dengan peserta default.
             </p>
             <button
@@ -943,10 +973,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   onResetDatabase();
                 }
               }}
-              className="btn btn-danger btn-sm font-bold flex items-center gap-1.5"
+              className="btn-danger py-2.5 px-4 text-xs font-black flex items-center gap-1.5 cursor-pointer"
             >
               <RotateCcw size={14} />
-              <span>Reset Database ke Default</span>
+              <span>RESET DATABASE KE DEFAULT</span>
             </button>
           </div>
         </div>

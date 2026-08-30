@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LockKeyhole, X } from 'lucide-react';
+import { LockKeyhole, X, AlertCircle } from 'lucide-react';
 import { isSupabaseConfigured, supabaseService } from '../services/supabaseService';
 
 interface AdminLoginModalProps {
@@ -47,51 +47,108 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/90 p-4 backdrop-blur-md">
-      <form onSubmit={handleSubmit} className="clean-card w-full max-w-sm space-y-4 border-white/15 bg-[#0e1420] p-5 shadow-2xl">
-        <div className="flex items-start justify-between border-b border-white/10 pb-3">
-          <div className="flex gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
-              <LockKeyhole size={19} />
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
+      <form
+        onSubmit={handleSubmit}
+        className="clean-card w-full max-w-md space-y-5 border border-[#CBD5E1] bg-white p-6 sm:p-7 shadow-2xl"
+      >
+        <div className="flex items-start justify-between border-b border-[#E2E8F0] pb-3.5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xs bg-[#EBF3FC] border border-[#BCD8F8] text-[#0B50A1]">
+              <LockKeyhole size={20} />
             </div>
             <div>
-              <h2 className="font-extrabold text-white">Akses Operasional</h2>
-              <p className="text-xs text-slate-400">Masuk sebagai super admin atau host liga.</p>
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#0B50A1] block">
+                OTENTIKASI RESMI
+              </span>
+              <h2 className="text-lg font-black text-[#0F172A] font-['Outfit'] uppercase">
+                Akses Operasional
+              </h2>
+              <p className="text-xs text-slate-500 font-medium">Masuk sebagai super admin atau host liga.</p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="p-1 text-slate-400 hover:text-white" aria-label="Tutup">
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-xs hover:bg-[#F1F5F9] transition"
+            aria-label="Tutup"
+          >
             <X size={18} />
           </button>
         </div>
 
         {isSupabaseConfigured ? (
-          <>
-            <label className="block text-xs font-bold text-slate-300">
-              Email
-              <input className="mt-1.5" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" />
-            </label>
-            <label className="block text-xs font-bold text-slate-300">
-              Password
-              <input className="mt-1.5" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required autoComplete="current-password" />
-            </label>
-          </>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1.5">
+                Alamat Email Pengelola *
+              </label>
+              <input
+                type="email"
+                placeholder="nama@email.com"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+                autoComplete="email"
+                className="w-full py-2.5 px-3.5 text-sm bg-white border-[#CBD5E1] text-[#0F172A]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1.5">
+                Kata Sandi (Password) *
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••••••"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                autoComplete="current-password"
+                className="w-full py-2.5 px-3.5 text-sm bg-white border-[#CBD5E1] text-[#0F172A]"
+              />
+            </div>
+          </div>
         ) : (
-          <>
-            <label className="block text-xs font-bold text-slate-300">
-              PIN Admin Lokal
-              <input className="mt-1.5" type="password" inputMode="numeric" value={pin} onChange={(event) => setPin(event.target.value)} required autoComplete="current-password" />
-            </label>
-            <p className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-2.5 text-[11px] text-amber-200">
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-wide mb-1.5">
+                PIN Admin Lokal *
+              </label>
+              <input
+                type="password"
+                inputMode="numeric"
+                placeholder="Masukkan 6 digit PIN"
+                value={pin}
+                onChange={(event) => setPin(event.target.value)}
+                required
+                autoComplete="current-password"
+                className="w-full py-2.5 px-3.5 text-sm bg-white border-[#CBD5E1] text-[#0F172A]"
+              />
+            </div>
+            <p className="rounded-xs border border-amber-200 bg-amber-50 p-2.5 text-xs text-amber-800 font-medium">
               Mode lokal aktif. Atur VITE_LOCAL_ADMIN_PIN untuk pengujian, atau hubungkan Supabase untuk produksi.
             </p>
-          </>
+          </div>
         )}
 
-        {error && <p role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-300">{error}</p>}
-        <button type="submit" disabled={submitting} className="btn-action-primary w-full justify-center py-2.5 disabled:opacity-50">
-          {submitting ? 'Memeriksa akses...' : 'Masuk ke panel operasional'}
+        {error && (
+          <div role="alert" className="rounded-xs border border-red-200 bg-red-50 p-3 text-xs text-red-600 font-bold flex items-center gap-2">
+            <AlertCircle size={15} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="btn-yonex-action w-full py-3 text-xs font-black justify-center disabled:opacity-50"
+        >
+          {submitting ? 'Memeriksa akses...' : 'MASUK KE PANEL OPERASIONAL'}
         </button>
       </form>
     </div>
   );
 };
+
+export default AdminLoginModal;
