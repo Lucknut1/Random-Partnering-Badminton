@@ -272,16 +272,101 @@ export const storageService = {
   importDatabaseJSON(jsonString: string): boolean {
     try {
       const data = JSON.parse(jsonString);
-      if (data.leagues && data.players && data.matches) {
-        this.saveLeagues(data.leagues);
-        this.savePlayers(data.players);
-        this.saveMatches(data.matches);
-        if (data.checkIns) this.saveCheckIns(data.checkIns);
-        return true;
+      if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        console.error('Import error: Payload must be a non-null object');
+        return false;
       }
-      return false;
+
+      // Validasi array leagues
+      if (!Array.isArray(data.leagues) || data.leagues.length === 0) return false;
+      const isValidLeague = (l: unknown): l is League => {
+        if (!l || typeof l !== 'object') return false;
+        const item = l as Partial<League>;
+        return (
+          typeof item.id === 'string' &&
+          Boolean(item.id.trim()) &&
+          typeof item.name === 'string' &&
+          typeof item.venue === 'string' &&
+          typeof item.courtsCount === 'number' &&
+          item.courtsCount > 0 &&
+          ['BWF', 'RACE_42'].includes(item.defaultFormat || '') &&
+          Array.isArray(item.seasons)
+        );
+      };
+      if (!data.leagues.every(isValidLeague)) {
+        console.error('Import error: Invalid leagues structure');
+        return false;
+      }
+
+      // Validasi array players
+      if (!Array.isArray(data.players)) return false;
+      const isValidPlayer = (p: unknown): p is Player => {
+        if (!p || typeof p !== 'object') return false;
+        const item = p as Partial<Player>;
+        return (
+          typeof item.id === 'string' &&
+          Boolean(item.id.trim()) &&
+          typeof item.name === 'string' &&
+          ['pria', 'wanita'].includes(item.gender || '') &&
+          ['A', 'B'].includes(item.level || '') &&
+          typeof item.department === 'string' &&
+          typeof item.leagueId === 'string'
+        );
+      };
+      if (!data.players.every(isValidPlayer)) {
+        console.error('Import error: Invalid players structure');
+        return false;
+      }
+
+      // Validasi array matches
+      if (!Array.isArray(data.matches)) return false;
+      const isValidMatch = (m: unknown): m is Match => {
+        if (!m || typeof m !== 'object') return false;
+        const item = m as Partial<Match>;
+        return (
+          typeof item.id === 'string' &&
+          typeof item.leagueId === 'string' &&
+          typeof item.date === 'string' &&
+          typeof item.courtNumber === 'number' &&
+          ['MD', 'WD', 'XD'].includes(item.matchType || '') &&
+          ['BWF', 'RACE_42'].includes(item.format || '') &&
+          Boolean(item.teamA && typeof item.teamA === 'object' && typeof item.teamA.score === 'number') &&
+          Boolean(item.teamB && typeof item.teamB === 'object' && typeof item.teamB.score === 'number') &&
+          ['SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'].includes(item.status || '')
+        );
+      };
+      if (!data.matches.every(isValidMatch)) {
+        console.error('Import error: Invalid matches structure');
+        return false;
+      }
+
+      // Validasi checkIns jika tersedia
+      if (data.checkIns !== undefined) {
+        if (!Array.isArray(data.checkIns)) return false;
+        const isValidCheckIn = (c: unknown): c is CheckInRecord => {
+          if (!c || typeof c !== 'object') return false;
+          const item = c as Partial<CheckInRecord>;
+          return (
+            typeof item.id === 'string' &&
+            typeof item.playerId === 'string' &&
+            typeof item.leagueId === 'string' &&
+            typeof item.date === 'string' &&
+            typeof item.round === 'number'
+          );
+        };
+        if (!data.checkIns.every(isValidCheckIn)) {
+          console.error('Import error: Invalid checkIns structure');
+          return false;
+        }
+      }
+
+      this.saveLeagues(data.leagues);
+      this.savePlayers(data.players);
+      this.saveMatches(data.matches);
+      if (data.checkIns) this.saveCheckIns(data.checkIns);
+      return true;
     } catch (e) {
-      console.error('Import error:', e);
+      console.error('Import validation error:', e);
       return false;
     }
   }

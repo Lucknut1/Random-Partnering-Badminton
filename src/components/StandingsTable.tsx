@@ -6,14 +6,17 @@ import { PodiumCard } from './PodiumCard';
 import { 
   Trophy, 
   Search, 
-  Filter, 
   Download, 
   Users, 
-  Flame, 
   TrendingUp, 
-  CheckCircle2, 
-  XCircle,
-  HelpCircle
+  HelpCircle,
+  Award,
+  ChevronRight,
+  Shield,
+  Zap,
+  Sparkles,
+  ArrowUpRight,
+  Minus
 } from 'lucide-react';
 
 interface StandingsTableProps {
@@ -50,15 +53,39 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
 
   const topThree = standings.slice(0, 3);
 
-  // Export to CSV
+  // Export to CSV with formula injection sanitization
   const handleExportCSV = () => {
-    const headers = ['Peringkat', 'Nama', 'Gender', 'Level', 'Departemen', 'Main', 'Menang', 'Kalah', 'Poin', 'Skor Masuk (PF)', 'Skor Kebobolan (PA)', 'Selisih (+/-)', 'Win Rate (%)'];
+    const sanitizeCsvValue = (val: unknown): string => {
+      const str = String(val ?? '');
+      const escaped = str.replace(/"/g, '""');
+      if (/^[=+\-@\t\r]/.test(escaped)) {
+        return `"'${escaped}"`;
+      }
+      return `"${escaped}"`;
+    };
+
+    const headers = [
+      'Rank',
+      'Player Name',
+      'Gender',
+      'Level',
+      'Department',
+      'Matches',
+      'Won',
+      'Lost',
+      'Points (PTS)',
+      'Points For (PF)',
+      'Points Against (PA)',
+      'Point Diff (+/-)',
+      'Win Rate (%)'
+    ];
+
     const rows = filteredStandings.map((r) => [
       r.rank,
-      `"${r.player.name}"`,
-      r.player.gender === 'pria' ? 'Pria' : 'Wanita',
-      `Level ${r.player.level}`,
-      `"${r.player.department}"`,
+      sanitizeCsvValue(r.player.name),
+      sanitizeCsvValue(r.player.gender === 'pria' ? 'Pria' : 'Wanita'),
+      sanitizeCsvValue(`Level ${r.player.level}`),
+      sanitizeCsvValue(r.player.department),
       r.played,
       r.won,
       r.lost,
@@ -66,121 +93,125 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
       r.pointsFor,
       r.pointsAgainst,
       r.pointDiff,
-      `${r.winRate}%`,
+      sanitizeCsvValue(`${r.winRate}%`),
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.map(sanitizeCsvValue).join(','), ...rows.map((e) => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Klasemen_${activeLeague.name}_${selectedGender}_${getLocalDate()}.csv`);
+    link.setAttribute('download', `BWF_Ranking_${activeLeague.name}_${selectedGender}_${getLocalDate()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  const countGender = (g: Gender) =>
+    players.filter((p) => p.gender === g && (p.leagueId === activeLeague.id || p.leagueId === 'all')).length;
+
   return (
     <div className="space-y-6">
-      {/* Top Header & Gender Switcher */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-white flex items-center gap-2.5">
-            <Trophy className="text-amber-400" size={26} />
-            <span>Klasemen Pertandingan Perorangan</span>
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Sistem 3 Poin per Kemenangan • Liga: <span className="text-emerald-400 font-semibold">{activeLeague.name}</span>
-          </p>
-        </div>
+      {/* BWF OFFICIAL HEADER & CATEGORY SWITCHER */}
+      <div className="clean-card p-4 sm:p-5 bg-gradient-to-r from-[#0d121c] via-[#101524] to-[#0d121c] border-white/10 shadow-xl">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                <Shield size={11} className="text-rose-400" /> BWF RANKING SYSTEM
+              </span>
+              <span className="text-[11px] text-slate-400 font-semibold">
+                Updated: {getLocalDate()}
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white font-['Outfit'] tracking-tight flex items-center gap-2">
+              <span>BWF Official World Rankings</span>
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Liga: <strong className="text-slate-200">{activeLeague.name}</strong> • 3 Poin per Kemenangan (W)
+            </p>
+          </div>
 
-        {/* Gender Tabs */}
-        <div className="flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-xl border border-white/10 self-start md:self-auto">
-          <button
-            onClick={() => setSelectedGender('pria')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition ${
-              selectedGender === 'pria'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Users size={15} />
-            <span>Kategori Putra (Men)</span>
-            <span className="bg-blue-950/80 text-blue-200 px-2 py-0.5 rounded-full text-[10px]">
-              {players.filter((p) => p.gender === 'pria' && (p.leagueId === activeLeague.id || p.leagueId === 'all')).length}
-            </span>
-          </button>
+          {/* BWF Category Tabs (Men's / Women's) */}
+          <div className="bwf-category-tabs self-start lg:self-auto">
+            <button
+              onClick={() => setSelectedGender('pria')}
+              className={`bwf-category-tab ${selectedGender === 'pria' ? 'active-mens' : ''}`}
+            >
+              <Users size={14} />
+              <span>PUTRA (MEN)</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/30 font-mono">
+                {countGender('pria')}
+              </span>
+            </button>
 
-          <button
-            onClick={() => setSelectedGender('wanita')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition ${
-              selectedGender === 'wanita'
-                ? 'bg-pink-600 text-white shadow-lg shadow-pink-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Users size={15} />
-            <span>Kategori Putri (Women)</span>
-            <span className="bg-pink-950/80 text-pink-200 px-2 py-0.5 rounded-full text-[10px]">
-              {players.filter((p) => p.gender === 'wanita' && (p.leagueId === activeLeague.id || p.leagueId === 'all')).length}
-            </span>
-          </button>
+            <button
+              onClick={() => setSelectedGender('wanita')}
+              className={`bwf-category-tab ${selectedGender === 'wanita' ? 'active-womens' : ''}`}
+            >
+              <Users size={14} />
+              <span>PUTRI (WOMEN)</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/30 font-mono">
+                {countGender('wanita')}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Podium Visualization */}
+      {/* TOP 3 PODIUM / WORLD #1 SHOWCASE */}
       <PodiumCard topThree={topThree} gender={selectedGender} />
 
-      {/* Filters & Control Bar */}
-      <div className="glass-panel p-4 flex flex-wrap items-center justify-between gap-3">
+      {/* FILTER CONTROLS BAR (BWF STYLE) */}
+      <div className="clean-card p-3 sm:p-4 bg-[#0a0e18] border-white/10 flex flex-wrap items-center justify-between gap-3">
         {/* Search */}
-        <div className="relative min-w-[240px] flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+        <div className="relative min-w-[220px] flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
           <input
             type="text"
-            placeholder="Cari nama peserta atau departemen..."
+            placeholder="Cari atlet atau divisi..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 pr-4 py-2 text-xs rounded-lg"
+            className="pl-9 pr-3 py-1.5 text-xs rounded-lg w-full bg-[#101524] border-white/10 focus:border-rose-500"
           />
         </div>
 
-        {/* Level Filter */}
-        <div className="flex items-center gap-1.5 bg-slate-900 p-1 rounded-lg border border-white/5">
-          <span className="text-[11px] text-slate-400 px-2 font-medium">Level:</span>
-          <button
-            onClick={() => setSelectedLevel('ALL')}
-            className={`px-2.5 py-1 rounded text-xs font-bold transition ${
-              selectedLevel === 'ALL' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Semua
-          </button>
-          <button
-            onClick={() => setSelectedLevel('A')}
-            className={`px-2.5 py-1 rounded text-xs font-bold transition ${
-              selectedLevel === 'A' ? 'bg-amber-500/30 text-amber-300 border border-amber-500/40' : 'text-slate-400 hover:text-amber-400'
-            }`}
-          >
-            Level A
-          </button>
-          <button
-            onClick={() => setSelectedLevel('B')}
-            className={`px-2.5 py-1 rounded text-xs font-bold transition ${
-              selectedLevel === 'B' ? 'bg-sky-500/30 text-sky-300 border border-sky-500/40' : 'text-slate-400 hover:text-sky-400'
-            }`}
-          >
-            Level B
-          </button>
-        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Level Filter Tabs */}
+          <div className="flex items-center gap-1 bg-[#101524] p-1 rounded-lg border border-white/5 text-xs">
+            <span className="text-[10px] text-slate-400 px-2 font-bold uppercase tracking-wider">Level:</span>
+            <button
+              onClick={() => setSelectedLevel('ALL')}
+              className={`px-2.5 py-1 rounded text-xs font-extrabold transition ${
+                selectedLevel === 'ALL' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              SEMUA
+            </button>
+            <button
+              onClick={() => setSelectedLevel('A')}
+              className={`px-2.5 py-1 rounded text-xs font-extrabold transition ${
+                selectedLevel === 'A' ? 'bg-amber-500/25 text-amber-300 border border-amber-500/40' : 'text-slate-400 hover:text-amber-300'
+              }`}
+            >
+              LVL A
+            </button>
+            <button
+              onClick={() => setSelectedLevel('B')}
+              className={`px-2.5 py-1 rounded text-xs font-extrabold transition ${
+                selectedLevel === 'B' ? 'bg-sky-500/25 text-sky-300 border border-sky-500/40' : 'text-slate-400 hover:text-sky-300'
+              }`}
+            >
+              LVL B
+            </button>
+          </div>
 
-        {/* Season Filter */}
-        <div className="flex items-center gap-2">
+          {/* Season / Week Selector */}
           <select
             value={selectedSeasonId}
             onChange={(e) => setSelectedSeasonId(e.target.value)}
-            className="text-xs py-2 px-3 rounded-lg bg-slate-900 border-white/10 text-slate-200"
+            className="text-xs py-1.5 px-3 rounded-lg bg-[#101524] border-white/10 text-slate-200 font-bold focus:outline-none"
           >
-            <option value="all">Semua Periode / Sepanjang Waktu</option>
+            <option value="all">Semua Periode Liga</option>
             {activeLeague.seasons.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name} {s.isActive ? '(Aktif)' : ''}
@@ -188,194 +219,226 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
             ))}
           </select>
 
-          {/* Export Button */}
+          {/* Export CSV Button */}
           <button
             onClick={handleExportCSV}
-            className="btn btn-secondary btn-sm flex items-center gap-1.5"
-            title="Download CSV"
+            className="btn-action-secondary text-xs py-1.5 px-3"
+            title="Download CSV Ranking"
           >
-            <Download size={14} />
-            <span className="hidden sm:inline">Export CSV</span>
+            <Download size={13} />
+            <span className="hidden sm:inline">Export BWF CSV</span>
           </button>
 
-          {/* Rule Modal Trigger */}
+          {/* Rules Modal Button */}
           <button
             onClick={() => setShowRuleModal(true)}
-            className="btn btn-secondary btn-sm text-slate-400 hover:text-white"
-            title="Aturan Klasemen"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/5"
+            title="Aturan Perhitungan Poin BWF"
           >
-            <HelpCircle size={15} />
+            <HelpCircle size={16} />
           </button>
         </div>
       </div>
 
-      {/* Main Standings Table */}
-      <div className="glass-panel overflow-hidden border border-white/10 shadow-2xl">
-        <div className="shuttle-table-container">
-          <table className="shuttle-table">
-            <thead>
+      {/* BWF LEADERBOARD TABLE */}
+      <div className="bwf-table-container">
+        <table className="bwf-table">
+          <thead>
+            <tr>
+              <th className="w-16 text-center">RANK</th>
+              <th>PLAYER / DIVISION</th>
+              <th className="text-center">LEVEL</th>
+              <th className="text-center" title="Matches Played">MATCHES</th>
+              <th className="text-center" title="Won - Lost">WIN - LOSS</th>
+              <th className="text-center font-bold text-amber-400" title="Total Ranking Points">POINTS</th>
+              <th className="text-center" title="Points For / Points Against">PF / PA</th>
+              <th className="text-center" title="Score Differential">DIFF</th>
+              <th className="text-center" title="Win Rate Percentage">WIN RATE</th>
+              <th className="text-center">FORM (LAST 5)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredStandings.length === 0 ? (
               <tr>
-                <th className="w-14 text-center">POS</th>
-                <th>PESERTA</th>
-                <th className="text-center">LEVEL</th>
-                <th className="text-center" title="Main">M</th>
-                <th className="text-center text-emerald-400" title="Menang">W</th>
-                <th className="text-center text-red-400" title="Kalah">L</th>
-                <th className="text-center text-amber-300 font-extrabold text-sm" title="Total Poin (Menang = 3 Poin)">POIN</th>
-                <th className="text-center" title="Poin Skor Masuk (Points For)">PF</th>
-                <th className="text-center" title="Poin Skor Kebobolan (Points Against)">PA</th>
-                <th className="text-center font-bold" title="Selisih Skor Menang - Kalah">+/-</th>
-                <th className="text-center" title="Win Rate %">WIN%</th>
-                <th className="text-center">FORM (5 LAGA)</th>
+                <td colSpan={10} className="text-center py-16 text-slate-500 text-sm">
+                  Belum ada catatan pertandingan untuk kategori atau filter ini.
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredStandings.length === 0 ? (
-                <tr>
-                  <td colSpan={12} className="text-center py-12 text-slate-500 text-sm">
-                    Belum ada peserta atau pertandingan pada filter ini.
-                  </td>
-                </tr>
-              ) : (
-                filteredStandings.map((row) => {
-                  const isTopOne = row.rank === 1 && row.points > 0;
-                  const isTopTwo = row.rank === 2 && row.points > 0;
-                  const isTopThree = row.rank === 3 && row.points > 0;
+            ) : (
+              filteredStandings.map((row) => {
+                const isRank1 = row.rank === 1 && row.points > 0;
+                const isRank2 = row.rank === 2 && row.points > 0;
+                const isRank3 = row.rank === 3 && row.points > 0;
+                const totalWL = row.won + row.lost;
+                const winPercent = totalWL > 0 ? Math.round((row.won / totalWL) * 100) : 0;
 
-                  return (
-                    <tr
-                      key={row.player.id}
-                      className={
-                        isTopOne
-                          ? 'bg-amber-500/5 hover:bg-amber-500/10'
-                          : isTopTwo
-                          ? 'bg-slate-400/5 hover:bg-slate-400/10'
-                          : isTopThree
-                          ? 'bg-amber-800/5 hover:bg-amber-800/10'
-                          : ''
-                      }
-                    >
-                      {/* Rank Position */}
-                      <td className="text-center font-bold">
+                return (
+                  <tr
+                    key={row.player.id}
+                    className={
+                      isRank1
+                        ? 'bg-amber-500/[0.04]'
+                        : isRank2
+                        ? 'bg-slate-400/[0.03]'
+                        : isRank3
+                        ? 'bg-amber-800/[0.03]'
+                        : ''
+                    }
+                  >
+                    {/* Rank Badge */}
+                    <td className="text-center">
+                      <div className="flex flex-col items-center justify-center gap-0.5">
                         <span
-                          className={`rank-badge ${
-                            isTopOne
-                              ? 'rank-1'
-                              : isTopTwo
-                              ? 'rank-2'
-                              : isTopThree
-                              ? 'rank-3'
-                              : 'rank-other'
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs ${
+                            isRank1
+                              ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                              : isRank2
+                              ? 'bg-gradient-to-r from-slate-300 to-slate-400 text-slate-950'
+                              : isRank3
+                              ? 'bg-gradient-to-r from-amber-700 to-amber-800 text-amber-100'
+                              : 'bg-slate-800/80 text-slate-400 border border-white/5'
                           }`}
                         >
                           {row.rank}
                         </span>
-                      </td>
+                        {isRank1 ? (
+                          <span className="bwf-movement-up text-[9px]">★ NO.1</span>
+                        ) : (
+                          <span className="bwf-movement-steady text-[9px]">—</span>
+                        )}
+                      </div>
+                    </td>
 
-                      {/* Player Name & Dept */}
-                      <td>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-800 border border-white/10 flex items-center justify-center font-bold text-xs text-slate-300">
-                            {row.player.name.charAt(0)}
+                    {/* Player Info */}
+                    <td>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center font-black text-xs text-slate-200 shadow-inner">
+                          {row.player.name.charAt(0)}
+                        </div>
+                        <div>
+                          <div className="font-extrabold text-white flex items-center gap-1.5 text-sm">
+                            <span>{row.player.name}</span>
+                            {isRank1 && <Award size={13} className="text-amber-400" />}
                           </div>
-                          <div>
-                            <div className="font-extrabold text-slate-100 flex items-center gap-2 text-sm">
-                              <span>{row.player.name}</span>
-                              {isTopOne && <Flame size={14} className="text-amber-400" />}
-                            </div>
-                            <div className="text-xs text-slate-400">{row.player.department}</div>
+                          <div className="text-xs text-slate-400 flex items-center gap-1">
+                            <span>{row.player.department}</span>
                           </div>
                         </div>
-                      </td>
+                      </div>
+                    </td>
 
-                      {/* Level Badge */}
-                      <td className="text-center">
-                        <span className={`badge-level-${row.player.level.toLowerCase()}`}>
-                          Level {row.player.level}
+                    {/* Level */}
+                    <td className="text-center">
+                      <span className={`badge-lvl-${row.player.level.toLowerCase()}`}>
+                        Level {row.player.level}
+                      </span>
+                    </td>
+
+                    {/* Matches */}
+                    <td className="text-center font-bold text-slate-300 font-mono text-xs">
+                      {row.played}
+                    </td>
+
+                    {/* Win - Loss Record & Mini Bar */}
+                    <td className="text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="font-mono text-xs font-bold">
+                          <strong className="text-emerald-400">{row.won}W</strong> - <strong className="text-rose-400">{row.lost}L</strong>
                         </span>
-                      </td>
+                        {totalWL > 0 && (
+                          <div className="bwf-wl-bar">
+                            <div
+                              className="bwf-wl-bar-win"
+                              style={{ width: `${winPercent}%` }}
+                            />
+                            <div
+                              className="bwf-wl-bar-loss"
+                              style={{ width: `${100 - winPercent}%` }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </td>
 
-                      {/* Played (M) */}
-                      <td className="text-center font-semibold text-slate-300">{row.played}</td>
+                    {/* Total Points in BWF Highlight */}
+                    <td className="text-center">
+                      <span className="bwf-points-badge">
+                        <span>{row.points}</span>
+                        <span className="text-[9px] font-bold text-amber-300/80">PTS</span>
+                      </span>
+                    </td>
 
-                      {/* Won (W) */}
-                      <td className="text-center font-bold text-emerald-400">{row.won}</td>
+                    {/* PF / PA */}
+                    <td className="text-center text-xs font-mono text-slate-300">
+                      <span>{row.pointsFor}</span> / <span className="text-slate-400">{row.pointsAgainst}</span>
+                    </td>
 
-                      {/* Lost (L) */}
-                      <td className="text-center font-bold text-red-400">{row.lost}</td>
+                    {/* Differential (+/-) */}
+                    <td className="text-center font-mono font-bold text-xs">
+                      <span
+                        className={
+                          row.pointDiff > 0
+                            ? 'text-emerald-400'
+                            : row.pointDiff < 0
+                            ? 'text-rose-400'
+                            : 'text-slate-400'
+                        }
+                      >
+                        {row.pointDiff > 0 ? `+${row.pointDiff}` : row.pointDiff}
+                      </span>
+                    </td>
 
-                      {/* Total Points (3 pts per win) */}
-                      <td className="text-center">
-                        <span className="font-extrabold text-base text-amber-300 font-['JetBrains_Mono'] px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">
-                          {row.points}
-                        </span>
-                      </td>
-
-                      {/* Points For (PF) */}
-                      <td className="text-center text-xs font-mono text-slate-300">{row.pointsFor}</td>
-
-                      {/* Points Against (PA) */}
-                      <td className="text-center text-xs font-mono text-slate-400">{row.pointsAgainst}</td>
-
-                      {/* Point Diff (+/-) */}
-                      <td className="text-center font-mono font-bold text-xs">
-                        <span
-                          className={
-                            row.pointDiff > 0
-                              ? 'text-emerald-400'
-                              : row.pointDiff < 0
-                              ? 'text-red-400'
-                              : 'text-slate-400'
-                          }
-                        >
-                          {row.pointDiff > 0 ? `+${row.pointDiff}` : row.pointDiff}
-                        </span>
-                      </td>
-
-                      {/* Win Rate */}
-                      <td className="text-center font-semibold text-xs text-slate-300">
+                    {/* Win Rate */}
+                    <td className="text-center">
+                      <span
+                        className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                          row.winRate >= 70
+                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                            : row.winRate >= 50
+                            ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                            : 'bg-slate-800 text-slate-400'
+                        }`}
+                      >
                         {row.winRate}%
-                      </td>
+                      </span>
+                    </td>
 
-                      {/* Recent Form (5 match badges) */}
-                      <td className="text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          {row.recentForm.length === 0 ? (
-                            <span className="text-[11px] text-slate-600">-</span>
-                          ) : (
-                            row.recentForm.map((result, idx) => (
-                              <span
-                                key={idx}
-                                className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
-                                  result === 'W'
-                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                                    : 'bg-red-500/20 text-red-400 border border-red-500/40'
-                                }`}
-                                title={result === 'W' ? 'Menang' : 'Kalah'}
-                              >
-                                {result}
-                              </span>
-                            ))
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                    {/* Form (Last 5) */}
+                    <td className="text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        {row.recentForm.length === 0 ? (
+                          <span className="text-xs text-slate-600">—</span>
+                        ) : (
+                          row.recentForm.map((result, idx) => (
+                            <span
+                              key={idx}
+                              className={`bwf-form-circle ${
+                                result === 'W' ? 'bwf-form-w' : 'bwf-form-l'
+                              }`}
+                              title={result === 'W' ? 'Menang' : 'Kalah'}
+                            >
+                              {result}
+                            </span>
+                          ))
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Rules Modal */}
       {showRuleModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="glass-panel max-w-lg w-full p-6 space-y-4 border border-white/20 shadow-2xl">
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="clean-card max-w-lg w-full p-6 space-y-4 border-white/20 shadow-2xl bg-[#0c101c]">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-lg font-black text-white flex items-center gap-2">
                 <Trophy className="text-amber-400" size={20} />
-                <span>Aturan Perhitungan Klasemen</span>
+                <span>Aturan Perhitungan Ranking BWF</span>
               </h3>
               <button
                 onClick={() => setShowRuleModal(false)}
@@ -389,30 +452,30 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
               <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
                 <p className="font-bold text-emerald-400 text-sm mb-1">1. Sistem Poin Pertandingan:</p>
                 <ul className="list-disc list-inside space-y-1 text-slate-300">
-                  <li><strong>Menang:</strong> +3 Poin</li>
-                  <li><strong>Kalah:</strong> 0 Poin</li>
+                  <li><strong>Menang (Win):</strong> +3 Poin</li>
+                  <li><strong>Kalah (Loss):</strong> 0 Poin</li>
                 </ul>
               </div>
 
-              <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl">
-                <p className="font-bold text-blue-400 text-sm mb-1">2. Urutan Penentuan Peringkat (Tie-Breaker):</p>
+              <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl">
+                <p className="font-bold text-rose-400 text-sm mb-1">2. Urutan Penentuan Ranking (Tie-Breaker):</p>
                 <ol className="list-decimal list-inside space-y-1 text-slate-300">
-                  <li><strong>Total Poin Terbanyak</strong></li>
-                  <li><strong>Jumlah Pertandingan Menang Terbanyak (W - L)</strong></li>
-                  <li><strong>Selisih Skor Poin Terbesar (+/- Diff: PF - PA)</strong></li>
-                  <li><strong>Total Poin Skor Masuk Terbanyak (PF)</strong></li>
+                  <li><strong>Total Ranking Points (PTS)</strong></li>
+                  <li><strong>Jumlah Kemenangan Terbanyak (W)</strong></li>
+                  <li><strong>Selisih Skor Poin (+/- Diff: PF - PA)</strong></li>
+                  <li><strong>Total Poin Skor Masuk (PF)</strong></li>
                   <li><strong>Persentase Win Rate (%)</strong></li>
                 </ol>
               </div>
 
               <div className="p-3 bg-slate-800/80 border border-white/10 rounded-xl">
-                <p className="font-bold text-slate-200 text-sm mb-1">3. Level & Jaminan Main:</p>
-                <p>Peserta dikategorikan <strong>Level A</strong> (kemampuan tinggi) dan <strong>Level B</strong>. Setiap peserta yang check-in dijamin main minimal 1x per hari sesi liga.</p>
+                <p className="font-bold text-slate-200 text-sm mb-1">3. Jaminan Main & Level Fair Play:</p>
+                <p>Peserta dikelompokkan ke <strong>Level A</strong> dan <strong>Level B</strong> untuk memastikan kesetaraan pertandingan dan perolehan poin yang kompetitif.</p>
               </div>
             </div>
 
             <div className="pt-2 text-right">
-              <button onClick={() => setShowRuleModal(false)} className="btn btn-primary btn-sm">
+              <button onClick={() => setShowRuleModal(false)} className="btn-action-primary px-4 py-2 text-xs">
                 Tutup & Mengerti
               </button>
             </div>

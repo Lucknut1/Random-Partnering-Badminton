@@ -238,14 +238,18 @@ export const supabaseService = {
   },
 
   localAdminAvailable(): boolean {
+    // Mode PIN lokal hanya diizinkan pada lingkungan pengembangan lokal (DEV), dinonaktifkan di build produksi
+    if (import.meta.env.PROD) return false;
     return Boolean(import.meta.env.VITE_LOCAL_ADMIN_PIN?.trim());
   },
 
   localAdminActive(): boolean {
+    if (import.meta.env.PROD) return false;
     return sessionStorage.getItem('shuttlerank_local_admin') === 'true';
   },
 
   signInLocal(pin: string): boolean {
+    if (import.meta.env.PROD) return false;
     const expectedPin = import.meta.env.VITE_LOCAL_ADMIN_PIN?.trim();
     const valid = Boolean(expectedPin) && pin === expectedPin;
     if (valid) sessionStorage.setItem('shuttlerank_local_admin', 'true');

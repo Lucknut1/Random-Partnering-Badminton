@@ -483,12 +483,12 @@ export const App: React.FC = () => {
     );
     if (!targetMatch) return;
 
-    if (!isAdmin && isSupabaseConfigured) {
+    if (isSupabaseConfigured) {
       try {
         await supabaseService.cancelActiveMatch(matchId);
       } catch (error) {
-        console.error('Public match cancellation failed:', error);
-        alert('Pertandingan belum dapat dibatalkan. Muat ulang halaman lalu coba lagi.');
+        console.error('Match cancellation failed:', error);
+        alert(error instanceof Error ? error.message : 'Pertandingan gagal dibatalkan. Pastikan Anda memiliki akses host/admin.');
         return;
       }
     }
