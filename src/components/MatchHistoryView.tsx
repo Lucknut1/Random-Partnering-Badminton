@@ -79,12 +79,12 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* BWF MATCH CENTER HEADER */}
+      {/* MATCH CENTER HEADER */}
       <div className="clean-card p-5 bg-[#0d121c] border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white">
-              BWF MATCH CENTER
+              MATCH CENTER
             </span>
             <span className="text-xs text-slate-400 font-semibold">{activeLeague.name}</span>
           </div>
@@ -134,7 +134,7 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
         />
       </div>
 
-      {/* COMPLETED MATCH CARDS LIST (BWF STYLE) */}
+      {/* COMPLETED MATCH CARDS LIST */}
       {completedMatches.length === 0 ? (
         <div className="clean-card p-12 text-center text-xs text-slate-500 bg-[#0d121c]">
           Belum ada riwayat pertandingan selesai pada liga ini.
@@ -165,7 +165,7 @@ export const MatchHistoryView: React.FC<MatchHistoryViewProps> = ({
                       {match.matchType === 'MD' ? "Men's Doubles" : match.matchType === 'WD' ? "Women's Doubles" : 'Mixed Doubles'}
                     </span>
                     <span className="text-slate-600">•</span>
-                    <span className="text-[11px] text-slate-400">{match.format === 'RACE_42' ? 'Race 42' : 'BWF 21'}</span>
+                    <span className="text-[11px] text-slate-400">{match.format === 'RACE_42' ? 'Race 42' : 'Standar 21'}</span>
                   </div>
 
                   <div className="flex items-center gap-2 text-[11px]">

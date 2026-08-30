@@ -87,7 +87,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="lg:col-span-2 space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shadow-md shadow-rose-600/30">
-                <Shield size={11} /> BWF TOURNAMENT HUB
+                <Shield size={11} /> TOURNAMENT HUB
               </span>
               <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Sesi Sedang Berjalan
@@ -137,7 +137,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 className="px-4 py-3 rounded-xl text-xs font-extrabold bg-[#161f33] text-amber-300 hover:bg-[#1c2740] border border-amber-500/30 transition flex items-center gap-1.5"
               >
                 <Trophy size={15} />
-                <span>Klasemen BWF</span>
+                <span>Klasemen</span>
               </button>
             </div>
           </div>
@@ -192,7 +192,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* DASHBOARD 2-COLUMN SECTION: LEADERBOARD TEASER & LIVE MATCH FEED */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        {/* LEFT: BWF TOP 5 RANKINGS TEASER */}
+        {/* LEFT: TOP 5 RANKINGS TEASER */}
         <section className="clean-card bg-[#0b0f19] border-white/10 p-5 space-y-4 shadow-xl">
           <div className="flex items-center justify-between border-b border-white/5 pb-3">
             <div className="flex items-center gap-2.5">
@@ -200,7 +200,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <Trophy size={16} />
               </div>
               <div>
-                <h3 className="font-extrabold text-white text-sm">BWF Top 5 Leaderboard</h3>
+                <h3 className="font-extrabold text-white text-sm">Top 5 Leaderboard</h3>
                 <p className="text-[11px] text-slate-400">Peringkat perolehan poin sementara</p>
               </div>
             </div>
@@ -289,7 +289,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             onClick={() => onNavigateTab('ranking')}
             className="w-full py-2.5 bg-[#12192c] hover:bg-[#18223c] text-rose-300 text-xs font-black uppercase tracking-wider rounded-xl border border-rose-500/20 flex items-center justify-center gap-1.5 transition"
           >
-            <span>Lihat Klasemen Lengkap BWF</span>
+            <span>Lihat Klasemen Lengkap</span>
             <ChevronRight size={14} />
           </button>
         </section>
@@ -333,7 +333,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   >
                     <div className="flex items-center justify-between text-[10px] text-slate-400 border-b border-white/5 pb-1.5">
                       <span className="font-bold text-rose-400">Lapangan {m.courtNumber}</span>
-                      <span>Format: {m.format === 'RACE_42' ? 'Race 42' : 'BWF 21'} • Selesai: {m.completedAt || 'Hari Ini'}</span>
+                      <span>Format: {m.format === 'RACE_42' ? 'Race 42' : 'Standar 21'} • Selesai: {m.completedAt || 'Hari Ini'}</span>
                     </div>
 
                     <div className="space-y-1">

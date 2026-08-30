@@ -548,7 +548,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     className="text-xs"
                   >
                     <option value="RACE_42">Race to 42</option>
-                    <option value="BWF">Standar BWF (21)</option>
+                    <option value="BWF">Standar 21</option>
                   </select>
                 </div>
               </div>
@@ -674,7 +674,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </div>
                     <div>
                       <span className="text-slate-500 block text-[10px]">Format Default:</span>
-                      <span className="font-bold text-emerald-300">{l.defaultFormat === 'RACE_42' ? 'Race 42' : 'BWF 21'}</span>
+                      <span className="font-bold text-emerald-300">{l.defaultFormat === 'RACE_42' ? 'Race 42' : 'Standar 21'}</span>
                     </div>
                     <div>
                       <span className="text-slate-500 block text-[10px]">Periode:</span>

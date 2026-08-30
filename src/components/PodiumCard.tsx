@@ -63,7 +63,7 @@ export const PodiumCard: React.FC<PodiumCardProps> = ({ topThree, gender }) => {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
                   <Star size={11} className="fill-amber-400 text-amber-400" />
-                  BWF WORLD NO. 1
+                  RANKING #1 (CHAMPION)
                 </span>
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   {categoryLabel}

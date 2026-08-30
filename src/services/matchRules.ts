@@ -26,7 +26,7 @@ export const matchRules = {
     const cappedWin = winner === 30 && loser <= 29;
     return regularWin || cappedWin
       ? { valid: true }
-      : { valid: false, message: 'Skor BWF harus menang 2 poin mulai 21, dengan batas 30 poin.' };
+      : { valid: false, message: 'Skor standar harus selisih 2 poin mulai 21, dengan batas maksimal 30 poin.' };
   },
 
   validateLineup(

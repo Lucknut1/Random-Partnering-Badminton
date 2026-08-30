@@ -99,7 +99,7 @@ export const MatchHistory: React.FC<MatchHistoryProps> = ({
           >
             <option value="all">Semua Format</option>
             <option value="RACE_42">Race to 42</option>
-            <option value="BWF">Standar BWF</option>
+            <option value="BWF">Standar 21</option>
           </select>
         </div>
       </div>
@@ -132,7 +132,7 @@ export const MatchHistory: React.FC<MatchHistoryProps> = ({
                       Lap. {match.courtNumber}
                     </span>
                     <span className="badge-format">
-                      {match.format === 'RACE_42' ? 'Race 42' : 'BWF (21)'}
+                      {match.format === 'RACE_42' ? 'Race 42' : 'Standar (21)'}
                     </span>
                     <span className="text-[11px] bg-slate-800 px-2 py-0.5 rounded font-semibold text-slate-300">
                       {match.matchType === 'MD' ? 'Ganda Putra' : match.matchType === 'WD' ? 'Ganda Putri' : 'Ganda Campuran'}

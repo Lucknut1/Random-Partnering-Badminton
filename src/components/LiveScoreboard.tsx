@@ -152,7 +152,7 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
                 COURT {match.courtNumber}
               </h4>
               <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                {match.format === 'RACE_42' ? '⚡ RACE TO 42' : '🏸 BWF 21'}
+                {match.format === 'RACE_42' ? '⚡ RACE TO 42' : '🏸 STANDAR 21'}
               </span>
               <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-extrabold border border-white/10 uppercase">
                 {match.matchType === 'MD' ? "Men's Doubles" : match.matchType === 'WD' ? "Women's Doubles" : 'Mixed Doubles'}
@@ -177,7 +177,7 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
         </div>
       </div>
 
-      {/* Interval / Switch Side Notification (BWF Gold Alert) */}
+      {/* Interval / Switch Side Notification (Gold Alert) */}
       {isIntervalReached && (
         <div className="p-3 bg-amber-500/20 border-2 border-amber-400 rounded-xl flex items-center justify-between gap-3 animate-pulse">
           <div className="flex items-center gap-2 text-amber-300 text-xs font-bold">
@@ -205,7 +205,7 @@ export const LiveScoreboard: React.FC<LiveScoreboardProps> = ({
               <p className="font-black text-xs sm:text-sm text-emerald-200 uppercase">
                 PERTANDINGAN SELESAI! PEMENANG: {winner === 'teamA' ? 'TIM A (RED)' : 'TIM B (BLUE)'}
               </p>
-              <p className="text-[11px] text-emerald-300/80">Pemenang berhak mendapatkan +3 Poin pada klasemen BWF.</p>
+              <p className="text-[11px] text-emerald-300/80">Pemenang berhak mendapatkan +3 Poin pada klasemen turnamen.</p>
             </div>
           </div>
           <button

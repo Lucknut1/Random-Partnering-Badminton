@@ -229,7 +229,7 @@ export const MatchScheduler: React.FC<MatchSchedulerProps> = ({
                         : 'bg-slate-800 text-slate-400 border-white/5 hover:text-white'
                     }`}
                   >
-                    🏸 Standar BWF (21)
+                    🏸 Standar 21 Poin
                   </button>
                 </div>
               </div>
@@ -404,7 +404,7 @@ export const MatchScheduler: React.FC<MatchSchedulerProps> = ({
                   className="text-xs"
                 >
                   <option value="RACE_42">Race to 42</option>
-                  <option value="BWF">Standar BWF (21)</option>
+                  <option value="BWF">Standar 21 Poin</option>
                 </select>
               </div>
             </div>

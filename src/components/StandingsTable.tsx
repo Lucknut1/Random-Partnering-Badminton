@@ -100,7 +100,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `BWF_Ranking_${activeLeague.name}_${selectedGender}_${getLocalDate()}.csv`);
+    link.setAttribute('download', `Klasemen_${activeLeague.name}_${selectedGender}_${getLocalDate()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -111,20 +111,20 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* BWF OFFICIAL HEADER & CATEGORY SWITCHER */}
+      {/* OFFICIAL HEADER & CATEGORY SWITCHER */}
       <div className="clean-card p-4 sm:p-5 bg-gradient-to-r from-[#0d121c] via-[#101524] to-[#0d121c] border-white/10 shadow-xl">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30">
-                <Shield size={11} className="text-rose-400" /> BWF RANKING SYSTEM
+                <Shield size={11} className="text-rose-400" /> SISTEM RANKING RESMI
               </span>
               <span className="text-[11px] text-slate-400 font-semibold">
                 Updated: {getLocalDate()}
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-white font-['Outfit'] tracking-tight flex items-center gap-2">
-              <span>BWF Official World Rankings</span>
+              <span>Klasemen & Peringkat Liga</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
               Liga: <strong className="text-slate-200">{activeLeague.name}</strong> • 3 Poin per Kemenangan (W)
@@ -226,21 +226,21 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
             title="Download CSV Ranking"
           >
             <Download size={13} />
-            <span className="hidden sm:inline">Export BWF CSV</span>
+            <span className="hidden sm:inline">Export CSV Klasemen</span>
           </button>
 
           {/* Rules Modal Button */}
           <button
             onClick={() => setShowRuleModal(true)}
             className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/5"
-            title="Aturan Perhitungan Poin BWF"
+            title="Aturan Perhitungan Poin"
           >
             <HelpCircle size={16} />
           </button>
         </div>
       </div>
 
-      {/* BWF LEADERBOARD TABLE */}
+      {/* LEADERBOARD TABLE */}
       <div className="bwf-table-container">
         <table className="bwf-table">
           <thead>
@@ -360,7 +360,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
                       </div>
                     </td>
 
-                    {/* Total Points in BWF Highlight */}
+                    {/* Total Points Highlight */}
                     <td className="text-center">
                       <span className="bwf-points-badge">
                         <span>{row.points}</span>
@@ -438,7 +438,7 @@ export const StandingsTable: React.FC<StandingsTableProps> = ({
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="text-lg font-black text-white flex items-center gap-2">
                 <Trophy className="text-amber-400" size={20} />
-                <span>Aturan Perhitungan Ranking BWF</span>
+                <span>Aturan Perhitungan Ranking Turnamen</span>
               </h3>
               <button
                 onClick={() => setShowRuleModal(false)}

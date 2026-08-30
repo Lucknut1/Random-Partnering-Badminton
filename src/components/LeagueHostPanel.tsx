@@ -64,7 +64,7 @@ export const LeagueHostPanel: React.FC<LeagueHostPanelProps> = ({ activeLeague, 
             Format skor
             <select className="mt-1.5" value={form.defaultFormat} onChange={(event) => setForm((current) => ({ ...current, defaultFormat: event.target.value as ScoreFormat }))}>
               <option value="RACE_42">Race to 42</option>
-              <option value="BWF">BWF 21</option>
+              <option value="BWF">Standar 21 Poin</option>
             </select>
           </label>
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 sm:col-span-2">

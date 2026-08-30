@@ -223,7 +223,7 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
             </div>
             <div>
               <span className="text-[10px] font-black uppercase tracking-wider text-rose-400">
-                BWF MATCH CONTROLLER
+                MATCH CONTROLLER
               </span>
               <h3 className="text-base font-black text-white font-['Outfit']">
                 {recordMode === 'generator' ? 'Random Partnering Engine' : 'Catat Pertandingan'}
@@ -250,7 +250,7 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
           </div>
         </div>
 
-        {/* Mode Selector Tabs (BWF Pill) */}
+        {/* Mode Selector Tabs */}
         <div className={`grid ${canRandomPartner ? 'grid-cols-3' : 'grid-cols-2'} gap-1 bg-[#101524] p-1 rounded-xl border border-white/5 text-xs font-black uppercase tracking-wider`}>
           <button
             type="button"
@@ -310,7 +310,7 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
                   className="w-full py-1.5 px-2 rounded-lg bg-[#101524] border-white/10 text-white font-bold"
                 >
                   <option value="RACE_42">Race to 42</option>
-                  <option value="BWF">BWF Standar (21)</option>
+                  <option value="BWF">Standar 21 Poin</option>
                 </select>
               </div>
 
@@ -550,7 +550,7 @@ export const RecordMatchModal: React.FC<RecordMatchModalProps> = ({
                   <div key={idx} className="p-3 bg-[#101524] rounded-xl border border-white/5 space-y-1.5 text-xs">
                     <div className="flex items-center justify-between text-slate-400 text-[10px] font-bold uppercase">
                       <span className="text-amber-400">LAPANGAN {prop.courtNumber}</span>
-                      <span>Format: {prop.format === 'RACE_42' ? 'Race 42' : 'BWF 21'}</span>
+                      <span>Format: {prop.format === 'RACE_42' ? 'Race 42' : 'Standar 21'}</span>
                     </div>
                     <div className="flex items-center justify-between text-white font-extrabold">
                       <span className="truncate text-rose-300">

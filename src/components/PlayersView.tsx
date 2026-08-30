@@ -109,12 +109,12 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* BWF ATHLETE REGISTRY HEADER */}
+      {/* ATHLETE REGISTRY HEADER */}
       <div className="clean-card p-5 bg-[#0d121c] border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white">
-              BWF ATHLETE REGISTRY
+              ATHLETE REGISTRY
             </span>
             <span className="text-xs text-slate-400 font-semibold">{activeLeague.name}</span>
           </div>
@@ -279,7 +279,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
         )}
       </div>
 
-      {/* BWF ATHLETE ENTRY MODAL */}
+      {/* ATHLETE ENTRY MODAL */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md" role="presentation">
           <div className="flex min-h-full items-start justify-center p-3 sm:items-center sm:p-4">
@@ -292,7 +292,7 @@ export const PlayersView: React.FC<PlayersViewProps> = ({
               <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-rose-400">
-                    BWF ATHLETE ENTRY
+                    PENDAFTARAN ATLET RESMI
                   </span>
                   <h2 className="text-xl font-black text-white font-['Outfit']">Pendaftaran Atlet</h2>
                   <p className="mt-1 text-xs text-slate-400">Daftarkan pemain ke dalam sistem turnamen liga.</p>

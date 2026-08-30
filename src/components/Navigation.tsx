@@ -87,7 +87,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                     MABAREK
                   </span>
                   <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-rose-600 text-white">
-                    BWF
+                    PRO
                   </span>
                 </div>
                 <span className="text-[10px] text-slate-400 font-bold tracking-[0.14em] uppercase">
@@ -149,7 +149,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             </div>
           </div>
 
-          {/* Desktop Navigation Tabs (BWF Pill & Ribbon Style) */}
+          {/* Desktop Navigation Tabs */}
           <nav className="hidden md:flex items-center gap-1.5 bg-[#0e1424] p-1 rounded-xl border border-white/5">
             <button
               onClick={() => onSelectTab('dashboard')}
@@ -170,7 +170,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                   : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
-              Klasemen BWF
+              Klasemen
             </button>
 
             <button
