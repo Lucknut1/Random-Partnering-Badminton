@@ -129,6 +129,23 @@ export const matchmakingEngine = {
     const proposals: GeneratedMatchProposal[] = [];
     let currentCourt = 1;
 
+    // Hitung poin kemenangan klasemen masing-masing pemain untuk penyeimbangan performa
+    const playerPointsMap = new Map<string, number>();
+    allPlayers.forEach((p) => {
+      let pts = 0;
+      currentMatches
+        .filter((m) => m.leagueId === options.league.id && m.status === 'COMPLETED' && m.verificationStatus !== 'PENDING')
+        .forEach((m) => {
+          const teamAWon = m.winnerTeam === 'teamA' || m.teamA.score > m.teamB.score;
+          const teamBWon = m.winnerTeam === 'teamB' || m.teamB.score > m.teamA.score;
+          if ((m.teamA.player1Id === p.id || m.teamA.player2Id === p.id) && teamAWon) pts += 3;
+          if ((m.teamB.player1Id === p.id || m.teamB.player2Id === p.id) && teamBWon) pts += 3;
+        });
+      playerPointsMap.set(p.id, pts);
+    });
+
+    const getPts = (player: Player) => playerPointsMap.get(player.id) || 0;
+
     // Helper untuk balance 4 pemain menjadi 2 tim seimbang
     const formBalancedTeams = (
       p1: Player,
@@ -140,47 +157,70 @@ export const matchmakingEngine = {
       const levelAPlayers = players.filter((p) => p.level === 'A');
       const levelBPlayers = players.filter((p) => p.level === 'B');
 
-      // Kasus 1: 2 Level A & 2 Level B -> Silang A+B vs A+B
+      // Kasus 1: 2 Level A & 2 Level B -> Silang A(Tertinggi)+B(Terendah) vs A(Terendah)+B(Tertinggi)
       if (levelAPlayers.length === 2 && levelBPlayers.length === 2) {
+        levelAPlayers.sort((a, b) => getPts(b) - getPts(a));
+        levelBPlayers.sort((a, b) => getPts(b) - getPts(a));
         return {
-          teamA: [levelAPlayers[0], levelBPlayers[0]],
-          teamB: [levelAPlayers[1], levelBPlayers[1]],
+          teamA: [levelAPlayers[0], levelBPlayers[1]], // A Tertinggi + B Terendah
+          teamB: [levelAPlayers[1], levelBPlayers[0]], // A Terendah + B Tertinggi
           balanceLabel: 'Sangat Seimbang (A+B vs A+B)',
         };
       }
 
       // Kasus 2: 4 Level A
       if (levelAPlayers.length === 4) {
+        levelAPlayers.sort((a, b) => getPts(b) - getPts(a));
         return {
-          teamA: [players[0], players[1]],
-          teamB: [players[2], players[3]],
+          teamA: [levelAPlayers[0], levelAPlayers[3]], // A1 + A4
+          teamB: [levelAPlayers[1], levelAPlayers[2]], // A2 + A3
           balanceLabel: 'Level Tinggi (A+A vs A+A)',
         };
       }
 
       // Kasus 3: 4 Level B
       if (levelBPlayers.length === 4) {
+        levelBPlayers.sort((a, b) => getPts(b) - getPts(a));
         return {
-          teamA: [players[0], players[1]],
-          teamB: [players[2], players[3]],
+          teamA: [levelBPlayers[0], levelBPlayers[3]], // B1 + B4
+          teamB: [levelBPlayers[1], levelBPlayers[2]], // B2 + B3
           balanceLabel: 'Level Merata (B+B vs B+B)',
         };
       }
 
-      // Kasus 4: 3 Level A + 1 Level B -> A+B vs A+A
+      // Kasus 4: 3 Level A + 1 Level B -> Laga Tantangan
+      // Aturan: Level A berpoin tertinggi dipasangkan dengan Level B melawan 2 Level A lainnya
       if (levelAPlayers.length === 3 && levelBPlayers.length === 1) {
+        levelAPlayers.sort((a, b) => getPts(b) - getPts(a)); // Urutkan A tertinggi ke terendah
+        const [aTop, aMid, aLow] = levelAPlayers;
+        const [bPlayer] = levelBPlayers;
+
         return {
-          teamA: [levelAPlayers[0], levelBPlayers[0]],
-          teamB: [levelAPlayers[1], levelAPlayers[2]],
-          balanceLabel: 'Tantangan (A+B vs A+A)',
+          teamA: [aTop, bPlayer],       // A Poin Tertinggi + Pemain B
+          teamB: [aMid, aLow],          // 2 Pemain A Lawannya
+          balanceLabel: 'Laga Tantangan (A_Top+B vs A+A)',
         };
       }
 
-      // Kasus 5: 1 Level A + 3 Level B -> A+B vs B+B
+      // Kasus 5: 1 Level A + 3 Level B -> Laga Kombinasi
+      // Aturan: Level A dipasangkan dengan Level B yang berpoin terendah melawan 2 Level B lainnya
+      if (levelAPlayers.length === 1 && levelBPlayers.length === 3) {
+        levelBPlayers.sort((a, b) => getPts(a) - getPts(b)); // Urutkan B terendah ke tertinggi
+        const [aPlayer] = levelAPlayers;
+        const [bLowest, bMid, bHigh] = levelBPlayers;
+
+        return {
+          teamA: [aPlayer, bLowest],    // Level A + Level B Poin Terendah
+          teamB: [bMid, bHigh],         // 2 Level B Lawan yang Poinnya Lebih Tinggi
+          balanceLabel: 'Laga Kombinasi (A+B_Low vs B+B)',
+        };
+      }
+
+      // Fallback
       return {
         teamA: [players[0], players[1]],
         teamB: [players[2], players[3]],
-        balanceLabel: 'Kombinasi (A+B vs B+B)',
+        balanceLabel: 'Kombinasi Tim',
       };
     };
 
